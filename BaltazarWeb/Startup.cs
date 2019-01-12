@@ -1,7 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using AliaaCommon;
+using AliaaCommon.MongoDB;
+using BaltazarWeb.Utils;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -26,12 +32,30 @@ namespace BaltazarWeb
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
+                options.CheckConsentNeeded = context => false;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddAuthentication(
+                CookieAuthenticationDefaults.AuthenticationScheme
+            ).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
+                options =>
+                {
+                    options.LoginPath = "/Account/Login";
+                    options.LogoutPath = "/Account/Logout";
+                });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(
+                options => { options.ModelBinderProviders.Insert(0, new ModelBinderProvider()); })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            string path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            PersianCharacters persianChars = new PersianCharacters(path);
+            services.AddSingleton(persianChars);
+
+            MongoHelper DB = new MongoHelper(persianChars, Configuration.GetValue<string>("DBName"), Configuration.GetValue<string>("MongoConnString"),
+                Configuration.GetValue<bool>("setDictionaryConventionToArrayOfDocuments"), null);
+            services.AddSingleton(DB);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
