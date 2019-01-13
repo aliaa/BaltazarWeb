@@ -1,8 +1,15 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
 for details on configuring this project to bundle and minify static web assets. */
+@font-face {
+    font-family: 'yekan';
+    src: url('../font/yekan.ttf');
+}
+
 body {
     padding-top: 50px;
     padding-bottom: 20px;
+    font-family: yekan;
+    direction: rtl;
 }
 
 /* Wrapping element */
@@ -34,4 +41,12 @@ body {
     .carousel-caption {
         display: none;
     }
+}
+
+.col-md-1, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10, .col-md-11, .col-md-12 {
+    float: right;
+}
+
+th {
+    text-align: right;
 }

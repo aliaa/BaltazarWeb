@@ -1,0 +1,43 @@
+﻿@model IEnumerable<BaltazarWeb.Models.City>
+@using MongoDB.Driver
+@inject AliaaCommon.MongoDB.MongoHelper DB
+
+@{
+    ViewData["Title"] = "لیست شهر ها";
+}
+
+<h2>لیست شهر ها</h2>
+
+<p>
+    <a asp-action="Add">افزودن</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ProvinceId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+            string provinceName = DB.FindById<Province>(item.ProvinceId)?.Name;
+            <tr>
+                <td>
+                    @Html.DisplayFor(_ => provinceName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.ActionLink("ویرایش", "Edit", new { id = item.Id.ToString() }) |
+                    @Html.ActionLink("حذف", "Delete", new { id = item.Id.ToString() })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

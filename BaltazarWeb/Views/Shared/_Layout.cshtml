@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - BaltazarWeb</title>
+    <title>@ViewData["Title"] - بالتازار</title>
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
@@ -26,13 +26,27 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">BaltazarWeb</a>
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                <ul class="nav navbar-nav navbar-right">
+                    @if (User.Claims.Any())
+                    {
+                        <li><a asp-area="" asp-controller="City" asp-action="Index">شهر ها</a></li>
+                        <li><a asp-area="" asp-controller="Province" asp-action="Index">استان ها</a></li>
+                    }
+                    <li><a asp-area="" asp-controller="Home" asp-action="About">درباره ما</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">تماس با ما</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">بالتازار</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-left">
+                    @if (User.Claims.Any())
+                    {
+                        <li style="float:right;"><a asp-controller="Account" asp-action="Logout">خروج</a></li>
+                    }
+                    else
+                    {
+                        <li style="float:right;"><a asp-controller="Account" asp-action="Login">ورود</a></li>
+                    }
                 </ul>
             </div>
         </div>
@@ -44,7 +58,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2019 - BaltazarWeb</p>
+            <p>&copy; 2019 - Baltazar</p>
         </footer>
     </div>
 

@@ -1,10 +1,11 @@
-﻿using MongoDB.Bson;
+﻿using AliaaCommon;
+using MongoDB.Bson;
 using Newtonsoft.Json;
 using System;
 
 namespace BaltazarWeb.Models
 {
-    public class Student
+    public class Student : MongoEntity
     {
         public enum GenderEnum
         {
