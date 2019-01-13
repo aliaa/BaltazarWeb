@@ -1,6 +1,6 @@
 using System;
 
-namespace BaltazarWeb.Models
+namespace BaltazarWeb.Models.ViewModels
 {
     public class ErrorViewModel
     {
