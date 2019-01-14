@@ -46,7 +46,9 @@ namespace BaltazarWeb
                 });
 
             services.AddMvc(
-                options => { options.ModelBinderProviders.Insert(0, new ModelBinderProvider()); })
+                    options => options.ModelBinderProviders.Insert(0, new ModelBinderProvider()))
+                .AddJsonOptions(
+                    options => options.SerializerSettings.Converters.Add(new ObjectIdJsonConverter()))
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             string path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
@@ -55,6 +57,7 @@ namespace BaltazarWeb
 
             MongoHelper DB = new MongoHelper(persianChars, Configuration.GetValue<string>("DBName"), Configuration.GetValue<string>("MongoConnString"),
                 Configuration.GetValue<bool>("setDictionaryConventionToArrayOfDocuments"), null);
+            DB.DefaultWriteLog = false;
             services.AddSingleton(DB);
         }
 

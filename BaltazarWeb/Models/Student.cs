@@ -1,10 +1,15 @@
 ﻿using AliaaCommon;
+using BaltazarWeb.Utils;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using Newtonsoft.Json;
 using System;
 
 namespace BaltazarWeb.Models
 {
+    [Serializable]
+    [MongoIndex(new string[] { nameof(Token) })]
+    [MongoIndex(new string[] { nameof(CityId) })]
     public class Student : MongoEntity
     {
         public enum GenderEnum
@@ -16,7 +21,6 @@ namespace BaltazarWeb.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Phone { get; set; }
-        [JsonIgnore]
         public string Password { get; set; }
         public int Grade { get; set; }
         public ObjectId StudyFieldId { get; set; }
