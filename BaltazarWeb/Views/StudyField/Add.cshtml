@@ -1,11 +1,10 @@
-﻿@model BaltazarWeb.Models.City
-@inject AliaaCommon.MongoDB.MongoHelper DB
+﻿@model BaltazarWeb.Models.StudyField
 
 @{
-    ViewData["Title"] = "افزودن شهر";
+    ViewData["Title"] = "افزودن رشته";
 }
 
-<h2>افزودن شهر</h2>
+<h2>افزودن رشته</h2>
 
 <hr />
 <div class="row">
@@ -16,10 +15,6 @@
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProvinceId" class="control-label"></label>
-                @Html.DropDownListFor(c => c.ProvinceId, DB.All<Province>().Select(p => new SelectListItem(p.Name, p.Id.ToString())))
             </div>
             <div class="form-group">
                 <input type="submit" value="ایجاد" class="btn btn-default" />

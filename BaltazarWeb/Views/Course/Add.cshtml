@@ -1,11 +1,11 @@
-﻿@model BaltazarWeb.Models.City
+﻿@model BaltazarWeb.Models.Course
 @inject AliaaCommon.MongoDB.MongoHelper DB
 
 @{
-    ViewData["Title"] = "افزودن شهر";
+    ViewData["Title"] = "افزودن درس";
 }
 
-<h2>افزودن شهر</h2>
+<h2>افزودن درس</h2>
 
 <hr />
 <div class="row">
@@ -13,13 +13,18 @@
         <form asp-action="Add">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
+                <label asp-for="Grade" class="control-label"></label>
+                <input asp-for="Grade" class="form-control" />
+                <span asp-validation-for="Grade" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StudyFieldId" class="control-label"></label>
+                @Html.DropDownListFor(c => c.StudyFieldId, DB.All<StudyField>().Select(f => new SelectListItem(f.Name, f.Id.ToString())))
+            </div>
+            <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProvinceId" class="control-label"></label>
-                @Html.DropDownListFor(c => c.ProvinceId, DB.All<Province>().Select(p => new SelectListItem(p.Name, p.Id.ToString())))
             </div>
             <div class="form-group">
                 <input type="submit" value="ایجاد" class="btn btn-default" />
@@ -29,7 +34,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">بازگشت به لیست</a>
+    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

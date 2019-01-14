@@ -1,28 +1,28 @@
-﻿@model BaltazarWeb.Models.City
+﻿@model BaltazarWeb.Models.CourseSection
 @inject AliaaCommon.MongoDB.MongoHelper DB
 
 @{
-    ViewData["Title"] = "افزودن شهر";
+    ViewData["Title"] = "ویرایش سرفصل";
 }
 
-<h2>افزودن شهر</h2>
+<h2>ویرایش سرفصل</h2>
 
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Add">
+        <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CourseId" class="control-label"></label>
+                @Html.DropDownListFor(model => model.CourseId, DB.All<Course>().Select(c => new SelectListItem(c.Name, c.Id.ToString())))
+            </div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ProvinceId" class="control-label"></label>
-                @Html.DropDownListFor(c => c.ProvinceId, DB.All<Province>().Select(p => new SelectListItem(p.Name, p.Id.ToString())))
-            </div>
-            <div class="form-group">
-                <input type="submit" value="ایجاد" class="btn btn-default" />
+                <input type="submit" value="ذخیره" class="btn btn-default" />
             </div>
         </form>
     </div>

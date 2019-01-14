@@ -1,0 +1,51 @@
+﻿@model IEnumerable<BaltazarWeb.Models.Course>
+@inject AliaaCommon.MongoDB.MongoHelper DB
+
+@{
+    ViewData["Title"] = "لیست دروس";
+}
+
+<h2>لیست دروس</h2>
+
+<p>
+    <a asp-action="Add">افزودن</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Grade)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StudyFieldId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Grade)
+                </td>
+                <td>
+                    @{
+                        string studyField = DB.FindById<StudyField>(item.StudyFieldId)?.Name;
+                    }
+                    @Html.DisplayFor(_ => studyField)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id.ToString() }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id.ToString() })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

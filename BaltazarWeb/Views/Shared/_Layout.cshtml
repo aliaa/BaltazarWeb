@@ -31,12 +31,15 @@
                 <ul class="nav navbar-nav navbar-right">
                     @if (User.Claims.Any())
                     {
-                        <li><a asp-area="" asp-controller="City" asp-action="Index">شهر ها</a></li>
-                        <li><a asp-area="" asp-controller="Province" asp-action="Index">استان ها</a></li>
+                        <li><a asp-controller="CourseSection" asp-action="Index">سرفصل ها</a></li>
+                        <li><a asp-controller="Course" asp-action="Index">درس ها</a></li>
+                        <li><a asp-controller="StudyField" asp-action="Index">رشته ها</a></li>
+                        <li><a asp-controller="City" asp-action="Index">شهر ها</a></li>
+                        <li><a asp-controller="Province" asp-action="Index">استان ها</a></li>
                     }
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">درباره ما</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">تماس با ما</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">بالتازار</a></li>
+                    <li><a asp-controller="Home" asp-action="About">درباره ما</a></li>
+                    <li><a asp-controller="Home" asp-action="Contact">تماس با ما</a></li>
+                    <li><a asp-controller="Home" asp-action="Index">بالتازار</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-left">
                     @if (User.Claims.Any())

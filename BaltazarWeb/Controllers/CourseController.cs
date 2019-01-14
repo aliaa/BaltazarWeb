@@ -12,18 +12,18 @@ using MongoDB.Driver;
 namespace BaltazarWeb.Controllers
 {
     [Authorize]
-    public class ProvinceController : Controller
+    public class CourseController : Controller
     {
         private readonly MongoHelper DB;
 
-        public ProvinceController(MongoHelper DB)
+        public CourseController(MongoHelper DB)
         {
             this.DB = DB;
         }
 
         public IActionResult Index()
         {
-            return View(DB.All<Province>());
+            return View(DB.All<Course>());
         }
 
         public IActionResult Add()
@@ -32,36 +32,36 @@ namespace BaltazarWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(Province Province)
+        public IActionResult Add(Course Course)
         {
-            if (DB.Any<Province>(i => i.Name == Province.Name))
+            if (DB.Any<Course>(i => i.Name == Course.Name))
             {
-                ModelState.AddModelError("", "استان با این نام قبلا وارد شده است!");
-                return View(Province);
+                ModelState.AddModelError("", "درس با این نام قبلا وارد شده است!");
+                return View(Course);
             }
-            DB.Save(Province);
+            DB.Save(Course);
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Delete(string id)
         {
             ObjectId objId = ObjectId.Parse(id);
-            if (DB.Any<City>(c => c.ProvinceId == objId))
-                ModelState.AddModelError("", "قابل حذف نیست!");
+            if (DB.Any<CourseSection>(s => s.CourseId == objId) || DB.Any<Question>(q => q.CourseId == objId))
+                ModelState.AddModelError("", "درس قابل حذف نیست!");
             else
-                DB.DeleteOne<Province>(ObjectId.Parse(id));
+                DB.DeleteOne<Course>(objId);
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult Edit(string id)
         {
-            return View(DB.FindById<Province>(id));
+            return View(DB.FindById<Course>(id));
         }
 
         [HttpPost]
-        public IActionResult Edit(Province Province, string id)
+        public IActionResult Edit(Course Course, string id)
         {
-            var updateDef = Builders<Province>.Update.Set(a => a.Name, Province.Name);
+            var updateDef = Builders<Course>.Update.Set(a => a.Name, Course.Name);
             DB.UpdateOne(a => a.Id == ObjectId.Parse(id), updateDef);
             return RedirectToAction(nameof(Index));
         }
