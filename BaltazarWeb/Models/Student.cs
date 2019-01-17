@@ -1,8 +1,5 @@
 ﻿using AliaaCommon;
-using BaltazarWeb.Utils;
-using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
-using Newtonsoft.Json;
 using System;
 
 namespace BaltazarWeb.Models
@@ -20,6 +17,7 @@ namespace BaltazarWeb.Models
 
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public string DisplayName => FirstName + " " + LastName;
         public string Phone { get; set; }
         public string Password { get; set; }
         public int Grade { get; set; }

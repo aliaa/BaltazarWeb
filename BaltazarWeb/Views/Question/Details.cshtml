@@ -1,0 +1,61 @@
+﻿@model BaltazarWeb.Models.Question
+@inject AliaaCommon.MongoDB.MongoHelper DB
+@using BaltazarWeb.Controllers;
+
+@{
+    ViewData["Title"] = "جزئیات سوال";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Question</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.UserId)
+        </dt>
+        <dd>
+            @{ Html.Raw(DB.FindById<Student>(Model.UserId)?.DisplayName); }
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Grade)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Grade)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CourseId)
+        </dt>
+        <dd>
+            @{ Html.Raw(DB.FindById<Course>(Model.CourseId)?.Name); }
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SectionId)
+        </dt>
+        <dd>
+            @{ Html.Raw(DB.FindById<CourseSection>(Model.SectionId)?.Name); }
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CreateDate)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CreateDate)
+        </dd>
+        @if(Model.HasImage)
+        {
+            <dt>تصویر:</dt>
+            <dd>
+                @{ string imagePath = System.IO.Path.Combine(QuestionsController.UPLOAD_DIR, Model.Id + ".jpg"); }
+                <img src="@imagePath" />
+            </dd>
+        }
+    </dl>
+</div>
+<div>
+    <input type="submit" value="تائید" asp-action="Accept" /> &nbsp;
+    <input type="submit" value="نامناسب" asp-action="Reject" />
+</div>
+<div>
+    <a asp-action="ApproveList">برگشت به لیست</a>
+</div>

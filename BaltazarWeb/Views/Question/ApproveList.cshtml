@@ -1,0 +1,74 @@
+﻿@model IEnumerable<BaltazarWeb.Models.Question>
+@inject AliaaCommon.MongoDB.MongoHelper DB
+
+@{
+    ViewData["Title"] = "تائید سوالات";
+}
+
+<h2>Approve</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Grade)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CourseId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SectionId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Text)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.ActionLink("جزئیات", "Details", new { id = item.Id.ToString() })
+            </td>
+            <td>
+                @{ Html.Raw(DB.FindById<Student>(item.UserId)?.DisplayName); }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Grade)
+            </td>
+            <td>
+                @{ Html.Raw(DB.FindById<Course>(item.CourseId)?.Name); }
+            </td>
+            <td>
+                @{ Html.Raw(DB.FindById<CourseSection>(item.SectionId)?.Name); }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreateDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Text)
+            </td>
+            <td>
+                @if (!item.HasImage)
+                {
+                    @Html.ActionLink("تائید", "Accept", new { id = item.Id.ToString() })
+                    Html.Raw(" | ");
+                }
+                @Html.ActionLink("نامناسب", "Reject", new { id = item.Id.ToString() })
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

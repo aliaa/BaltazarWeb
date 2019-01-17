@@ -1,5 +1,7 @@
 ﻿using AliaaCommon;
+using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,15 +10,21 @@ using System.Threading.Tasks;
 
 namespace BaltazarWeb.Models
 {
+    [MongoIndex(new string[] { nameof(UserId) })]
+    [MongoIndex(new string[] { nameof(PublishStatus) })]
+    [BsonKnownTypes(typeof(Question), typeof(Answer))]
     public abstract class BaseUserContent : MongoEntity
     {
-        public enum PublishStatus
+        public enum PublishStatusEnum
         {
             [Display(Name = "منتظر تائید")]
-            WaitForAccept,
+            WaitForApprove,
 
             [Display(Name = "منتشر شده")]
-            Published
+            Published,
+
+            [Display(Name = "رد شده")]
+            Rejected,
         }
 
         [Display(Name = "کاربر")]
@@ -27,11 +35,13 @@ namespace BaltazarWeb.Models
 
         [Display(Name = "متن")]
         public string Text { get; set; }
+        
+        [Display(Name = "وضعیت انتشار")]
+        public PublishStatusEnum PublishStatus { get; set; }
 
-        [Display(Name = "تصویر")]
-        public string Image { get; set; }
+        public bool HasImage { get; set; }
 
-        [Display(Name = "وضعیت")]
-        public PublishStatus Status { get; set; }
+        [BsonIgnore]
+        public IFormFile ImageFile { get; set; }
     }
 }
