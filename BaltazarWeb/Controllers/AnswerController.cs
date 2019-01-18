@@ -8,6 +8,7 @@ using BaltazarWeb.Models;
 using BaltazarWeb.Models.ApiModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -31,7 +32,7 @@ namespace BaltazarWeb.Controllers
         [Authorize]
         public IActionResult ApproveList()
         {
-            return View(DB.Find<Answer>(a => a.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).SortBy(q => q.CreateDate));
+            return View(DB.Find<Answer>(a => a.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).SortBy(q => q.CreateDate).ToEnumerable());
         }
 
         [Authorize]
@@ -72,20 +73,31 @@ namespace BaltazarWeb.Controllers
             answer.Id = ObjectId.Empty;
             answer.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;
             answer.UserId = student.Id;
-            answer.HasImage = answer.ImageFile != null;
+            answer.HasImage = false;
             answer.Response = Answer.QuestionerResponseEnum.NotSeen;
 
             DB.Save(answer);
+            return new CommonResponse { Success = true };
+        }
 
-            if (answer.HasImage)
+        [HttpPost]
+        [Route("Answer/UploadImage/{id?}")]
+        public ActionResult<CommonResponse> UploadImage([FromHeader] Guid token, [FromRoute] string id, IFormFile image)
+        {
+            Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            if (student == null)
+                return Unauthorized();
+            Answer answer = DB.FindById<Answer>(id);
+            if (answer.UserId != student.Id)
+                return Unauthorized();
+            if (image == null)
+                return new CommonResponse { Success = false };
+            string filePath = Path.Combine(UploadPath, id + ".jpg");
+            using (FileStream fs = new FileStream(filePath, FileMode.Create))
             {
-                string filePath = Path.Combine(UploadPath, answer.Id.ToString() + ".jpg");
-                using (FileStream fs = new FileStream(filePath, FileMode.CreateNew))
-                {
-                    answer.ImageFile.CopyTo(fs);
-                }
+                image.CopyTo(fs);
             }
-
+            DB.UpdateOne(q => q.Id == answer.Id, Builders<Answer>.Update.Set(q => q.HasImage, true));
             return new CommonResponse { Success = true };
         }
 

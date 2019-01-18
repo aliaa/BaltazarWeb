@@ -9,14 +9,13 @@
 <h2>جزئیات جواب</h2>
 
 <div>
-    <h4>Answer</h4>
     <hr />
-    <dl class="dl-horizontal">
+    <dl>
         <dt>
             @Html.DisplayNameFor(model => model.UserId)
         </dt>
         <dd>
-            @{ Html.Raw(DB.FindById<Student>(Model.UserId)?.DisplayName); }
+            @(DB.FindById<Student>(Model.UserId)?.DisplayName)
         </dd>
         <dt>
             @Html.DisplayNameFor(model => model.Response)
@@ -46,15 +45,14 @@
         {
             <dt>تصویر:</dt>
             <dd>
-                @{ string imagePath = System.IO.Path.Combine(QuestionsController.UPLOAD_DIR, Model.Id + ".jpg"); }
-                <img src="@imagePath" />
+                <img src="@("/" + QuestionController.UPLOAD_DIR + "/" + Model.Id + ".jpg")" style="width:100%;" />
             </dd>
         }
     </dl>
 </div>
-<div>
-    <input type="submit" value="تائید" asp-action="Accept" /> &nbsp;
-    <input type="submit" value="نامناسب" asp-action="Reject" />
+<div align="center">
+    @Html.ActionLink("تائید محتوا", "Accept", new { id = Model.Id.ToString() }) &nbsp;&nbsp;&nbsp;
+    @Html.ActionLink("محتوای نامناسب", "Reject", new { id = Model.Id.ToString() })
 </div>
 <div>
     <a asp-action="ApproveList">برگشت به لیست</a>

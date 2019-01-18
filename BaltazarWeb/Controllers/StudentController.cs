@@ -36,6 +36,11 @@ namespace BaltazarWeb.Controllers
             {
                 response.Success = false;
             }
+            else if(DB.Any<Student>(s => s.Phone == student.Phone))
+            {
+                response.Success = false;
+                response.Message = "این شماره قبلا ثبت نام نموده است!";
+            }
             else
             {
                 response.Success = true;

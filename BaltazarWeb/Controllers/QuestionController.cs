@@ -7,19 +7,20 @@ using BaltazarWeb.Models;
 using BaltazarWeb.Models.ApiModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace BaltazarWeb.Controllers
 {
-    public class QuestionsController : Controller
+    public class QuestionController : Controller
     {
         public const string UPLOAD_DIR = "Uploads";
         private readonly MongoHelper DB;
         private readonly string UploadPath;
 
-        public QuestionsController(MongoHelper DB, IHostingEnvironment env)
+        public QuestionController(MongoHelper DB, IHostingEnvironment env)
         {
             this.DB = DB;
             UploadPath = Path.Combine(env.WebRootPath, UPLOAD_DIR);
@@ -30,7 +31,7 @@ namespace BaltazarWeb.Controllers
         [Authorize]
         public IActionResult ApproveList()
         {
-            return View(DB.Find<Question>(q => q.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).SortBy(q => q.CreateDate));
+            return View(DB.Find<Question>(q => q.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).SortBy(q => q.CreateDate).ToEnumerable());
         }
         
         [Authorize]
@@ -66,7 +67,7 @@ namespace BaltazarWeb.Controllers
             question.Id = ObjectId.Empty;
             question.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;
             question.UserId = student.Id;
-            question.HasImage = question.ImageFile != null;
+            question.HasImage = false;
             question.AcceptedAnswerId = ObjectId.Empty;
 
             Course course = DB.FindById<Course>(question.CourseId);
@@ -75,16 +76,27 @@ namespace BaltazarWeb.Controllers
             question.Grade = course.Grade;
 
             DB.Save(question);
+            return new CommonResponse { Success = true };
+        }
 
-            if (question.HasImage)
+        [HttpPost]
+        [Route("Question/UploadImage/{id}")]
+        public ActionResult<CommonResponse> UploadImage([FromHeader] Guid token, [FromRoute] string id, IFormFile image)
+        {
+            Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            if (student == null)
+                return Unauthorized();
+            Question question = DB.FindById<Question>(id);
+            if (question.UserId != student.Id)
+                return Unauthorized();
+            if (image == null)
+                return new CommonResponse { Success = false };
+            string filePath = Path.Combine(UploadPath, id + ".jpg");
+            using (FileStream fs = new FileStream(filePath, FileMode.Create))
             {
-                string filePath = Path.Combine(UploadPath, question.Id.ToString() + ".jpg");
-                using (FileStream fs = new FileStream(filePath, FileMode.CreateNew))
-                {
-                    question.ImageFile.CopyTo(fs);
-                }
+                image.CopyTo(fs);
             }
-
+            DB.UpdateOne(q => q.Id == question.Id, Builders<Question>.Update.Set(q => q.HasImage, true));
             return new CommonResponse { Success = true };
         }
 
