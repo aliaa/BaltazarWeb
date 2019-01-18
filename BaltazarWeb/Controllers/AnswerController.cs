@@ -119,21 +119,21 @@ namespace BaltazarWeb.Controllers
             return new CommonResponse { Success = true };
         }
 
-        public ActionResult<ListResponse<Answer>> List([FromHeader] Guid token, string questionId)
-        {
-            Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
-            if (student == null)
-                return Unauthorized();
-            Question question = DB.FindById<Question>(questionId);
-            if (question == null)
-                return new ListResponse<Answer> { Success = false, Message = "سوال یافت نشد!" };
-            if (question.UserId != student.Id)
-                return new ListResponse<Answer> { Success = false, Message = "سوال شما نیست!" };
+        //public ActionResult<ListResponse<Answer>> List([FromHeader] Guid token, string questionId)
+        //{
+        //    Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+        //    if (student == null)
+        //        return Unauthorized();
+        //    Question question = DB.FindById<Question>(questionId);
+        //    if (question == null)
+        //        return new ListResponse<Answer> { Success = false, Message = "سوال یافت نشد!" };
+        //    if (question.UserId != student.Id)
+        //        return new ListResponse<Answer> { Success = false, Message = "سوال شما نیست!" };
 
-            var list = DB.Find<Answer>(a => a.QuestionId == question.Id && 
-                                            a.Response == Answer.QuestionerResponseEnum.NotSeen && 
-                                            a.PublishStatus == BaseUserContent.PublishStatusEnum.Published).ToList();
-            return new ListResponse<Answer> { Success = true, List = list };
-        }
+        //    var list = DB.Find<Answer>(a => a.QuestionId == question.Id && 
+        //                                    a.Response == Answer.QuestionerResponseEnum.NotSeen && 
+        //                                    a.PublishStatus == BaseUserContent.PublishStatusEnum.Published).ToList();
+        //    return new ListResponse<Answer> { Success = true, List = list };
+        //}
     }
 }

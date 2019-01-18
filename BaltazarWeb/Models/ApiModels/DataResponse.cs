@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 
 namespace BaltazarWeb.Models.ApiModels
 {
-    public class ListResponse<T> : CommonResponse
+    public class DataResponse<D> : CommonResponse
     {
-        public List<T> List { get; set; }
+        public D Data { get; set; }
     }
 }

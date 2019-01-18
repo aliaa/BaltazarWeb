@@ -21,15 +21,19 @@ namespace BaltazarWeb.Controllers
             this.DB = DB;
         }
 
-        public ActionResult<CommonData> Index()
+        public ActionResult<DataResponse<CommonData>> Index()
         {
-            return new CommonData
+            return new DataResponse<CommonData>
             {
-                Provinces = DB.All<Province>().ToList(),
-                Cities = DB.All<City>().ToList(),
-                Courses = DB.All<Course>().ToList(),
-                StudyFields = DB.All<StudyField>().ToList(),
-                Sections = DB.All<CourseSection>().ToList()
+                Success = true,
+                Data = new CommonData
+                {
+                    Provinces = DB.All<Province>().ToList(),
+                    Cities = DB.All<City>().ToList(),
+                    Courses = DB.All<Course>().ToList(),
+                    StudyFields = DB.All<StudyField>().ToList(),
+                    Sections = DB.All<CourseSection>().ToList()
+                }
             };
         }
     }

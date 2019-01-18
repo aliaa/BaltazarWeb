@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AliaaCommon.MongoDB;
@@ -87,7 +88,7 @@ namespace BaltazarWeb.Controllers
             return new CommonResponse { Success = true };
         }
 
-        public ActionResult<ListResponse<Question>> List([FromHeader] Guid token)
+        public ActionResult<DataResponse<List<Question>>> List([FromHeader] Guid token)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
@@ -95,16 +96,23 @@ namespace BaltazarWeb.Controllers
             var list = DB.Find<Question>(q => q.Grade <= student.Grade && q.UserId != student.Id && q.AcceptedAnswerId == ObjectId.Empty)
                 .SortByDescending(q => q.Grade).ThenByDescending(q => q.CreateDate)
                 .Limit(1000).ToList();
-            return new ListResponse<Question> { Success = true, List = list };
+            return new DataResponse<List<Question>> { Success = true, Data = list };
         }
 
-        public ActionResult<ListResponse<Question>> Mine([FromHeader] Guid token)
+        public ActionResult<DataResponse<List<Question>>> Mine([FromHeader] Guid token)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
                 return Unauthorized();
             var list = DB.Find<Question>(q => q.UserId == student.Id).SortByDescending(q => q.CreateDate).ToList();
-            return new ListResponse<Question> { Success = true, List = list };
+            foreach (var question in list)
+            {
+                question.Answers = DB.Find<Answer>(a => 
+                        a.QuestionId == question.Id &&
+                        a.Response == Answer.QuestionerResponseEnum.NotSeen &&
+                        a.PublishStatus == BaseUserContent.PublishStatusEnum.Published).ToList();
+            }
+            return new DataResponse<List<Question>> { Success = true, Data = list };
         }        
     }
 }

@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace BaltazarWeb.Controllers
 {
+    [Authorize]
     public class CourseSectionController : Controller
     {
         private readonly MongoHelper DB;

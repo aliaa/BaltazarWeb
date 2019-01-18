@@ -1,5 +1,7 @@
 ﻿using AliaaCommon;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace BaltazarWeb.Models
@@ -18,5 +20,8 @@ namespace BaltazarWeb.Models
         public ObjectId SectionId { get; set; }
 
         public ObjectId AcceptedAnswerId { get; set; }
+
+        [BsonIgnore]
+        public List<Answer> Answers { get; set; }
     }
 }

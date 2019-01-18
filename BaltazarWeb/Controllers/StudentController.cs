@@ -29,7 +29,7 @@ namespace BaltazarWeb.Controllers
         [HttpPost]
         public IActionResult Register([FromBody] Student student)
         {
-            var response = new TokenResponse();
+            DataResponse<Student> response = new DataResponse<Student>();
             if (!ModelState.IsValid || student == null || string.IsNullOrWhiteSpace(student.FirstName) || string.IsNullOrWhiteSpace(student.LastName) ||
                 string.IsNullOrWhiteSpace(student.Phone) || string.IsNullOrWhiteSpace(student.Password) || !DB.Any<City>(c => c.Id == student.CityId) ||
                 student.Grade < 1 || student.Grade > 12 || (student.Grade >= 10 && !DB.Any<StudyField>(f => f.Id == student.StudyFieldId)))
@@ -39,14 +39,15 @@ namespace BaltazarWeb.Controllers
             else
             {
                 response.Success = true;
-                student.Token = response.Token = Guid.NewGuid();
+                student.Token = Guid.NewGuid();
+                response.Data = student;
                 DB.Save(student);
             }
             return CreatedAtAction(nameof(Register), response);
         }
 
         [HttpPost]
-        public ActionResult<CommonResponse> Update([FromHeader] Guid token, [FromBody] Student update)
+        public ActionResult<DataResponse<Student>> Update([FromHeader] Guid token, [FromBody] Student update)
         {
             Student st = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (st == null)
@@ -65,19 +66,18 @@ namespace BaltazarWeb.Controllers
             if (update.StudyFieldId != ObjectId.Empty)
                 st.StudyFieldId = update.StudyFieldId;
             DB.Save(st);
-            return new CommonResponse { Success = true };
+            return new DataResponse<Student> { Success = true, Data = st };
         }
 
-        public ActionResult<TokenResponse> Login(string phone, string password)
+        public ActionResult<DataResponse<Student>> Login(string phone, string password)
         {
             Student st = DB.Find<Student>(s => s.Phone == phone && s.Password == password).FirstOrDefault();
             if (st == null)
                 return Unauthorized();
-
-            TokenResponse response = new TokenResponse { Success = true };
-            response.Token = Guid.NewGuid();
-            DB.UpdateOne(s => s.Id == st.Id, Builders<Student>.Update.Set(s => s.Token, response.Token));
-            return response;
+            
+            st.Token = Guid.NewGuid();
+            DB.Save(st);
+            return new DataResponse<Student> { Success = true, Data = st };
         }
     }
 }
