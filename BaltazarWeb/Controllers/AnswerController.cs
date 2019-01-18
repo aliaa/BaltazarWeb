@@ -17,14 +17,13 @@ namespace BaltazarWeb.Controllers
 {
     public class AnswerController : Controller
     {
-        public const string UPLOAD_DIR = "Uploads";
         private readonly MongoHelper DB;
         private readonly string UploadPath;
 
         public AnswerController(MongoHelper DB, IHostingEnvironment env)
         {
             this.DB = DB;
-            UploadPath = Path.Combine(env.WebRootPath, UPLOAD_DIR);
+            UploadPath = Path.Combine(env.WebRootPath, Consts.UPLOAD_DIR);
             if (!Directory.Exists(UploadPath))
                 Directory.CreateDirectory(UploadPath);
         }
@@ -122,7 +121,10 @@ namespace BaltazarWeb.Controllers
             if (response == Answer.QuestionerResponseEnum.Accepted)
             {
                 question.AcceptedAnswerId = answer.Id;
+                student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.ANSWER_DEFAULT_PRIZE, QuestionId = question.Id });
+                student.Coins += Consts.ANSWER_DEFAULT_PRIZE;
                 DB.Save(question);
+                DB.Save(student);
             }
 
             answer.Response = response;

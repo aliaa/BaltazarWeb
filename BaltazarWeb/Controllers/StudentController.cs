@@ -45,6 +45,7 @@ namespace BaltazarWeb.Controllers
             {
                 response.Success = true;
                 student.Token = Guid.NewGuid();
+                student.Coins = Consts.INITIAL_COIN;
                 response.Data = student;
                 DB.Save(student);
             }

@@ -16,14 +16,13 @@ namespace BaltazarWeb.Controllers
 {
     public class QuestionController : Controller
     {
-        public const string UPLOAD_DIR = "Uploads";
         private readonly MongoHelper DB;
         private readonly string UploadPath;
 
         public QuestionController(MongoHelper DB, IHostingEnvironment env)
         {
             this.DB = DB;
-            UploadPath = Path.Combine(env.WebRootPath, UPLOAD_DIR);
+            UploadPath = Path.Combine(env.WebRootPath, Consts.UPLOAD_DIR);
             if (!Directory.Exists(UploadPath))
                 Directory.CreateDirectory(UploadPath);
         }
@@ -37,8 +36,13 @@ namespace BaltazarWeb.Controllers
         [Authorize]
         public IActionResult Accept(string id)
         {
-            ObjectId objId = ObjectId.Parse(id);
-            DB.UpdateOne(q => q.Id == objId, Builders<Question>.Update.Set(q => q.PublishStatus, BaseUserContent.PublishStatusEnum.Published));
+            Question question = DB.FindById<Question>(id);
+            question.PublishStatus = BaseUserContent.PublishStatusEnum.Published;
+            DB.Save(question);
+            Student student = DB.FindById<Student>(question.UserId);
+            student.Coins -= Consts.QUESTION_COIN_COST;
+            student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.QUESTION_COIN_COST, QuestionId = question.Id });
+            DB.Save(student);
             return RedirectToAction(nameof(ApproveList));
         }
         
@@ -63,6 +67,9 @@ namespace BaltazarWeb.Controllers
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
                 return Unauthorized();
+
+            if (student.Coins < Consts.QUESTION_COIN_COST)
+                return new CommonResponse { Success = false, Message = "تعداد سکه باقی مانده شما کم است!" };
 
             question.Id = ObjectId.Empty;
             question.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;
