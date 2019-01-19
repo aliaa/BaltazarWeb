@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BaltazarWeb.Models
 {
+    [MongoIndex(new string[] { nameof(QuestionId) })]
     public class Answer : BaseUserContent
     {
         public enum QuestionerResponseEnum

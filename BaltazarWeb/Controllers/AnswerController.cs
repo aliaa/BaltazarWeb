@@ -121,8 +121,8 @@ namespace BaltazarWeb.Controllers
             if (response == Answer.QuestionerResponseEnum.Accepted)
             {
                 question.AcceptedAnswerId = answer.Id;
-                student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.ANSWER_DEFAULT_PRIZE, QuestionId = question.Id });
-                student.Coins += Consts.ANSWER_DEFAULT_PRIZE;
+                student.CoinTransactions.Add(new CoinTransaction { Amount = question.Prize, QuestionId = question.Id });
+                student.Coins += question.Prize;
                 DB.Save(question);
                 DB.Save(student);
             }

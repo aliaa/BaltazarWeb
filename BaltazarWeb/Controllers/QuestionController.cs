@@ -18,6 +18,7 @@ namespace BaltazarWeb.Controllers
     {
         private readonly MongoHelper DB;
         private readonly string UploadPath;
+        private const int PAGE_SIZE = 200;
 
         public QuestionController(MongoHelper DB, IHostingEnvironment env)
         {
@@ -76,6 +77,7 @@ namespace BaltazarWeb.Controllers
             question.UserId = student.Id;
             question.HasImage = false;
             question.AcceptedAnswerId = ObjectId.Empty;
+            question.Prize = Consts.ANSWER_DEFAULT_PRIZE;
 
             Course course = DB.FindById<Course>(question.CourseId);
             if (course == null)
@@ -107,14 +109,30 @@ namespace BaltazarWeb.Controllers
             return new CommonResponse { Success = true };
         }
 
-        public ActionResult<DataResponse<List<Question>>> List([FromHeader] Guid token)
+        public ActionResult<DataResponse<List<Question>>> List([FromHeader] Guid token, 
+            int? grade = null, ObjectId? studyField = null, ObjectId? courseId = null, 
+            ObjectId? sectionId = null, int page = 0)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
                 return Unauthorized();
-            var list = DB.Find<Question>(q => q.Grade <= student.Grade && q.UserId != student.Id && q.AcceptedAnswerId == ObjectId.Empty)
+
+            var fb = Builders<Question>.Filter;
+            List<FilterDefinition<Question>> filters = new List<FilterDefinition<Question>>();
+            filters.Add(fb.Ne(q => q.UserId, student.Id));
+            filters.Add(fb.Eq(q => q.AcceptedAnswerId, ObjectId.Empty));
+            if (grade == null)
+                filters.Add(fb.Lte(q => q.Grade, student.Grade));
+            else
+                filters.Add(fb.Eq(q => q.Grade, grade.Value));
+
+            var list = DB.Find(fb.And(filters))
                 .SortByDescending(q => q.Grade).ThenByDescending(q => q.CreateDate)
-                .Limit(1000).ToList();
+                .Limit(PAGE_SIZE)
+                .Skip(page * PAGE_SIZE)
+                .ToList();
+            foreach (var item in list)
+                item.Hot = !DB.Any<Answer>(a => a.QuestionId == item.Id);
             return new DataResponse<List<Question>> { Success = true, Data = list };
         }
 

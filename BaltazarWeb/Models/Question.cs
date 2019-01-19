@@ -23,5 +23,12 @@ namespace BaltazarWeb.Models
 
         [BsonIgnore]
         public List<Answer> Answers { get; set; }
+
+        [Display(Name = "جایزه")]
+        public int Prize { get; set; }
+
+        [Display(Name = "سوال داغ")]
+        [BsonIgnore]
+        public bool Hot { get; set; }
     }
 }

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2041
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaltazarWeb", "BaltazarWeb\BaltazarWeb.csproj", "{5FE4994D-C498-4F46-AA14-12027589F128}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaltazarWeb", "BaltazarWeb\BaltazarWeb.csproj", "{5FE4994D-C498-4F46-AA14-12027589F128}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AliaaCommon", "..\AliaaCommon\AliaaCommon\AliaaCommon.csproj", "{10666660-095D-4878-99CF-3E5CAB5B575A}"
 EndProject
