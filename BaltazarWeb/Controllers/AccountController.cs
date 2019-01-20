@@ -56,13 +56,13 @@ namespace BaltazarWeb.Controllers
             if (returnUrl != null && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
             else
-                return Redirect("/");
+                return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
         public IActionResult Logout()
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
-            return Redirect("/");
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
     }
 }
