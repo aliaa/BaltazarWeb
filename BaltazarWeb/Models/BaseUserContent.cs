@@ -40,5 +40,7 @@ namespace BaltazarWeb.Models
         public PublishStatusEnum PublishStatus { get; set; }
 
         public bool HasImage { get; set; }
+        public bool HasVideo { get; set; }
+        public bool HasVoice { get; set; }
     }
 }

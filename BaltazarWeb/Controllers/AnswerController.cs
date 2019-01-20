@@ -18,14 +18,14 @@ namespace BaltazarWeb.Controllers
     public class AnswerController : Controller
     {
         private readonly MongoHelper DB;
-        private readonly string UploadPath;
+        private readonly string ImageUploadPath;
 
         public AnswerController(MongoHelper DB, IHostingEnvironment env)
         {
             this.DB = DB;
-            UploadPath = Path.Combine(env.WebRootPath, Consts.UPLOAD_DIR);
-            if (!Directory.Exists(UploadPath))
-                Directory.CreateDirectory(UploadPath);
+            ImageUploadPath = Path.Combine(env.WebRootPath, Consts.UPLOAD_IMAGE_DIR);
+            if (!Directory.Exists(ImageUploadPath))
+                Directory.CreateDirectory(ImageUploadPath);
         }
 
         [Authorize]
@@ -91,7 +91,7 @@ namespace BaltazarWeb.Controllers
                 return Unauthorized();
             if (image == null)
                 return new CommonResponse { Success = false };
-            string filePath = Path.Combine(UploadPath, id + ".jpg");
+            string filePath = Path.Combine(ImageUploadPath, id + ".jpg");
             using (FileStream fs = new FileStream(filePath, FileMode.Create))
             {
                 image.CopyTo(fs);
