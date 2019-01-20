@@ -27,29 +27,53 @@ namespace BaltazarWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register([FromBody] Student student)
+        public ActionResult<DataResponse<Student>> Register([FromBody] Student student)
         {
             DataResponse<Student> response = new DataResponse<Student>();
-            if (!ModelState.IsValid || student == null || string.IsNullOrWhiteSpace(student.FirstName) || string.IsNullOrWhiteSpace(student.LastName) ||
-                string.IsNullOrWhiteSpace(student.Phone) || string.IsNullOrWhiteSpace(student.Password) || !DB.Any<City>(c => c.Id == student.CityId) ||
-                student.Grade < 1 || student.Grade > 12 || (student.Grade >= 10 && !DB.Any<StudyField>(f => f.Id == student.StudyFieldId)))
+            if (student == null)
+                return response;
+            if(string.IsNullOrWhiteSpace(student.FirstName) || string.IsNullOrWhiteSpace(student.LastName))
             {
-                response.Success = false;
+                response.Message = "نام یا نام خانوادگی نباید خالی باشد!";
+                return response;
             }
-            else if(DB.Any<Student>(s => s.Phone == student.Phone))
+            if(string.IsNullOrWhiteSpace(student.Phone))
             {
-                response.Success = false;
+                response.Message = "شماره تلفن نباید خالی باشد!";
+                return response;
+            }
+            if(string.IsNullOrWhiteSpace(student.Password))
+            {
+                response.Message = "رمز عبوز نباید خالی باشد!";
+                return response;
+            }
+            if(student.Grade < 1 || student.Grade > 12)
+            {
+                response.Message = "مقطع تحصیلی صحیح نیست!";
+                return response;
+            }
+            if(student.CityId != ObjectId.Empty && !DB.Any<City>(c => c.Id == student.CityId))
+            {
+                response.Message = "شهر یافت نشد!";
+                return response;
+            }
+            if(student.Grade >= 10 && !DB.Any<StudyField>(f => f.Id == student.StudyFieldId))
+            {
+                response.Message = "رشته یافت نشد یا انتخاب نشده است!";
+                return response;
+            }
+            if(DB.Any<Student>(s => s.Phone == student.Phone))
+            {
                 response.Message = "این شماره قبلا ثبت نام نموده است!";
+                return response;
             }
-            else
-            {
-                response.Success = true;
-                student.Token = Guid.NewGuid();
-                student.Coins = Consts.INITIAL_COIN;
-                response.Data = student;
-                DB.Save(student);
-            }
-            return CreatedAtAction(nameof(Register), response);
+
+            response.Success = true;
+            student.Token = Guid.NewGuid();
+            student.Coins = Consts.INITIAL_COIN;
+            response.Data = student;
+            DB.Save(student);
+            return response;
         }
 
         [HttpPost]
