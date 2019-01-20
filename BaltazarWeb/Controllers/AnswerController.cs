@@ -58,7 +58,7 @@ namespace BaltazarWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult<CommonResponse> Publish([FromHeader] Guid token, [FromBody] Answer answer)
+        public ActionResult<DataResponse<Answer>> Publish([FromHeader] Guid token, [FromBody] Answer answer)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
@@ -66,7 +66,7 @@ namespace BaltazarWeb.Controllers
 
             Question question = DB.FindById<Question>(answer.QuestionId);
             if (question == null)
-                return new CommonResponse { Success = true, Message = "سوال یافت نشد!" };
+                return new DataResponse<Answer> { Success = true, Message = "سوال یافت نشد!" };
             if(question.PublishStatus != BaseUserContent.PublishStatusEnum.Published)
 
             answer.Id = ObjectId.Empty;
@@ -76,7 +76,7 @@ namespace BaltazarWeb.Controllers
             answer.Response = Answer.QuestionerResponseEnum.NotSeen;
 
             DB.Save(answer);
-            return new CommonResponse { Success = true };
+            return new DataResponse<Answer> { Success = true, Data = answer };
         }
 
         [HttpPost]

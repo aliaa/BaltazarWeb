@@ -63,14 +63,14 @@ namespace BaltazarWeb.Controllers
         }
 
         [HttpPost]
-        public ActionResult<CommonResponse> Publish([FromHeader] Guid token, [FromBody] Question question)
+        public ActionResult<DataResponse<Question>> Publish([FromHeader] Guid token, [FromBody] Question question)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
                 return Unauthorized();
 
             if (student.Coins < Consts.QUESTION_COIN_COST)
-                return new CommonResponse { Success = false, Message = "تعداد سکه باقی مانده شما کم است!" };
+                return new DataResponse<Question> { Success = false, Message = "تعداد سکه باقی مانده شما کم است!" };
 
             question.Id = ObjectId.Empty;
             question.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;
@@ -81,11 +81,11 @@ namespace BaltazarWeb.Controllers
 
             Course course = DB.FindById<Course>(question.CourseId);
             if (course == null)
-                return new CommonResponse { Success = false, Message = "نام درس صحیح نیست!" };
+                return new DataResponse<Question> { Success = false, Message = "نام درس صحیح نیست!" };
             question.Grade = course.Grade;
 
             DB.Save(question);
-            return new CommonResponse { Success = true };
+            return new DataResponse<Question> { Success = true, Data = question };
         }
 
         [HttpPost]
