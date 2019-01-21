@@ -23,7 +23,7 @@ namespace BaltazarWeb.Controllers
 
         public IActionResult Index()
         {
-            return View(DB.All<Course>());
+            return View(DB.Find<Course>(_ => true).SortBy(c => c.Grade).ThenBy(c => c.StudyFieldId).ThenBy(c => c.Name).ToEnumerable());
         }
 
         public IActionResult Add()
@@ -32,14 +32,16 @@ namespace BaltazarWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult Add(Course Course)
+        public IActionResult Add(Course course)
         {
-            if (DB.Any<Course>(i => i.Name == Course.Name))
+            if (course.Grade < 10)
+                course.StudyFieldId = ObjectId.Empty;
+            if (DB.Any<Course>(i => i.Grade == course.Grade && i.StudyFieldId == course.StudyFieldId && i.Name == course.Name))
             {
                 ModelState.AddModelError("", "درس با این نام قبلا وارد شده است!");
-                return View(Course);
+                return View(course);
             }
-            DB.Save(Course);
+            DB.Save(course);
             return RedirectToAction(nameof(Index));
         }
 

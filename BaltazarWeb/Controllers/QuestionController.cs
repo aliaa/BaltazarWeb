@@ -84,6 +84,9 @@ namespace BaltazarWeb.Controllers
                 return new DataResponse<Question> { Success = false, Message = "نام درس صحیح نیست!" };
             question.Grade = course.Grade;
 
+            if (question.SectionId != ObjectId.Empty && !DB.Any<Question>(q => q.SectionId == question.SectionId))
+                return new DataResponse<Question> { Success = false, Message = "سرفصل موجود نمیباشد!" };
+
             DB.Save(question);
             return new DataResponse<Question> { Success = true, Data = question };
         }

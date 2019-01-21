@@ -120,6 +120,9 @@ namespace BaltazarWeb.Controllers
 
             if (response == Answer.QuestionerResponseEnum.Accepted)
             {
+                if (question.AcceptedAnswerId != ObjectId.Empty || DB.Any<Answer>(a => a.QuestionId == question.Id && a.Response == Answer.QuestionerResponseEnum.Accepted))
+                    return new CommonResponse { Success = false, Message = "قبلا جوابی برای این سوال قبول شده است!" };
+
                 question.AcceptedAnswerId = answer.Id;
                 student.CoinTransactions.Add(new CoinTransaction { Amount = question.Prize, QuestionId = question.Id });
                 student.Coins += question.Prize;
