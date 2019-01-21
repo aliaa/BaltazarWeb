@@ -113,8 +113,7 @@ namespace BaltazarWeb.Controllers
         }
 
         public ActionResult<DataResponse<List<Question>>> List([FromHeader] Guid token, 
-            int? grade = null, string studyFieldId = null, string courseId = null, 
-            string sectionId = null, int page = 0)
+            int? grade = null, string courseId = null, string sectionId = null, int page = 0)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
@@ -124,10 +123,17 @@ namespace BaltazarWeb.Controllers
             List<FilterDefinition<Question>> filters = new List<FilterDefinition<Question>>();
             filters.Add(fb.Ne(q => q.UserId, student.Id));
             filters.Add(fb.Eq(q => q.AcceptedAnswerId, ObjectId.Empty));
+
             if (grade == null)
                 filters.Add(fb.Lte(q => q.Grade, student.Grade));
             else
                 filters.Add(fb.Eq(q => q.Grade, grade.Value));
+
+            ObjectId id;
+            if (courseId != null && ObjectId.TryParse(courseId, out id))
+                filters.Add(fb.Eq(q => q.CourseId, id));
+            if (sectionId != null && ObjectId.TryParse(sectionId, out id))
+                filters.Add(fb.Eq(q => q.SectionId, id));
 
             var list = DB.Find(fb.And(filters))
                 .SortByDescending(q => q.Grade).ThenByDescending(q => q.CreateDate)
