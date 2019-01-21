@@ -113,8 +113,8 @@ namespace BaltazarWeb.Controllers
         }
 
         public ActionResult<DataResponse<List<Question>>> List([FromHeader] Guid token, 
-            int? grade = null, ObjectId? studyField = null, ObjectId? courseId = null, 
-            ObjectId? sectionId = null, int page = 0)
+            int? grade = null, string studyFieldId = null, string courseId = null, 
+            string sectionId = null, int page = 0)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
