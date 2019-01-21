@@ -102,7 +102,7 @@ namespace BaltazarWeb.Controllers
             if (question.UserId != student.Id)
                 return Unauthorized();
             if (image == null)
-                return new CommonResponse { Success = false };
+                return new CommonResponse { Success = false, Message = "تصویر دریافت نشد!" };
             string filePath = Path.Combine(ImageUploadPath, id + ".jpg");
             using (FileStream fs = new FileStream(filePath, FileMode.Create))
             {

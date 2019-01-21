@@ -11,41 +11,29 @@
 <div>
     <hr />
     <dl>
-        <dt>
-            @Html.DisplayNameFor(model => model.UserId)
-        </dt>
-        <dd>
-            @(DB.FindById<Student>(Model.UserId)?.DisplayName)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Response)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Response)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.CreateDate)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.CreateDate)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Text)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Text)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.PublishStatus)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.PublishStatus)
-        </dd>
+        <dt>@Html.DisplayNameFor(model => model.UserId)</dt>
+        <dd>@(DB.FindById<Student>(Model.UserId)?.DisplayName)</dd>
+
+        <dt>@Html.DisplayNameFor(model => model.Response)</dt>
+        <dd>@Html.DisplayFor(model => model.Response)</dd>
+
+        <dt>@Html.DisplayNameFor(model => model.CreateDate)</dt>
+        <dd>@Html.DisplayFor(model => model.CreateDate)</dd>
+
+        <dt>@Html.DisplayNameFor(model => model.Text)</dt>
+        <dd>@Html.DisplayFor(model => model.Text)</dd>
+
+        <dt>@Html.DisplayNameFor(model => model.PublishStatus)</dt>
+        <dd>@Html.DisplayFor(model => model.PublishStatus)</dd>
+
+        <dt>@Html.DisplayNameFor(model => model.Text)</dt>
+        <dd>@Html.DisplayFor(model => model.Text)</dd>
+
         @if (Model.HasImage)
         {
             <dt>تصویر:</dt>
             <dd>
-                <img src="@("/" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + Model.Id + ".jpg")" style="width:100%;" />
+                <img src="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + Model.Id + ".jpg")" style="width:100%;" />
             </dd>
         }
     </dl>
