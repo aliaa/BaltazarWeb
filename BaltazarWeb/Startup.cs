@@ -48,7 +48,11 @@ namespace BaltazarWeb
             services.AddMvc(
                     options => options.ModelBinderProviders.Insert(0, new ModelBinderProvider()))
                 .AddJsonOptions(
-                    options => options.SerializerSettings.Converters.Add(new ObjectIdJsonConverter()))
+                    options =>
+                    {
+                        options.SerializerSettings.Converters.Add(new ObjectIdJsonConverter());
+                        options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                    })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             string path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
