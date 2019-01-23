@@ -72,6 +72,7 @@ namespace BaltazarWeb.Controllers
             answer.Id = ObjectId.Empty;
             answer.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;
             answer.UserId = student.Id;
+            answer.UserName = student.DisplayName;
             answer.HasImage = false;
             answer.Response = Answer.QuestionerResponseEnum.NotSeen;
 

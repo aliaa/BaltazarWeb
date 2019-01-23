@@ -60,9 +60,9 @@ namespace BaltazarWeb.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(City City, string id)
+        public IActionResult Edit(City city, string id)
         {
-            var updateDef = Builders<City>.Update.Set(a => a.Name, City.Name);
+            var updateDef = Builders<City>.Update.Set(a => a.Name, city.Name);
             DB.UpdateOne(a => a.Id == ObjectId.Parse(id), updateDef);
             return RedirectToAction(nameof(Index));
         }

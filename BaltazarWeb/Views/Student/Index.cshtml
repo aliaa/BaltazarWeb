@@ -1,0 +1,96 @@
+﻿@model IEnumerable<BaltazarWeb.Models.Student>
+
+@{
+    ViewData["Title"] = "لیست دانش آموزان";
+}
+
+
+
+<form asp-action="Index">
+    <p style="margin:10px; text-align:center;">
+        شهر: 
+        <select id="city" name="city" onchange="document.forms[0].submit();">
+            <option value="">انتخاب نشده</option>
+            @foreach(City city in ViewBag.Cities)
+            {
+                <option value="@city.Id.ToString()">@city.Name</option>
+            }
+        </select>
+        <script type="text/javascript">
+            window.onload = function() {
+                $("#city").val("@ViewBag.SelectedCity");
+            }
+        </script>
+    </p>
+</form>
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LastName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Phone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Password)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Grade)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Gender)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SchoolName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Coins)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.ActionLink("ویرایش", "Edit", new { id = item.Id.ToString() }) |
+                @Html.ActionLink("غیر فعال سازی", "Disable", new { id = item.Id.ToString() })
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Password)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Grade)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Gender)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SchoolName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Coins)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

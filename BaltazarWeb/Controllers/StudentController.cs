@@ -7,6 +7,7 @@ using BaltazarWeb.Models;
 using BaltazarWeb.Models.ApiModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -21,9 +22,36 @@ namespace BaltazarWeb.Controllers
         }
 
         [Authorize]
-        public IActionResult Index()
+        public IActionResult Index(string city = null, int page = 0)
         {
-            return View();
+            ObjectId cityId;
+            ObjectId.TryParse(city, out cityId);
+            var list = DB.Find<Student>(s => s.CityId == cityId).Limit(1000).Skip(page * 1000).ToList();
+
+            ViewBag.Cities = DB.Find<City>(_ => true).SortBy(c => c.ProvinceId).ThenBy(c => c.Name).ToEnumerable();
+            ViewBag.SelectedCity = city;
+            return View(list);
+        }
+
+        [Authorize]
+        public IActionResult Edit(string id)
+        {
+            return View(DB.FindById<Student>(id));
+        }
+
+        [HttpPost]
+        public IActionResult Edit(Student student, string id)
+        {
+            DB.UpdateOne<Student>(s => s.Id == ObjectId.Parse(id), Builders<Student>.Update
+                .Set(s => s.FirstName, student.FirstName)
+                .Set(s => s.LastName, student.LastName)
+                .Set(s => s.Address, student.Address)
+                .Set(s => s.Coins, student.Coins)
+                .Set(s => s.Gender, student.Gender)
+                .Set(s => s.Password, student.Password)
+                .Set(s => s.Phone, student.Phone)
+                .Set(s => s.SchoolName, student.SchoolName));
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]

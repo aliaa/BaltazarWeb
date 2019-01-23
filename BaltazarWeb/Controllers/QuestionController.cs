@@ -75,6 +75,7 @@ namespace BaltazarWeb.Controllers
             question.Id = ObjectId.Empty;
             question.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;
             question.UserId = student.Id;
+            question.UserName = student.DisplayName;
             question.HasImage = false;
             question.AcceptedAnswerId = ObjectId.Empty;
             question.Prize = Consts.ANSWER_DEFAULT_PRIZE;
@@ -123,6 +124,7 @@ namespace BaltazarWeb.Controllers
             List<FilterDefinition<Question>> filters = new List<FilterDefinition<Question>>();
             filters.Add(fb.Ne(q => q.UserId, student.Id));
             filters.Add(fb.Eq(q => q.AcceptedAnswerId, ObjectId.Empty));
+            filters.Add(fb.Eq(q => q.PublishStatus, BaseUserContent.PublishStatusEnum.Published));
 
             if (grade == null)
                 filters.Add(fb.Lte(q => q.Grade, student.Grade));

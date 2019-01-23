@@ -30,6 +30,9 @@ namespace BaltazarWeb.Models
         [Display(Name = "کاربر")]
         public ObjectId UserId { get; set; }
 
+        [BsonIgnore]
+        public string UserName { get; set; }
+
         [Display(Name = "تاریخ ایجاد")]
         public DateTime CreateDate { get; set; } = DateTime.Now;
 
