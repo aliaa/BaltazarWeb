@@ -109,15 +109,16 @@ namespace BaltazarWeb.Controllers
             return RedirectToAction(nameof(OrdersList), new { status = ShopOrder.OrderStatus.WaitForApprove });
         }
 
-        public ActionResult<List<ShopItem>> ListShopItems(Guid token)
+        public ActionResult<DataResponse<List<ShopItem>>> ListShopItems([FromHeader] Guid token)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
                 return Unauthorized();
-            return DB.Find<ShopItem>(i => i.Enabled).SortByDescending(i => i.DateAdded).ToList();
+            var list = DB.Find<ShopItem>(i => i.Enabled).SortByDescending(i => i.DateAdded).ToList();
+            return new DataResponse<List<ShopItem>> { Success = true, Data = list };
         }
 
-        public ActionResult<CommonResponse> AddOrder(Guid token, string shopItemId)
+        public ActionResult<CommonResponse> AddOrder([FromHeader] Guid token, string shopItemId)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
@@ -140,7 +141,7 @@ namespace BaltazarWeb.Controllers
             return new CommonResponse { Success = true, Message = "سفارش شما ثبت شد!" };
         }
 
-        public ActionResult<List<ShopOrder>> MyOrders(Guid token)
+        public ActionResult<List<ShopOrder>> MyOrders([FromHeader] Guid token)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
