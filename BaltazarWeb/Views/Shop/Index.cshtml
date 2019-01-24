@@ -48,7 +48,7 @@
             <td>
                 @if (item.HasImage)
                 {
-                    <a href="../@(Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + item.Id).jpg">نمایش تصویر</a>
+                    <a href="@("../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + item.Id + ".jpg")">نمایش تصویر</a>
                 }
             </td>
             <td>
