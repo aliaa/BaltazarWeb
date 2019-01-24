@@ -29,7 +29,7 @@ namespace BaltazarWeb.Controllers
         [Authorize]
         public IActionResult Index()
         {
-            return View(DB.Find<ShopItem>(i => i.Enabled).ToEnumerable());
+            return View(DB.All<ShopItem>());
         }
 
         [Authorize]
@@ -76,7 +76,10 @@ namespace BaltazarWeb.Controllers
         [HttpPost]
         public IActionResult Edit(ShopItem item, string id)
         {
-            item.Id = ObjectId.Parse(id);
+            UpdateDefinition<ShopItem> update = Builders<ShopItem>.Update
+                .Set(i => i.Name, item.Name)
+                .Set(i => i.CoinCost, item.CoinCost)
+                .Set(i => i.Enabled, item.Enabled);
             if(item.ImageFile != null)
             {
                 item.HasImage = true;
@@ -85,9 +88,25 @@ namespace BaltazarWeb.Controllers
                 {
                     item.ImageFile.CopyTo(fs);
                 }
+                update = update.Set(i => i.HasImage, true);
             }
-            DB.Save(item);
+            DB.UpdateOne<ShopItem>(i =>  i.Id == ObjectId.Parse(id), update);
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize]
+        [Route("Shop/OrdersList/{status?}")]
+        public IActionResult OrdersList(ShopOrder.OrderStatus status = ShopOrder.OrderStatus.WaitForApprove)
+        {
+            ViewBag.Status = AliaaCommon.Utils.GetDisplayNameOfMember(typeof(ShopOrder.OrderStatus), status.ToString());
+            return View(DB.Find<ShopOrder>(o => o.Status == status).ToEnumerable());
+        }
+
+        [Authorize]
+        public IActionResult ApproveOrder(string id)
+        {
+            DB.UpdateOne<ShopOrder>(o => o.Id == ObjectId.Parse(id), Builders<ShopOrder>.Update.Set(o => o.Status, ShopOrder.OrderStatus.Approved));
+            return RedirectToAction(nameof(OrdersList), new { status = ShopOrder.OrderStatus.WaitForApprove });
         }
 
         public ActionResult<List<ShopItem>> ListShopItems(Guid token)

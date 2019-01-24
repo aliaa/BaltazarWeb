@@ -1,0 +1,47 @@
+﻿@model BaltazarWeb.Models.ShopItem
+
+@{
+    ViewData["Title"] = "افزودن محصول به فروشگاه";
+}
+
+<h2>افزودن محصول به فروشگاه</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Add" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <div class="checkbox">
+                    <label dir="ltr">
+                        <input asp-for="Enabled" checked="checked"/> @Html.DisplayNameFor(model => model.Enabled)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="CoinCost" class="control-label"></label>
+                <input asp-for="CoinCost" class="form-control" />
+                <span asp-validation-for="CoinCost" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @Html.DisplayNameFor(model => model.ImageFile): <input asp-for="ImageFile" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="افزودن" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">برگشت به لیست</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
