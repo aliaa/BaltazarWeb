@@ -109,6 +109,13 @@ namespace BaltazarWeb.Controllers
             return RedirectToAction(nameof(OrdersList), new { status = ShopOrder.OrderStatus.WaitForApprove });
         }
 
+        [Authorize]
+        public IActionResult RejectOrder(string id)
+        {
+            DB.UpdateOne<ShopOrder>(o => o.Id == ObjectId.Parse(id), Builders<ShopOrder>.Update.Set(o => o.Status, ShopOrder.OrderStatus.Rejected));
+            return RedirectToAction(nameof(OrdersList), new { status = ShopOrder.OrderStatus.WaitForApprove });
+        }
+
         public ActionResult<DataResponse<List<ShopItem>>> ListShopItems([FromHeader] Guid token)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();

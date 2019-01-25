@@ -50,6 +50,8 @@
                 @if (item.Status == ShopOrder.OrderStatus.WaitForApprove)
                 {
                     @Html.ActionLink("تائید", "ApproveOrder", new { id = item.Id })
+                    <span>&nbsp;|&nbsp;</span>
+                    @Html.ActionLink("رد", "RejectOrder", new { id = item.Id })
                 }
             </td>
         </tr>
