@@ -24,18 +24,21 @@ namespace BaltazarWeb.Controllers
 
         public ActionResult<DataResponse<CommonData>> Index([FromHeader] Guid token, [FromQuery] int appVersion, [FromQuery] int androidVersion, [FromQuery] string uuid)
         {
-            Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
-            if (student == null)
-                return Unauthorized();
+            Student student = null;
+            if (token != null)
+                student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
 
-            var log = new AppUsageLog
+            if (student != null)
             {
-                StudentId = student.Id,
-                UUID = uuid,
-                AppVersion = appVersion,
-                AndroidVersion = androidVersion
-            };
-            DB.Save(log);
+                var log = new AppUsageLog
+                {
+                    StudentId = student.Id,
+                    UUID = uuid,
+                    AppVersion = appVersion,
+                    AndroidVersion = androidVersion
+                };
+                DB.Save(log);
+            }
 
             student.Password = null;
             return new DataResponse<CommonData>
