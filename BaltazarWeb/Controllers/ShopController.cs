@@ -131,6 +131,10 @@ namespace BaltazarWeb.Controllers
             if (student.Coins < shopItem.CoinCost)
                 return new CommonResponse { Message = "تعداد سکه های شما برای خرید این آیتم کافی نیست!" };
 
+            if (DB.Any<ShopOrder>(o => o.ShopItemId == shopItem.Id && o.UserId == student.Id && 
+                    (o.Status == ShopOrder.OrderStatus.WaitForApprove || o.Status == ShopOrder.OrderStatus.Approved)))
+                return new CommonResponse { Message = "این سفارش قبلا برای شما ثبت شده است! لطفا منتظر تحویل بمانید." };
+
             ShopOrder order = new ShopOrder
             {
                 CoinCost = shopItem.CoinCost,
@@ -138,6 +142,11 @@ namespace BaltazarWeb.Controllers
                 UserId = student.Id
             };
             DB.Save(order);
+
+            student.CoinTransactions.Add(new CoinTransaction { Amount = shopItem.CoinCost, ShopItemId = shopItem.Id });
+            student.Coins -= shopItem.CoinCost;
+            DB.Save(student);
+
             return new CommonResponse { Success = true, Message = "سفارش شما ثبت شد!" };
         }
 

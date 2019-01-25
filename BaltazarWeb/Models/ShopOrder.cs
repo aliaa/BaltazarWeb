@@ -15,6 +15,8 @@ namespace BaltazarWeb.Models
         {
             [Display(Name = "منتظر تائید")]
             WaitForApprove,
+            [Display(Name = "رد شده")]
+            Rejected,
             [Display(Name = "تائید شده")]
             Approved,
             [Display(Name = "به مقصد رسیده")]

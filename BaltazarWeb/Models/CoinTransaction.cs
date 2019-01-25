@@ -11,5 +11,6 @@ namespace BaltazarWeb.Models
         public int Amount { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
         public ObjectId QuestionId { get; set; }
+        public ObjectId ShopItemId { get; set; }
     }
 }
