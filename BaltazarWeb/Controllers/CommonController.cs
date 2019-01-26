@@ -7,6 +7,7 @@ using BaltazarWeb.Models;
 using BaltazarWeb.Models.ApiModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace BaltazarWeb.Controllers
@@ -25,19 +26,18 @@ namespace BaltazarWeb.Controllers
         public ActionResult<DataResponse<CommonData>> Index([FromHeader] Guid token, [FromQuery] int appVersion, [FromQuery] int androidVersion, [FromQuery] string uuid)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
-            if (student == null)
-                return Unauthorized();
-
+            
             var log = new AppUsageLog
             {
-                StudentId = student.Id,
+                StudentId = student != null ? student.Id : ObjectId.Empty,
                 UUID = uuid,
                 AppVersion = appVersion,
                 AndroidVersion = androidVersion
             };
             DB.Save(log);
 
-            student.Password = null;
+            if(student != null)
+                student.Password = null;
             return new DataResponse<CommonData>
             {
                 Success = true,
