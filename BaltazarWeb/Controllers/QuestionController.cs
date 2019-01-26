@@ -41,8 +41,6 @@ namespace BaltazarWeb.Controllers
             question.PublishStatus = BaseUserContent.PublishStatusEnum.Published;
             DB.Save(question);
             Student student = DB.FindById<Student>(question.UserId);
-            student.Coins -= Consts.QUESTION_COIN_COST;
-            student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.QUESTION_COIN_COST, QuestionId = question.Id });
             DB.Save(student);
             return RedirectToAction(nameof(ApproveList));
         }
@@ -51,7 +49,20 @@ namespace BaltazarWeb.Controllers
         public IActionResult Reject(string id)
         {
             ObjectId objId = ObjectId.Parse(id);
-            DB.UpdateOne(q => q.Id == objId, Builders<Question>.Update.Set(q => q.PublishStatus, BaseUserContent.PublishStatusEnum.Rejected));
+            Question question = DB.FindById<Question>(objId);
+            if (question != null)
+            {
+                DB.UpdateOne(q => q.Id == objId, Builders<Question>.Update.Set(q => q.PublishStatus, BaseUserContent.PublishStatusEnum.Rejected));
+
+                Student student = DB.FindById<Student>(question.UserId);
+                var transaction = student.CoinTransactions.Where(t => t.QuestionId == question.Id).FirstOrDefault();
+                if(transaction != null)
+                {
+                    student.CoinTransactions.Remove(transaction);
+                    student.Coins += transaction.Amount;
+                    DB.Save(student);
+                }
+            }
             return RedirectToAction(nameof(ApproveList));
         }
 
@@ -89,6 +100,11 @@ namespace BaltazarWeb.Controllers
                 return new DataResponse<Question> { Success = false, Message = "سرفصل موجود نمیباشد!" };
 
             DB.Save(question);
+
+            student.Coins -= Consts.QUESTION_COIN_COST;
+            student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.QUESTION_COIN_COST, QuestionId = question.Id });
+            DB.Save(student);
+
             return new DataResponse<Question> { Success = true, Data = question };
         }
 
