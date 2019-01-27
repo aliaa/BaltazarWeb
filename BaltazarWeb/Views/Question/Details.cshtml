@@ -38,9 +38,16 @@
     </dl>
 </div>
 <div align="center">
-    @Html.ActionLink("تائید محتوا", "Accept", new { id = Model.Id.ToString() }) &nbsp;&nbsp;&nbsp;
-    @Html.ActionLink("محتوای نامناسب", "Reject", new { id = Model.Id.ToString() })
+    @if (Model.PublishStatus != BaseUserContent.PublishStatusEnum.Published)
+    {
+        @Html.ActionLink("تائید محتوا", "Accept", new { id = Model.Id.ToString() }) 
+    }
+    @if(Model.PublishStatus != BaseUserContent.PublishStatusEnum.Rejected)
+    { 
+        <span>&nbsp; &nbsp; &nbsp;</span>
+        @Html.ActionLink("محتوای نامناسب", "Reject", new { id = Model.Id.ToString() })
+    }
 </div>
 <div>
-    <a asp-action="ApproveList">برگشت به لیست</a>
+    <a asp-action="Index">برگشت به لیست</a>
 </div>

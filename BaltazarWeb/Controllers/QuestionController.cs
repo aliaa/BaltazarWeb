@@ -27,11 +27,16 @@ namespace BaltazarWeb.Controllers
             if (!Directory.Exists(ImageUploadPath))
                 Directory.CreateDirectory(ImageUploadPath);
         }
-        
+
         [Authorize]
-        public IActionResult ApproveList()
+        public IActionResult Index(BaseUserContent.PublishStatusEnum status)
         {
-            return View(DB.Find<Question>(q => q.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).SortBy(q => q.CreateDate).ToEnumerable());
+            var query = DB.Find<Question>(q => q.PublishStatus == status);
+            if (status == BaseUserContent.PublishStatusEnum.WaitForApprove)
+                query = query.SortBy(q => q.CreateDate);
+            else
+                query = query.SortByDescending(q => q.CreateDate);
+            return View(query.ToEnumerable());
         }
         
         [Authorize]
@@ -42,7 +47,7 @@ namespace BaltazarWeb.Controllers
             DB.Save(question);
             Student student = DB.FindById<Student>(question.UserId);
             DB.Save(student);
-            return RedirectToAction(nameof(ApproveList));
+            return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
         }
         
         [Authorize]
@@ -63,7 +68,7 @@ namespace BaltazarWeb.Controllers
                     DB.Save(student);
                 }
             }
-            return RedirectToAction(nameof(ApproveList));
+            return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
         }
 
         [Authorize]
@@ -160,6 +165,15 @@ namespace BaltazarWeb.Controllers
                 .ToList();
             foreach (var item in list)
                 item.Hot = !DB.Any<Answer>(a => a.QuestionId == item.Id);
+
+            var baltazarQuestions = DB.Find<BaltazarQuestion>(q => q.ExpireDate > DateTime.Now && q.Grade > student.Grade && q.MaxGrade < student.Grade).ToList();
+            Random random = new Random();
+            foreach (var bq in baltazarQuestions)
+            {
+                int index = random.Next(list.Count);
+                list.Insert(index, bq);
+            }
+
             return new DataResponse<List<Question>> { Success = true, Data = list };
         }
 

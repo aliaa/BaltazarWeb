@@ -1,0 +1,80 @@
+﻿@model IEnumerable<BaltazarWeb.Models.Question>
+@inject AliaaCommon.MongoDB.MongoHelper DB
+
+@{
+    var status = BaseUserContent.PublishStatusEnum.WaitForApprove;
+    var queryStatus = Context.Request.Query["status"];
+    if (queryStatus.Count == 1) {
+        Enum.TryParse<BaseUserContent.PublishStatusEnum>(queryStatus, out status);
+    }
+    
+    ViewData["Title"] = "سوالات";
+}
+
+<h2>سوالات @Html.DisplayFor(_ => status)</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Grade)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CourseId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SectionId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Text)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.ActionLink("جزئیات", "Details", new { id = item.Id.ToString() })
+                </td>
+                <td>
+                    @(DB.FindById<Student>(item.UserId)?.DisplayName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Grade)
+                </td>
+                <td>
+                    @(DB.FindById<Course>(item.CourseId)?.Name)
+                </td>
+                <td>
+                    @(DB.FindById<CourseSection>(item.SectionId)?.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreateDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Text)
+                </td>
+                <td>
+                    @if (item.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove)
+                    {
+                        @if (!item.HasImage)
+                        {
+                            @Html.ActionLink("تائید", "Accept", new { id = item.Id.ToString() })
+                            <span>&nbsp;|&nbsp;</span>
+                        }
+                        @Html.ActionLink("نامناسب", "Reject", new { id = item.Id.ToString() })
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

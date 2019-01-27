@@ -1,0 +1,75 @@
+﻿@model IEnumerable<BaltazarWeb.Models.BaltazarQuestion>
+
+@{
+    ViewData["Title"] = "لیست سوالات بالتازار";
+}
+
+<h2>لیست سوالات بالتازار</h2>
+
+<p>
+    <a asp-action="Add">ایجاد</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                حداقل مقطع
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MaxGrade)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExpireDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Prize)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </th>
+            <th>
+                تصویر
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Text)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Grade)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.MaxGrade)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExpireDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Prize)
+            </td>
+            <td>
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </td>
+            <td>
+                @if (item.HasImage)
+                {
+                    <a href="@(Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + item.Id + ".jpg")">نمایش تصویر</a>
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Text)
+            </td>
+            <td>
+            </td>
+            <td>
+                @Html.ActionLink("ویرایش", "Edit", new { id = item.Id.ToString() }) |
+                @Html.ActionLink("حذف", "Delete", new { id = item.Id.ToString() })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

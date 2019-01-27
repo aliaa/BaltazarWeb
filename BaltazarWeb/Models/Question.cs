@@ -30,5 +30,9 @@ namespace BaltazarWeb.Models
         [Display(Name = "سوال داغ")]
         [BsonIgnore]
         public bool Hot { get; set; }
+
+        [Display(Name = "سوال بالتازار")]
+        [BsonIgnore]
+        public bool FromBaltazar { get; protected set; } = false;
     }
 }
