@@ -23,5 +23,8 @@ namespace BaltazarWeb.Models
 
         [Display(Name = "پاسخ سوال کننده")]
         public QuestionerResponseEnum Response { get; set; }
+
+        [Display(Name = "برای سوال بالتازار")]
+        public bool ToBaltazarQuestion { get; set; }
     }
 }

@@ -164,9 +164,11 @@ namespace BaltazarWeb.Controllers
                 .Skip(page * PAGE_SIZE)
                 .ToList();
             foreach (var item in list)
+            {
                 item.Hot = !DB.Any<Answer>(a => a.QuestionId == item.Id);
-
-            var baltazarQuestions = DB.Find<BaltazarQuestion>(q => q.ExpireDate > DateTime.Now && q.Grade > student.Grade && q.MaxGrade < student.Grade).ToList();
+                item.UserName = DB.FindById<Student>(item.UserId).DisplayName;
+            }
+            var baltazarQuestions = DB.Find<BaltazarQuestion>(q => q.ExpireDate > DateTime.Now && student.Grade >= q.Grade && student.Grade <= q.MaxGrade).ToList();
             Random random = new Random();
             foreach (var bq in baltazarQuestions)
             {

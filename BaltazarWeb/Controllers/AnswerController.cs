@@ -64,7 +64,12 @@ namespace BaltazarWeb.Controllers
             if (student == null)
                 return Unauthorized();
 
-            Question question = DB.FindById<Question>(answer.QuestionId);
+            Question question;
+            if (answer.ToBaltazarQuestion)
+                question = DB.FindById<BaltazarQuestion>(answer.QuestionId);
+            else
+                question = DB.FindById<Question>(answer.QuestionId);
+
             if (question == null)
                 return new DataResponse<Answer> { Success = true, Message = "سوال یافت نشد!" };
             if(question.PublishStatus != BaseUserContent.PublishStatusEnum.Published)
