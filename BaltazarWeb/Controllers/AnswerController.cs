@@ -130,10 +130,17 @@ namespace BaltazarWeb.Controllers
                     return new CommonResponse { Success = false, Message = "قبلا جوابی برای این سوال قبول شده است!" };
 
                 question.AcceptedAnswerId = answer.Id;
-                student.CoinTransactions.Add(new CoinTransaction { Amount = question.Prize, QuestionId = question.Id });
-                student.Coins += question.Prize;
                 DB.Save(question);
-                DB.Save(student);
+
+                Student answererStudent = DB.FindById<Student>(answer.UserId);
+                if (answererStudent != null)
+                {
+                    answererStudent.CoinTransactions.Add(new CoinTransaction { Amount = question.Prize, QuestionId = question.Id });
+                    answererStudent.Coins += question.Prize;
+                    answererStudent.Points += question.Prize;
+                    answererStudent.PointsFromOtherQuestions += question.Prize;
+                    DB.Save(answererStudent);
+                }
             }
 
             answer.Response = response;
