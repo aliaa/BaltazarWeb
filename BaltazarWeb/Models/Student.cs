@@ -52,6 +52,7 @@ namespace BaltazarWeb.Models
         [Display(Name = "امتیاز از سایر سوالات")]
         public int PointsFromOtherQuestions { get; set; }
 
+        [JsonIgnore]
         public List<CoinTransaction> CoinTransactions { get; set; } = new List<CoinTransaction>();
     }
 }

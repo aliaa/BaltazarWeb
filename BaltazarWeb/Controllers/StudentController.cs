@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
@@ -160,6 +161,26 @@ namespace BaltazarWeb.Controllers
             {
                 Success = true,
                 Data = data
+            };
+        }
+
+        public ActionResult<DataResponse<List<CoinTransaction>>> MyCoinTransactions([FromHeader] Guid token)
+        {
+            Student me = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            if (me == null)
+                return Unauthorized();
+            var transactions = me.CoinTransactions.OrderByDescending(t => t.Date).Take(100).ToList();
+            foreach (var tr in transactions)
+            {
+                if (tr.QuestionId != ObjectId.Empty)
+                    tr.Question = DB.FindById<Question>(tr.QuestionId);
+                else if (tr.ShopItemId != ObjectId.Empty)
+                    tr.ShopItem = DB.FindById<ShopItem>(tr.ShopItemId);
+            }
+            return new DataResponse<List<CoinTransaction>>
+            {
+                Success = true,
+                Data = transactions
             };
         }
     }
