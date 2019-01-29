@@ -169,18 +169,10 @@ namespace BaltazarWeb.Controllers
             Student me = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (me == null)
                 return Unauthorized();
-            var transactions = me.CoinTransactions.OrderByDescending(t => t.Date).Take(100).ToList();
-            foreach (var tr in transactions)
-            {
-                if (tr.QuestionId != ObjectId.Empty)
-                    tr.Question = DB.FindById<Question>(tr.QuestionId);
-                else if (tr.ShopItemId != ObjectId.Empty)
-                    tr.ShopItem = DB.FindById<ShopItem>(tr.ShopItemId);
-            }
             return new DataResponse<List<CoinTransaction>>
             {
                 Success = true,
-                Data = transactions
+                Data = me.CoinTransactions.OrderByDescending(t => t.Date).Take(100).ToList()
             };
         }
     }

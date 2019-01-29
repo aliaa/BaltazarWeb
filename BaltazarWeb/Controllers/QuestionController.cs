@@ -60,11 +60,11 @@ namespace BaltazarWeb.Controllers
                 DB.UpdateOne(q => q.Id == objId, Builders<Question>.Update.Set(q => q.PublishStatus, BaseUserContent.PublishStatusEnum.Rejected));
 
                 Student student = DB.FindById<Student>(question.UserId);
-                var transaction = student.CoinTransactions.Where(t => t.QuestionId == question.Id).FirstOrDefault();
+                var transaction = student.CoinTransactions.Where(t => t.Type == CoinTransaction.TransactionType.AskQuestion && t.SourceId == question.Id).FirstOrDefault();
                 if(transaction != null)
                 {
                     student.CoinTransactions.Remove(transaction);
-                    student.Coins += transaction.Amount;
+                    student.Coins += Math.Abs(transaction.Amount);
                     DB.Save(student);
                 }
             }
@@ -107,7 +107,12 @@ namespace BaltazarWeb.Controllers
             DB.Save(question);
 
             student.Coins -= Consts.QUESTION_COIN_COST;
-            student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.QUESTION_COIN_COST, QuestionId = question.Id });
+            student.CoinTransactions.Add(new CoinTransaction
+            {
+                Type = CoinTransaction.TransactionType.AskQuestion,
+                Amount = -Consts.QUESTION_COIN_COST,
+                SourceId = question.Id
+            });
             DB.Save(student);
 
             return new DataResponse<Question> { Success = true, Data = question };

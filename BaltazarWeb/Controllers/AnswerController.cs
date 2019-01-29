@@ -135,7 +135,12 @@ namespace BaltazarWeb.Controllers
                 Student answererStudent = DB.FindById<Student>(answer.UserId);
                 if (answererStudent != null)
                 {
-                    answererStudent.CoinTransactions.Add(new CoinTransaction { Amount = question.Prize, QuestionId = question.Id });
+                    answererStudent.CoinTransactions.Add(new CoinTransaction
+                    {
+                        Type = CoinTransaction.TransactionType.AnswerQuestion,
+                        Amount = question.Prize,
+                        SourceId = question.Id
+                    });
                     answererStudent.Coins += question.Prize;
                     answererStudent.Points += question.Prize;
                     answererStudent.PointsFromOtherQuestions += question.Prize;

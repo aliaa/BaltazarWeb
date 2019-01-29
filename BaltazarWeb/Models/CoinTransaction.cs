@@ -10,19 +10,19 @@ namespace BaltazarWeb.Models
 {
     public class CoinTransaction
     {
+        public enum TransactionType
+        {
+            AskQuestion,
+            AnswerQuestion,
+            AnswerBaltazar,
+            Buy,
+        }
+
         public int Amount { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
+        public ObjectId SourceId { get; set; }
 
-        [JsonIgnore]
-        public ObjectId QuestionId { get; set; }
-
-        [JsonIgnore]
-        public ObjectId ShopItemId { get; set; }
-
-        [BsonIgnore]
-        public Question Question { get; set; }
-
-        [BsonIgnore]
-        public ShopItem ShopItem { get; set; }
+        [BsonRepresentation(BsonType.String)]
+        public TransactionType Type { get; set; }
     }
 }

@@ -150,7 +150,12 @@ namespace BaltazarWeb.Controllers
             };
             DB.Save(order);
 
-            student.CoinTransactions.Add(new CoinTransaction { Amount = shopItem.CoinCost, ShopItemId = shopItem.Id });
+            student.CoinTransactions.Add(new CoinTransaction
+            {
+                Type = CoinTransaction.TransactionType.Buy,
+                Amount = -shopItem.CoinCost,
+                SourceId = shopItem.Id
+            });
             student.Coins -= shopItem.CoinCost;
             DB.Save(student);
 
