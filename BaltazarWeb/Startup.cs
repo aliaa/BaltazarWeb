@@ -63,6 +63,7 @@ namespace BaltazarWeb
                 Configuration.GetValue<bool>("setDictionaryConventionToArrayOfDocuments"), null);
             DB.DefaultWriteLog = false;
             services.AddSingleton(DB);
+            services.AddSingleton(new ScoresDataProvider(DB));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

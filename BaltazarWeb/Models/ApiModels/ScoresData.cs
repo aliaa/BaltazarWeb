@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using FarsiLibrary;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,12 +17,28 @@ namespace BaltazarWeb.Models.ApiModels
 
     public class ScoresData
     {
-        public int MyPoints { get; set; }
-        public int MyPointsFromLeague { get; set; }
-        public int MyPointsFromOtherQuestions { get; set; }
-        public long MyTotalScore { get; set; }
-        public long MyScoreOnBase { get; set; }
-        public List<TopStudent> TotalTop { get; set; } = new List<TopStudent>();
-        public List<TopStudent> TopOnBase { get; set; } = new List<TopStudent>();
+        public string FestivalName { get; set; }
+        public int MyFestivalPoints { get; set; }
+        public int MyFestivalPointsFromLeague { get; set; }
+        public int MyFestivalPointsFromOtherQuestions { get; set; }
+        public long MyFestivalScore { get; set; }
+        public long MyFestivalScoreOnGrade { get; set; }
+        public long MyAllTimePoints { get; set; }
+        public long MyAllTimeTotalScore { get; set; }
+
+        public List<TopStudent> FestivalTop { get; set; }
+        public List<TopStudent> FestivalTopOnGrade { get; set; }
+        public List<TopStudent> TotalTop { get; set; }
+
+        public static string CurrentFestivalName
+        {
+            get
+            {
+                PersianDate pDate = PersianDateConverter.ToPersianDate(DateTime.Now);
+                int currentMonth = pDate.Month;
+                int currentSeason = (currentMonth - 1) / 4 + 1;
+                return pDate.Year + "S" + currentSeason;
+            }
+        }
     }
 }

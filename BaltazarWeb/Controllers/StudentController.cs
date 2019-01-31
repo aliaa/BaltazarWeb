@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
 using BaltazarWeb.Models.ApiModels;
+using BaltazarWeb.Utils;
+using FarsiLibrary;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -17,9 +16,12 @@ namespace BaltazarWeb.Controllers
     public class StudentController : Controller
     {
         private readonly MongoHelper DB;
-        public StudentController(MongoHelper DB)
+        private readonly ScoresDataProvider scoresDataProvider;
+
+        public StudentController(MongoHelper DB, ScoresDataProvider scoresDataProvider)
         {
             this.DB = DB;
+            this.scoresDataProvider = scoresDataProvider;
         }
 
         [Authorize]
@@ -100,6 +102,17 @@ namespace BaltazarWeb.Controllers
             response.Success = true;
             student.Token = Guid.NewGuid();
             student.Coins = Consts.INITIAL_COIN;
+            student.RegistrationDate = DateTime.Now;
+            student.InvitationCode = Student.GenerateNewInvitationCode(DB);
+            if (!string.IsNullOrEmpty(student.InvitedFromCode))
+            {
+                Student inviteSource = DB.Find<Student>(s => s.InvitationCode == student.InvitedFromCode).FirstOrDefault();
+                inviteSource.Coins += Consts.INVITE_PRIZE;
+                inviteSource.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITE_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
+                DB.Save(inviteSource);
+            }
+            else
+                student.InvitedFromCode = null;
             response.Data = student;
             DB.Save(student);
             return response;
@@ -139,30 +152,50 @@ namespace BaltazarWeb.Controllers
             return new DataResponse<Student> { Success = true, Data = st };
         }
 
+        private readonly string[] SEASONAL_FESTIVAL_NAMES = new string[] { "بهاره", "تابستانه", "پاییزه", "زمستانه" };
+
         public ActionResult<DataResponse<ScoresData>> Scores([FromHeader] Guid token)
         {
+            PersianDate pDate = PersianDateConverter.ToPersianDate(DateTime.Now);
+            int currentMonth = pDate.Month;
+            int currentSeason = (currentMonth - 1) / 4;
+            DateTime festivalStart = PersianDateConverter.ToGregorianDateTime(new PersianDate(pDate.Year, month: currentSeason * 4 + 1, day: 1));
+
             Student me = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (me == null)
                 return Unauthorized();
 
-            ScoresData data = new ScoresData
-            {
-                MyPoints = me.Points,
-                MyPointsFromLeague = me.PointsFromLeague,
-                MyPointsFromOtherQuestions = me.PointsFromOtherQuestions,
-                MyTotalScore = DB.Count<Student>(s => s.Points > me.Points) + 1,
-                MyScoreOnBase = DB.Count<Student>(s => s.Points > me.Points && s.Grade == me.Grade) + 1,
-                TotalTop = DB.Find<Student>(s => true).SortByDescending(s => s.Points).Limit(10).ToEnumerable()
-                    .Select(s => new TopStudent { UserName = s.DisplayName, CityId = s.CityId, Points = s.Points, School = s.SchoolName }).ToList(),
-                TopOnBase = DB.Find<Student>(s => s.Grade == me.Grade).SortByDescending(s => s.Points).Limit(10).ToEnumerable()
-                    .Select(s => new TopStudent { UserName = s.DisplayName, CityId = s.CityId, Points = s.Points, School = s.SchoolName }).ToList(),
-            };
+            var currentFestival = ScoresData.CurrentFestivalName;
+            ScoresData data = new ScoresData();
+
+            data.MyAllTimePoints = me.TotalPoints;
+            data.MyAllTimeTotalScore = DB.Count<Student>(s => s.TotalPoints > me.TotalPoints) + 1;
+
+            data.FestivalName = SEASONAL_FESTIVAL_NAMES[currentSeason];
+            var myFestival = me.FestivalPoints.FirstOrDefault(f => f.FestivalName == currentFestival);
+            data.MyFestivalPoints = myFestival != null ? myFestival.Points : 0;
+            data.MyFestivalPointsFromLeague = myFestival != null ? myFestival.PointsFromLeague : 0;
+            data.MyFestivalPointsFromOtherQuestions = myFestival != null ? myFestival.PointsFromOtherQuestions : 0;
+
+            data.MyFestivalScore = DB.Count(Builders<Student>.Filter.ElemMatch(s => s.FestivalPoints, f => f.Points > data.MyFestivalPoints)) + 1;
+            data.MyFestivalScoreOnGrade = DB.Count(
+                Builders<Student>.Filter.And(
+                    Builders<Student>.Filter.Eq(s => s.Grade, me.Grade),
+                    Builders<Student>.Filter.ElemMatch(s => s.FestivalPoints, f => f.Points > data.MyFestivalPoints)
+                )) + 1;
+
+            data.FestivalTop = scoresDataProvider.FestivalTopStudents;
+            data.TotalTop = scoresDataProvider.TotalTopStudents;
+            data.FestivalTopOnGrade = scoresDataProvider.GetFestivalTopStudentsInGrade(me.Grade);
+
             return new DataResponse<ScoresData>
             {
                 Success = true,
                 Data = data
             };
         }
+
+
 
         public ActionResult<DataResponse<List<CoinTransaction>>> MyCoinTransactions([FromHeader] Guid token)
         {

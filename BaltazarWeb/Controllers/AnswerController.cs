@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
 using BaltazarWeb.Models.ApiModels;
@@ -142,8 +140,25 @@ namespace BaltazarWeb.Controllers
                         SourceId = question.Id
                     });
                     answererStudent.Coins += question.Prize;
-                    answererStudent.Points += question.Prize;
-                    answererStudent.PointsFromOtherQuestions += question.Prize;
+                    answererStudent.TotalPoints += question.Prize;
+                    answererStudent.TotalPointsFromOtherQuestions += question.Prize;
+
+                    string festivalName = ScoresData.CurrentFestivalName;
+                    var festivalPoint = answererStudent.FestivalPoints.First(f => f.FestivalName == festivalName);
+                    if (festivalPoint == null)
+                    {
+                        answererStudent.FestivalPoints.Add(new Student.FestivalPoint
+                        {
+                            FestivalName = festivalName,
+                            Points = question.Prize,
+                            PointsFromOtherQuestions = question.Prize
+                        });
+                    }
+                    else
+                    {
+                        festivalPoint.Points += question.Prize;
+                        festivalPoint.PointsFromOtherQuestions += question.Prize;
+                    }
                     DB.Save(answererStudent);
                 }
             }
