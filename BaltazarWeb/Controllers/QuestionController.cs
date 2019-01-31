@@ -27,11 +27,16 @@ namespace BaltazarWeb.Controllers
             if (!Directory.Exists(ImageUploadPath))
                 Directory.CreateDirectory(ImageUploadPath);
         }
-        
+
         [Authorize]
-        public IActionResult ApproveList()
+        public IActionResult Index(BaseUserContent.PublishStatusEnum status)
         {
-            return View(DB.Find<Question>(q => q.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).SortBy(q => q.CreateDate).ToEnumerable());
+            var query = DB.Find<Question>(q => q.PublishStatus == status);
+            if (status == BaseUserContent.PublishStatusEnum.WaitForApprove)
+                query = query.SortBy(q => q.CreateDate);
+            else
+                query = query.SortByDescending(q => q.CreateDate);
+            return View(query.ToEnumerable());
         }
         
         [Authorize]
@@ -42,7 +47,7 @@ namespace BaltazarWeb.Controllers
             DB.Save(question);
             Student student = DB.FindById<Student>(question.UserId);
             DB.Save(student);
-            return RedirectToAction(nameof(ApproveList));
+            return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
         }
         
         [Authorize]
@@ -55,15 +60,15 @@ namespace BaltazarWeb.Controllers
                 DB.UpdateOne(q => q.Id == objId, Builders<Question>.Update.Set(q => q.PublishStatus, BaseUserContent.PublishStatusEnum.Rejected));
 
                 Student student = DB.FindById<Student>(question.UserId);
-                var transaction = student.CoinTransactions.Where(t => t.QuestionId == question.Id).FirstOrDefault();
+                var transaction = student.CoinTransactions.Where(t => t.Type == CoinTransaction.TransactionType.AskQuestion && t.SourceId == question.Id).FirstOrDefault();
                 if(transaction != null)
                 {
                     student.CoinTransactions.Remove(transaction);
-                    student.Coins += transaction.Amount;
+                    student.Coins += Math.Abs(transaction.Amount);
                     DB.Save(student);
                 }
             }
-            return RedirectToAction(nameof(ApproveList));
+            return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
         }
 
         [Authorize]
@@ -102,7 +107,12 @@ namespace BaltazarWeb.Controllers
             DB.Save(question);
 
             student.Coins -= Consts.QUESTION_COIN_COST;
-            student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.QUESTION_COIN_COST, QuestionId = question.Id });
+            student.CoinTransactions.Add(new CoinTransaction
+            {
+                Type = CoinTransaction.TransactionType.AskQuestion,
+                Amount = -Consts.QUESTION_COIN_COST,
+                SourceId = question.Id
+            });
             DB.Save(student);
 
             return new DataResponse<Question> { Success = true, Data = question };
@@ -159,7 +169,18 @@ namespace BaltazarWeb.Controllers
                 .Skip(page * PAGE_SIZE)
                 .ToList();
             foreach (var item in list)
+            {
                 item.Hot = !DB.Any<Answer>(a => a.QuestionId == item.Id);
+                item.UserName = DB.FindById<Student>(item.UserId).DisplayName;
+            }
+            var baltazarQuestions = DB.Find<BaltazarQuestion>(q => q.ExpireDate > DateTime.Now && student.Grade >= q.Grade && student.Grade <= q.MaxGrade).ToList();
+            Random random = new Random();
+            foreach (var bq in baltazarQuestions)
+            {
+                int index = random.Next(list.Count);
+                list.Insert(index, bq);
+            }
+
             return new DataResponse<List<Question>> { Success = true, Data = list };
         }
 

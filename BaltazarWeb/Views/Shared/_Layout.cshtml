@@ -35,7 +35,15 @@
                         <li><a asp-controller="Shop" asp-action="OrdersList">سفارش ها</a></li>
                         <li><a asp-controller="Shop" asp-action="Index">فروشگاه</a></li>
                         <li><a asp-controller="Answer" asp-action="ApproveList">جواب ها</a></li>
-                        <li><a asp-controller="Question" asp-action="ApproveList">سوال ها</a></li>
+                        <li><a asp-controller="BaltazarQuestion" asp-action="Index">سوالات بالتازار</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">سوالات <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a asp-controller="Question" asp-action="Index" asp-route-status="WaitForApprove">نیاز به تائید</a></li>
+                                <li><a asp-controller="Question" asp-action="Index" asp-route-status="Published">منتشر شده</a></li>
+                                <li><a asp-controller="Question" asp-action="Index" asp-route-status="Rejected">رد شده</a></li>
+                            </ul>
+                        </li>
                         <li><a asp-controller="Student" asp-action="Index">دانش آموزان</a></li>
                         <li><a asp-controller="CourseSection" asp-action="Index">سرفصل ها</a></li>
                         <li><a asp-controller="Course" asp-action="Index">درس ها</a></li>

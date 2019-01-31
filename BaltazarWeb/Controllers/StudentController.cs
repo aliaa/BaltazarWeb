@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
@@ -136,6 +137,43 @@ namespace BaltazarWeb.Controllers
             st.Token = Guid.NewGuid();
             DB.Save(st);
             return new DataResponse<Student> { Success = true, Data = st };
+        }
+
+        public ActionResult<DataResponse<ScoresData>> Scores([FromHeader] Guid token)
+        {
+            Student me = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            if (me == null)
+                return Unauthorized();
+
+            ScoresData data = new ScoresData
+            {
+                MyPoints = me.Points,
+                MyPointsFromLeague = me.PointsFromLeague,
+                MyPointsFromOtherQuestions = me.PointsFromOtherQuestions,
+                MyTotalScore = DB.Count<Student>(s => s.Points > me.Points) + 1,
+                MyScoreOnBase = DB.Count<Student>(s => s.Points > me.Points && s.Grade == me.Grade) + 1,
+                TotalTop = DB.Find<Student>(s => true).SortByDescending(s => s.Points).Limit(10).ToEnumerable()
+                    .Select(s => new TopStudent { UserName = s.DisplayName, CityId = s.CityId, Points = s.Points, School = s.SchoolName }).ToList(),
+                TopOnBase = DB.Find<Student>(s => s.Grade == me.Grade).SortByDescending(s => s.Points).Limit(10).ToEnumerable()
+                    .Select(s => new TopStudent { UserName = s.DisplayName, CityId = s.CityId, Points = s.Points, School = s.SchoolName }).ToList(),
+            };
+            return new DataResponse<ScoresData>
+            {
+                Success = true,
+                Data = data
+            };
+        }
+
+        public ActionResult<DataResponse<List<CoinTransaction>>> MyCoinTransactions([FromHeader] Guid token)
+        {
+            Student me = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            if (me == null)
+                return Unauthorized();
+            return new DataResponse<List<CoinTransaction>>
+            {
+                Success = true,
+                Data = me.CoinTransactions.OrderByDescending(t => t.Date).Take(100).ToList()
+            };
         }
     }
 }

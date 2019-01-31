@@ -38,8 +38,10 @@ namespace BaltazarWeb.Controllers
             };
             DB.Save(log);
 
-            if(student != null)
+            if (student != null)
+            {
                 student.Password = null;
+            }
             return new DataResponse<CommonData>
             {
                 Success = true,

@@ -42,6 +42,17 @@ namespace BaltazarWeb.Models
         public Guid Token { get; set; }
         [Display(Name = "تعداد سکه ها")]
         public int Coins { get; set; }
+
+        [Display(Name = "امتیاز")]
+        public int Points { get; set; }
+
+        [Display(Name = "امتیاز از لیگ")]
+        public int PointsFromLeague { get; set; }
+
+        [Display(Name = "امتیاز از سایر سوالات")]
+        public int PointsFromOtherQuestions { get; set; }
+
+        [JsonIgnore]
         public List<CoinTransaction> CoinTransactions { get; set; } = new List<CoinTransaction>();
     }
 }
