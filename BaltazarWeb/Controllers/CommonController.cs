@@ -25,7 +25,9 @@ namespace BaltazarWeb.Controllers
 
         public ActionResult<DataResponse<CommonData>> Index([FromHeader] Guid token, [FromQuery] int appVersion, [FromQuery] int androidVersion, [FromQuery] string uuid)
         {
-            Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            Student student = null;
+            if(token != null && token != Guid.Empty)
+                student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             
             var log = new AppUsageLog
             {
