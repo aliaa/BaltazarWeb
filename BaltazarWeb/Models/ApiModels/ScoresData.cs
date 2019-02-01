@@ -36,8 +36,8 @@ namespace BaltazarWeb.Models.ApiModels
             {
                 PersianDate pDate = PersianDateConverter.ToPersianDate(DateTime.Now);
                 int currentMonth = pDate.Month;
-                int currentSeason = (currentMonth - 1) / 4 + 1;
-                return pDate.Year + "S" + currentSeason;
+                int currentSeason1Based = (currentMonth - 1) / 3 + 1;
+                return pDate.Year + "S" + currentSeason1Based;
             }
         }
     }

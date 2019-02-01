@@ -17,6 +17,7 @@ namespace BaltazarWeb.Models
             AnswerBaltazar,
             Buy,
             InviteFriend,
+            ProfileCompletion,
         }
 
         public int Amount { get; set; }

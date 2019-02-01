@@ -125,20 +125,57 @@ namespace BaltazarWeb.Controllers
             if (st == null)
                 return Unauthorized();
 
+            int updateCount = 0;
             if (!string.IsNullOrWhiteSpace(update.Address))
+            {
                 st.Address = update.Address;
+                updateCount++;
+            }
             if (update.CityId != ObjectId.Empty)
+            {
                 st.CityId = update.CityId;
+                updateCount++;
+            }
             if (!string.IsNullOrWhiteSpace(update.FirstName))
                 st.FirstName = update.FirstName;
             if (!string.IsNullOrWhiteSpace(update.LastName))
                 st.LastName = update.LastName;
             if (!string.IsNullOrWhiteSpace(update.SchoolName))
+            {
                 st.SchoolName = update.SchoolName;
+                updateCount++;
+            }
+            if(!string.IsNullOrEmpty(update.SchoolPhone))
+            {
+                st.SchoolPhone = update.SchoolPhone;
+                updateCount++;
+            }
+            if(update.BirthDate.Year > 1900)
+            {
+                st.BirthDate = update.BirthDate;
+                updateCount++;
+            }
+            if (!string.IsNullOrWhiteSpace(update.NickName))
+                st.NickName = update.NickName;
             if (update.StudyFieldId != ObjectId.Empty)
                 st.StudyFieldId = update.StudyFieldId;
+            if(update.Grade > 0)
+                st.Grade = update.Grade;
+            if (update.Gender != Student.GenderEnum.Unspecified)
+            {
+                updateCount++;
+                st.Gender = update.Gender;
+            }
+
+            string message = null;
+            if (updateCount >= 6 && !st.CoinTransactions.Any(t => t.Type == CoinTransaction.TransactionType.ProfileCompletion))
+            {
+                st.Coins += Consts.PROFILE_COMPLETE_PRIZE;
+                st.CoinTransactions.Add(new CoinTransaction { Amount = Consts.PROFILE_COMPLETE_PRIZE, Type = CoinTransaction.TransactionType.ProfileCompletion });
+                message = "اطلاعات با موفقیت ذخیره شد و مقدار " + Consts.PROFILE_COMPLETE_PRIZE + " سکه به شما تعلق یافت!";
+            }
             DB.Save(st);
-            return new DataResponse<Student> { Success = true, Data = st };
+            return new DataResponse<Student> { Success = true, Data = st, Message = message };
         }
 
         public ActionResult<DataResponse<Student>> Login(string phone, string password)
@@ -158,8 +195,8 @@ namespace BaltazarWeb.Controllers
         {
             PersianDate pDate = PersianDateConverter.ToPersianDate(DateTime.Now);
             int currentMonth = pDate.Month;
-            int currentSeason = (currentMonth - 1) / 4;
-            DateTime festivalStart = PersianDateConverter.ToGregorianDateTime(new PersianDate(pDate.Year, month: currentSeason * 4 + 1, day: 1));
+            int currentSeason0Based = (currentMonth - 1) / 3;
+            DateTime festivalStart = PersianDateConverter.ToGregorianDateTime(new PersianDate(pDate.Year, month: currentSeason0Based * 3 + 1, day: 1));
 
             Student me = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (me == null)
@@ -171,7 +208,7 @@ namespace BaltazarWeb.Controllers
             data.MyAllTimePoints = me.TotalPoints;
             data.MyAllTimeTotalScore = DB.Count<Student>(s => s.TotalPoints > me.TotalPoints) + 1;
 
-            data.FestivalName = SEASONAL_FESTIVAL_NAMES[currentSeason];
+            data.FestivalName = SEASONAL_FESTIVAL_NAMES[currentSeason0Based];
             var myFestival = me.FestivalPoints.FirstOrDefault(f => f.FestivalName == currentFestival);
             data.MyFestivalPoints = myFestival != null ? myFestival.Points : 0;
             data.MyFestivalPointsFromLeague = myFestival != null ? myFestival.PointsFromLeague : 0;

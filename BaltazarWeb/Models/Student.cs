@@ -16,6 +16,7 @@ namespace BaltazarWeb.Models
     {
         public enum GenderEnum
         {
+            Unspecified,
             Male,
             Female
         }
@@ -68,6 +69,9 @@ namespace BaltazarWeb.Models
         [Display(Name = "مدرسه")]
         public string SchoolName { get; set; }
 
+        [Display(Name = "تلفن مدرسه")]
+        public string SchoolPhone { get; set; }
+
         public Guid Token { get; set; }
 
         [Display(Name = "تعداد سکه ها")]
@@ -87,6 +91,11 @@ namespace BaltazarWeb.Models
 
         [Display(Name = "کد دعوت وارد شده")]
         public string InvitedFromCode { get; set; }
+
+        [Display(Name = "تاریخ تولد")]
+        public DateTime BirthDate { get; set; }
+
+
 
         [JsonIgnore]
         public List<CoinTransaction> CoinTransactions { get; set; } = new List<CoinTransaction>();
