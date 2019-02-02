@@ -198,6 +198,22 @@ namespace BaltazarWeb.Controllers
                         a.PublishStatus == BaseUserContent.PublishStatusEnum.Published).ToList();
             }
             return new DataResponse<List<Question>> { Success = true, Data = list };
-        }        
+        }
+
+        [HttpDelete]
+        [Route("Question/{id}")]
+        public ActionResult<CommonResponse> Delete([FromHeader] Guid token, [FromRoute] string id)
+        {
+            Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            if (student == null)
+                return Unauthorized();
+            Question question = DB.FindById<Question>(id);
+            if (question.UserId != student.Id)
+                return new CommonResponse { Message = "این سوال شما نیست!" };
+            if (question.PublishStatus != BaseUserContent.PublishStatusEnum.WaitForApprove)
+                return new CommonResponse { Message = "این سوال قبلا منتشر شده یا رد شده است!" };
+            DB.DeleteOne(question);
+            return new CommonResponse { Success = true, Message = "سوال حذف شد!" };
+        }
     }
 }
