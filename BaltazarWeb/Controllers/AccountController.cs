@@ -9,6 +9,7 @@ using BaltazarWeb.Models;
 using BaltazarWeb.Models.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BaltazarWeb.Controllers
@@ -47,6 +48,7 @@ namespace BaltazarWeb.Controllers
                     {
                         foreach (string p in Enum.GetNames(typeof(Permission)))
                             permsStr.Append(p).Append(",");
+                        claims.Add(new Claim("IsAdmin", "true"));
                     }
                     else
                     {
@@ -79,6 +81,12 @@ namespace BaltazarWeb.Controllers
         {
             HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).Wait();
             return RedirectToAction(nameof(HomeController.Index), "Home");
+        }
+
+        [Authorize(policy: "Admin")]
+        public IActionResult Manage()
+        {
+            return View();
         }
     }
 }

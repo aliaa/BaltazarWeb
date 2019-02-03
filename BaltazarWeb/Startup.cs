@@ -54,6 +54,7 @@ namespace BaltazarWeb
                         var permClaim = context.User.Claims.FirstOrDefault(c => c.Type == permissionClaimName);
                         return permClaim != null && permClaim.Value.Contains(perm);
                     }));
+                options.AddPolicy("Admin", policy => policy.RequireClaim("IsAdmin"));
             });
 
             services.AddMvc(
