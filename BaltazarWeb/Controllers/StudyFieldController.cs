@@ -11,7 +11,7 @@ using MongoDB.Driver;
 
 namespace BaltazarWeb.Controllers
 {
-    [Authorize]
+    [Authorize(policy: nameof(Permission.ManageCourses))]
     public class StudyFieldController : Controller
     {
         private readonly MongoHelper DB;

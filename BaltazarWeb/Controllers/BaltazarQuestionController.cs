@@ -13,6 +13,7 @@ using MongoDB.Driver;
 
 namespace BaltazarWeb.Controllers
 {
+    [Authorize(policy: nameof(Permission.ManageLeagueQuestions))]
     public class BaltazarQuestionController : Controller
     {
         private readonly MongoHelper DB;
@@ -24,20 +25,17 @@ namespace BaltazarWeb.Controllers
             if (!Directory.Exists(ImageUploadPath))
                 Directory.CreateDirectory(ImageUploadPath);
         }
-
-        [Authorize]
+        
         public IActionResult Index()
         {
             return View(DB.Find<BaltazarQuestion>(_ => true).SortByDescending(q => q.CreateDate).ToEnumerable());
         }
-
-        [Authorize]
+        
         public IActionResult Add()
         {
             return View();
         }
-
-        [Authorize]
+        
         [HttpPost]
         public IActionResult Add(BaltazarQuestion item)
         {
@@ -53,14 +51,12 @@ namespace BaltazarWeb.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-
-        [Authorize]
+        
         public IActionResult Edit(string id)
         {
             return View(DB.FindById<BaltazarQuestion>(id));
         }
-
-        [Authorize]
+        
         [HttpPost]
         public IActionResult Edit(BaltazarQuestion item, string id)
         {
@@ -68,8 +64,7 @@ namespace BaltazarWeb.Controllers
             DB.Save(item);
             return RedirectToAction(nameof(Index));
         }
-
-        [Authorize]
+        
         public IActionResult Delete(string id)
         {
             ObjectId objId = ObjectId.Parse(id);

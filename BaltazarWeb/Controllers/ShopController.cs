@@ -26,19 +26,19 @@ namespace BaltazarWeb.Controllers
                 Directory.CreateDirectory(ImageUploadPath);
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageShops))]
         public IActionResult Index()
         {
             return View(DB.All<ShopItem>());
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageShops))]
         public IActionResult Add()
         {
             return View();
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageShops))]
         [HttpPost]
         public IActionResult Add(ShopItem item)
         {
@@ -55,7 +55,7 @@ namespace BaltazarWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageShops))]
         public IActionResult Delete(string id)
         {
             ObjectId objId = ObjectId.Parse(id);
@@ -66,13 +66,13 @@ namespace BaltazarWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageShops))]
         public IActionResult Edit(string id)
         {
             return View(DB.FindById<ShopItem>(id));
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageShops))]
         [HttpPost]
         public IActionResult Edit(ShopItem item, string id)
         {
@@ -94,7 +94,7 @@ namespace BaltazarWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageShops))]
         [Route("Shop/OrdersList/{status?}")]
         public IActionResult OrdersList(ShopOrder.OrderStatus status = ShopOrder.OrderStatus.WaitForApprove)
         {
@@ -102,14 +102,14 @@ namespace BaltazarWeb.Controllers
             return View(DB.Find<ShopOrder>(o => o.Status == status).ToEnumerable());
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageShops))]
         public IActionResult ApproveOrder(string id)
         {
             DB.UpdateOne<ShopOrder>(o => o.Id == ObjectId.Parse(id), Builders<ShopOrder>.Update.Set(o => o.Status, ShopOrder.OrderStatus.Approved));
             return RedirectToAction(nameof(OrdersList), new { status = ShopOrder.OrderStatus.WaitForApprove });
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageShops))]
         public IActionResult RejectOrder(string id)
         {
             DB.UpdateOne<ShopOrder>(o => o.Id == ObjectId.Parse(id), Builders<ShopOrder>.Update.Set(o => o.Status, ShopOrder.OrderStatus.Rejected));

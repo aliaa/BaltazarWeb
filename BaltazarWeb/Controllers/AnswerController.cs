@@ -26,13 +26,13 @@ namespace BaltazarWeb.Controllers
                 Directory.CreateDirectory(ImageUploadPath);
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ViewContent))]
         public IActionResult ApproveList()
         {
             return View(DB.Find<Answer>(a => a.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).SortBy(q => q.CreateDate).ToEnumerable());
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ApproveContent))]
         public IActionResult Accept(string id)
         {
             ObjectId objId = ObjectId.Parse(id);
@@ -40,7 +40,7 @@ namespace BaltazarWeb.Controllers
             return RedirectToAction(nameof(ApproveList));
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ApproveContent))]
         public IActionResult Reject(string id)
         {
             ObjectId objId = ObjectId.Parse(id);
@@ -48,7 +48,7 @@ namespace BaltazarWeb.Controllers
             return RedirectToAction(nameof(ApproveList));
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ViewContent))]
         public IActionResult Details(string id)
         {
             ObjectId objId = ObjectId.Parse(id);

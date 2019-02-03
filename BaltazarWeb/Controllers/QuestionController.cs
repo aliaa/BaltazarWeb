@@ -28,7 +28,7 @@ namespace BaltazarWeb.Controllers
                 Directory.CreateDirectory(ImageUploadPath);
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ViewContent))]
         public IActionResult Index(BaseUserContent.PublishStatusEnum status)
         {
             var query = DB.Find<Question>(q => q.PublishStatus == status);
@@ -38,8 +38,8 @@ namespace BaltazarWeb.Controllers
                 query = query.SortByDescending(q => q.CreateDate);
             return View(query.ToEnumerable());
         }
-        
-        [Authorize]
+
+        [Authorize(policy: nameof(Permission.ApproveContent))]
         public IActionResult Accept(string id)
         {
             Question question = DB.FindById<Question>(id);
@@ -49,8 +49,8 @@ namespace BaltazarWeb.Controllers
             DB.Save(student);
             return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
         }
-        
-        [Authorize]
+
+        [Authorize(policy: nameof(Permission.ApproveContent))]
         public IActionResult Reject(string id)
         {
             ObjectId objId = ObjectId.Parse(id);
@@ -71,7 +71,7 @@ namespace BaltazarWeb.Controllers
             return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ViewContent))]
         public IActionResult Details(string id)
         {
             ObjectId objId = ObjectId.Parse(id);

@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
-using AliaaCommon.Models;
 using AliaaCommon.MongoDB;
+using BaltazarWeb.Models;
 using BaltazarWeb.Models.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -32,7 +33,7 @@ namespace BaltazarWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                AuthUser user = DB.CheckAuthentication(model.Username, model.Password);
+                AuthUserX user = DB.CheckAuthentication(model.Username, model.Password);
                 if (user != null)
                 {
                     List<Claim> claims = new List<Claim>
@@ -40,6 +41,21 @@ namespace BaltazarWeb.Controllers
                         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                         new Claim(ClaimTypes.Name, user.DisplayName),
                     };
+
+                    StringBuilder permsStr = new StringBuilder();
+                    if (user.IsAdmin)
+                    {
+                        foreach (string p in Enum.GetNames(typeof(Permission)))
+                            permsStr.Append(p).Append(",");
+                    }
+                    else
+                    {
+                        foreach (Permission p in user.Permissions)
+                            permsStr.Append(p).Append(",");
+                    }
+                    claims.Add(new Claim(nameof(Permission), permsStr.ToString()));
+                    
+
                     ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                     ClaimsPrincipal principal = new ClaimsPrincipal(identity);
                     HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal,

@@ -31,25 +31,48 @@
                 <ul class="nav navbar-nav navbar-right">
                     @if (User.Claims.Any())
                     {
-                        <li><a asp-controller="Blog" asp-action="List">مدیریت بلاگ</a></li>
-                        <li><a asp-controller="Shop" asp-action="OrdersList">سفارش ها</a></li>
-                        <li><a asp-controller="Shop" asp-action="Index">فروشگاه</a></li>
-                        <li><a asp-controller="Answer" asp-action="ApproveList">جواب ها</a></li>
-                        <li><a asp-controller="BaltazarQuestion" asp-action="Index">سوالات بالتازار</a></li>
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">سوالات <span class="caret"></span></a>
-                            <ul class="dropdown-menu">
-                                <li><a asp-controller="Question" asp-action="Index" asp-route-status="WaitForApprove">نیاز به تائید</a></li>
-                                <li><a asp-controller="Question" asp-action="Index" asp-route-status="Published">منتشر شده</a></li>
-                                <li><a asp-controller="Question" asp-action="Index" asp-route-status="Rejected">رد شده</a></li>
-                            </ul>
-                        </li>
-                        <li><a asp-controller="Student" asp-action="Index">دانش آموزان</a></li>
-                        <li><a asp-controller="CourseSection" asp-action="Index">سرفصل ها</a></li>
-                        <li><a asp-controller="Course" asp-action="Index">درس ها</a></li>
-                        <li><a asp-controller="StudyField" asp-action="Index">رشته ها</a></li>
-                        <li><a asp-controller="City" asp-action="Index">شهر ها</a></li>
-                        <li><a asp-controller="Province" asp-action="Index">استان ها</a></li>
+                        var perms = User.Claims.First(c => c.Type == nameof(Permission)).Value.Split(',');
+                        if (perms.Contains(nameof(Permission.ManageBlogs)))
+                        {
+                            <li><a asp-controller="Blog" asp-action="List">مدیریت بلاگ</a></li>
+                        }
+                        if (perms.Contains(nameof(Permission.ManageBlogs)))
+                        {
+                            <li><a asp-controller="Shop" asp-action="OrdersList">سفارش ها</a></li>
+                            <li><a asp-controller="Shop" asp-action="Index">فروشگاه</a></li>
+                        }
+                        if (perms.Contains(nameof(Permission.ViewContent)))
+                        {
+                            <li><a asp-controller="Answer" asp-action="ApproveList">جواب ها</a></li>
+
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">سوالات <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-controller="Question" asp-action="Index" asp-route-status="WaitForApprove">نیاز به تائید</a></li>
+                                    <li><a asp-controller="Question" asp-action="Index" asp-route-status="Published">منتشر شده</a></li>
+                                    <li><a asp-controller="Question" asp-action="Index" asp-route-status="Rejected">رد شده</a></li>
+                                </ul>
+                            </li>
+                        }
+                        if (perms.Contains(nameof(Permission.ManageLeagueQuestions)))
+                        {
+                            <li><a asp-controller="BaltazarQuestion" asp-action="Index">سوالات بالتازار</a></li>
+                        }
+                        if (perms.Contains(nameof(Permission.ManageStudents)))
+                        {
+                            <li><a asp-controller="Student" asp-action="Index">دانش آموزان</a></li>
+                        }
+                        if (perms.Contains(nameof(Permission.ManageCourses)))
+                        {
+                            <li><a asp-controller="CourseSection" asp-action="Index">سرفصل ها</a></li>
+                            <li><a asp-controller="Course" asp-action="Index">درس ها</a></li>
+                            <li><a asp-controller="StudyField" asp-action="Index">رشته ها</a></li>
+                        }
+                        if (perms.Contains(nameof(Permission.ManageProvincesAndCities)))
+                        {
+                            <li><a asp-controller="City" asp-action="Index">شهر ها</a></li>
+                            <li><a asp-controller="Province" asp-action="Index">استان ها</a></li>
+                        }
                     }
                     <li><a asp-controller="Home" asp-action="About">درباره ما</a></li>
                     <li><a asp-controller="Home" asp-action="Contact">تماس با ما</a></li>
@@ -62,7 +85,7 @@
                     }
                     else
                     {
-                        <li style="float:right;"><a asp-controller="Account" asp-action="Login">ورود</a></li>
+                        <li style="float:right;"><a asp-controller="Account" asp-action="Login">ورود کارمندان</a></li>
                     }
                 </ul>
             </div>

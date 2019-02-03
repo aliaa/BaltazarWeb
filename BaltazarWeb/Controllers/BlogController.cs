@@ -27,19 +27,19 @@ namespace BaltazarWeb.Controllers
                 Directory.CreateDirectory(ImageUploadPath);
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageBlogs))]
         public IActionResult List()
         {
             return View(DB.Find<Blog>(_ => true).SortByDescending(b => b.DateAdded).ToEnumerable());
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageBlogs))]
         public IActionResult Add()
         {
             return View();
         }
-
-        [Authorize]
+        
+        [Authorize(policy: nameof(Permission.ManageBlogs))]
         [HttpPost]
         public IActionResult Add(Blog item)
         {
@@ -56,13 +56,13 @@ namespace BaltazarWeb.Controllers
             return RedirectToAction(nameof(List));
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageBlogs))]
         public IActionResult Edit(string id)
         {
             return View(DB.FindById<Blog>(id));
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageBlogs))]
         [HttpPost]
         public IActionResult Edit(Blog item, string id)
         {
@@ -80,7 +80,7 @@ namespace BaltazarWeb.Controllers
             return RedirectToAction(nameof(List));
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageBlogs))]
         public IActionResult Delete(string id)
         {
             DB.DeleteOne<Blog>(ObjectId.Parse(id));

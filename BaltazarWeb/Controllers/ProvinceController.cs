@@ -11,7 +11,7 @@ using MongoDB.Driver;
 
 namespace BaltazarWeb.Controllers
 {
-    [Authorize]
+    [Authorize(policy: nameof(Permission.ManageProvincesAndCities))]
     public class ProvinceController : Controller
     {
         private readonly MongoHelper DB;

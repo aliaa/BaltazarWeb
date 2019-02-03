@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AliaaCommon;
 using AliaaCommon.MongoDB;
+using BaltazarWeb.Models;
 using BaltazarWeb.Utils;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -36,14 +37,24 @@ namespace BaltazarWeb
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddAuthentication(
-                CookieAuthenticationDefaults.AuthenticationScheme
-            ).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme,
-                options =>
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).
+                AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
                 {
                     options.LoginPath = "/Account/Login";
                     options.LogoutPath = "/Account/Logout";
                 });
+
+
+            string permissionClaimName = nameof(Permission);
+            services.AddAuthorization(options =>
+            {
+                foreach (string perm in Enum.GetNames(typeof(Permission)))
+                    options.AddPolicy(perm, policy => policy.RequireAssertion(context =>
+                    {
+                        var permClaim = context.User.Claims.FirstOrDefault(c => c.Type == permissionClaimName);
+                        return permClaim != null && permClaim.Value.Contains(perm);
+                    }));
+            });
 
             services.AddMvc(
                     options => options.ModelBinderProviders.Insert(0, new ModelBinderProvider()))

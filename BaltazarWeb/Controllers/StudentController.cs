@@ -24,7 +24,7 @@ namespace BaltazarWeb.Controllers
             this.scoresDataProvider = scoresDataProvider;
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageStudents))]
         public IActionResult Index(string city = null, int page = 0)
         {
             ObjectId cityId;
@@ -36,7 +36,7 @@ namespace BaltazarWeb.Controllers
             return View(list);
         }
 
-        [Authorize]
+        [Authorize(policy: nameof(Permission.ManageStudents))]
         public IActionResult Edit(string id)
         {
             return View(DB.FindById<Student>(id));
