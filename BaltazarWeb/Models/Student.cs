@@ -16,8 +16,11 @@ namespace BaltazarWeb.Models
     {
         public enum GenderEnum
         {
+            [Display(Name = "نامشخص")]
             Unspecified,
+            [Display(Name = "پسر")]
             Male,
+            [Display(Name = "دختر")]
             Female
         }
 

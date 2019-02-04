@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<BaltazarWeb.Models.Student>
+@inject AliaaCommon.MongoDB.MongoHelper DB
 
 @{
     ViewData["Title"] = "لیست دانش آموزان";
@@ -43,7 +44,10 @@
                 @Html.DisplayNameFor(model => model.Grade)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Address)
+                @Html.DisplayNameFor(model => model.StudyFieldId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CityId)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Gender)
@@ -54,6 +58,14 @@
             <th>
                 @Html.DisplayNameFor(model => model.Coins)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalPoints)
+            </th>
+            <th>سوالات تائید شده</th>
+            <th>سوالات رد شده</th>
+            <th>جوابهای تائید شده</th>
+            <th>جوابهای رد شده</th>
+            <th>جوابهای گزارش شده</th>
         </tr>
     </thead>
     <tbody>
@@ -79,7 +91,10 @@
                 @Html.DisplayFor(modelItem => item.Grade)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Address)
+                @(DB.FindById<StudyField>(item.StudyFieldId)?.Name)
+            </td>
+            <td>
+                @(DB.FindById<City>(item.CityId)?.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Gender)
@@ -89,6 +104,24 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Coins)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalPoints)
+            </td>
+            <td>
+                @(DB.Count<Question>(q => q.UserId == item.Id && q.PublishStatus == BaseUserContent.PublishStatusEnum.Published))
+            </td>
+            <td>
+                @(DB.Count<Question>(q => q.UserId == item.Id && q.PublishStatus == BaseUserContent.PublishStatusEnum.Rejected))
+            </td>
+            <td>
+                @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Accepted))
+            </td>
+            <td>
+                @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Rejected))
+            </td>
+            <td>
+                @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Reported))
             </td>
         </tr>
 }

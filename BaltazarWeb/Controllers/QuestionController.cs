@@ -91,7 +91,7 @@ namespace BaltazarWeb.Controllers
             question.Id = ObjectId.Empty;
             question.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;
             question.UserId = student.Id;
-            question.UserName = student.DisplayName;
+            question.UserName = student.NickName;
             question.HasImage = false;
             question.AcceptedAnswerId = ObjectId.Empty;
             question.Prize = Consts.ANSWER_DEFAULT_PRIZE;
@@ -171,7 +171,7 @@ namespace BaltazarWeb.Controllers
             foreach (var item in list)
             {
                 item.Hot = !DB.Any<Answer>(a => a.QuestionId == item.Id);
-                item.UserName = DB.FindById<Student>(item.UserId).DisplayName;
+                item.UserName = DB.FindById<Student>(item.UserId).NickName;
             }
             var baltazarQuestions = DB.Find<BaltazarQuestion>(q => q.ExpireDate > DateTime.Now && student.Grade >= q.Grade && student.Grade <= q.MaxGrade).ToList();
             Random random = new Random();
