@@ -110,6 +110,9 @@ namespace BaltazarWeb.Controllers
                 inviteSource.Coins += Consts.INVITE_PRIZE;
                 inviteSource.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITE_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
                 DB.Save(inviteSource);
+
+                student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITE_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
+                student.Coins += Consts.INVITE_PRIZE;
             }
             else
                 student.InvitedFromCode = null;
@@ -231,8 +234,14 @@ namespace BaltazarWeb.Controllers
                 Data = data
             };
         }
-
-
+        
+        public ActionResult<DataResponse<Student>> Me([FromHeader] Guid token)
+        {
+            Student me = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            if (me == null)
+                return Unauthorized();
+            return new DataResponse<Student> { Success = true, Data = me };
+        }
 
         public ActionResult<DataResponse<List<CoinTransaction>>> MyCoinTransactions([FromHeader] Guid token)
         {

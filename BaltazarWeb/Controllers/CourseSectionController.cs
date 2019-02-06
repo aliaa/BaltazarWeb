@@ -6,6 +6,7 @@ using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -26,8 +27,19 @@ namespace BaltazarWeb.Controllers
             return View(DB.All<CourseSection>());
         }
 
+        public IEnumerable<SelectListItem> CourseDropdownItems
+        {
+            get
+            {
+                var studyFields = DB.All<StudyField>().ToDictionary(i => i.Id, i => i.Name);
+                return DB.Find<Course>(_ => true).SortBy(c => c.Grade).ThenBy(c => c.StudyFieldId).ThenBy(c => c.Name).ToEnumerable()
+                    .Select(c => new SelectListItem(c.Grade + " - " + (c.StudyFieldId == ObjectId.Empty ? "" : (studyFields[c.StudyFieldId] + " - ")) + c.Name, c.Id.ToString()));
+            }
+        }
+
         public IActionResult Add()
         {
+            ViewData["courses"] = CourseDropdownItems;
             return View();
         }
 
@@ -55,6 +67,7 @@ namespace BaltazarWeb.Controllers
 
         public IActionResult Edit(string id)
         {
+            ViewData["courses"] = CourseDropdownItems;
             return View(DB.FindById<CourseSection>(id));
         }
 
