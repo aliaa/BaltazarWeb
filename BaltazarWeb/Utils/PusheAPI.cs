@@ -70,10 +70,11 @@ namespace BaltazarWeb.Utils
             try
             {
                 var task = client.PostAsJsonAsync(NOTIFICATIONS_URI, data);
-                task.Wait();
+                if (!task.Wait(2000))
+                    return false;
                 var response = task.Result;
                 var readTask = response.Content.ReadAsStringAsync();
-                readTask.Wait();
+                readTask.Wait(1000);
                 return (int)response.StatusCode / 100 == 2;
             }
             catch

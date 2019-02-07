@@ -23,6 +23,7 @@ namespace BaltazarWeb.Controllers
         public AnswerController(MongoHelper DB, IHostingEnvironment env, PusheAPI push)
         {
             this.DB = DB;
+            this.push = push;
             ImageUploadPath = Path.Combine(env.WebRootPath, Consts.UPLOAD_IMAGE_DIR);
             if (!Directory.Exists(ImageUploadPath))
                 Directory.CreateDirectory(ImageUploadPath);
