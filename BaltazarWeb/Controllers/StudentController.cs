@@ -8,6 +8,7 @@ using BaltazarWeb.Utils;
 using FarsiLibrary;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -25,13 +26,18 @@ namespace BaltazarWeb.Controllers
         }
 
         [Authorize(policy: nameof(Permission.ManageStudents))]
-        public IActionResult Index(string city = null, int page = 0)
+        public IActionResult Index(string city = "", int page = 0)
         {
             ObjectId cityId;
             ObjectId.TryParse(city, out cityId);
             var list = DB.Find<Student>(s => s.CityId == cityId).Limit(1000).Skip(page * 1000).ToList();
 
-            ViewBag.Cities = DB.Find<City>(_ => true).SortBy(c => c.ProvinceId).ThenBy(c => c.Name).ToEnumerable();
+            var provinces = DB.All<Province>().ToDictionary(i => i.Id, i => i.Name);
+            List<SelectListItem> cities = new List<SelectListItem>();
+            cities.Add(new SelectListItem("انتخاب نشده", ""));
+            cities.AddRange(DB.Find<City>(_ => true).SortBy(c => c.ProvinceId).ThenBy(c => c.Name).ToEnumerable()
+                .Select(c => new SelectListItem(provinces[c.ProvinceId] + " - " + c.Name, c.Id.ToString())));
+            ViewBag.Cities = cities;
             ViewBag.SelectedCity = city;
             return View(list);
         }

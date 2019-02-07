@@ -4,6 +4,7 @@ using System.Linq;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
 using BaltazarWeb.Models.ApiModels;
+using BaltazarWeb.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -16,9 +17,10 @@ namespace BaltazarWeb.Controllers
     public class AnswerController : Controller
     {
         private readonly MongoHelper DB;
+        private readonly PusheAPI push;
         private readonly string ImageUploadPath;
 
-        public AnswerController(MongoHelper DB, IHostingEnvironment env)
+        public AnswerController(MongoHelper DB, IHostingEnvironment env, PusheAPI push)
         {
             this.DB = DB;
             ImageUploadPath = Path.Combine(env.WebRootPath, Consts.UPLOAD_IMAGE_DIR);
@@ -160,6 +162,10 @@ namespace BaltazarWeb.Controllers
                         festivalPoint.PointsFromOtherQuestions += question.Prize;
                     }
                     DB.Save(answererStudent);
+
+                    if (answererStudent.PusheId != null)
+                        push.SendMessageToUser("تائید جواب شما", 
+                            "تبریک! جواب شما برای یک سوال از طرف سوال کننده تائید شده و " + question.Prize + " امتیاز به شما تعلق یافت!", answererStudent.PusheId);
                 }
             }
 

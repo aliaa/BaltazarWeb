@@ -23,7 +23,7 @@ namespace BaltazarWeb.Controllers
             this.DB = DB;
         }
 
-        public ActionResult<DataResponse<CommonData>> Index([FromHeader] Guid token, [FromQuery] int appVersion, [FromQuery] int androidVersion, [FromQuery] string uuid)
+        public ActionResult<DataResponse<CommonData>> Index([FromHeader] Guid token, [FromQuery] int appVersion, [FromQuery] int androidVersion, [FromQuery] string uuid, [FromQuery] string pusheId)
         {
             Student student = null;
             if(token != null && token != Guid.Empty)
@@ -40,6 +40,11 @@ namespace BaltazarWeb.Controllers
 
             if (student != null)
             {
+                if (student.PusheId != pusheId)
+                {
+                    student.PusheId = pusheId;
+                    DB.UpdateOne(s => s.Id == student.Id, Builders<Student>.Update.Set(s => s.PusheId, pusheId));
+                }
                 student.Password = null;
             }
             return new DataResponse<CommonData>

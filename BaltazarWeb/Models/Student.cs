@@ -98,6 +98,8 @@ namespace BaltazarWeb.Models
         [Display(Name = "تاریخ تولد")]
         public DateTime BirthDate { get; set; }
 
+        [Display(Name = "آیدی پوشه")]
+        public string PusheId { get; set; }
 
 
         [JsonIgnore]

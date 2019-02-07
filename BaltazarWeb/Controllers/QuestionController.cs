@@ -5,6 +5,7 @@ using System.Linq;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
 using BaltazarWeb.Models.ApiModels;
+using BaltazarWeb.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -17,12 +18,14 @@ namespace BaltazarWeb.Controllers
     public class QuestionController : Controller
     {
         private readonly MongoHelper DB;
+        private readonly PusheAPI push;
         private readonly string ImageUploadPath;
         private const int PAGE_SIZE = 200;
 
-        public QuestionController(MongoHelper DB, IHostingEnvironment env)
+        public QuestionController(MongoHelper DB, IHostingEnvironment env, PusheAPI push)
         {
             this.DB = DB;
+            this.push = push;
             ImageUploadPath = Path.Combine(env.WebRootPath, Consts.UPLOAD_IMAGE_DIR);
             if (!Directory.Exists(ImageUploadPath))
                 Directory.CreateDirectory(ImageUploadPath);
@@ -47,6 +50,8 @@ namespace BaltazarWeb.Controllers
             DB.Save(question);
             Student student = DB.FindById<Student>(question.UserId);
             DB.Save(student);
+            if(student.PusheId != null)
+                push.SendMessageToUser("تائید سوال شما", "سوال شما تائید و منتشر شد!", student.PusheId);
             return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
         }
 
@@ -67,6 +72,8 @@ namespace BaltazarWeb.Controllers
                     student.Coins += Math.Abs(transaction.Amount);
                     DB.Save(student);
                 }
+                if (student.PusheId != null)
+                    push.SendMessageToUser("رد سوال شما", "متاسفانه سوال شما برای انتشار رد شد!", student.PusheId);
             }
             return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
         }

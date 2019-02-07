@@ -10,13 +10,7 @@
 <form asp-action="Index">
     <p style="margin:10px; text-align:center;">
         شهر: 
-        <select id="city" name="city" onchange="document.forms[0].submit();">
-            <option value="">انتخاب نشده</option>
-            @foreach(City city in ViewBag.Cities)
-            {
-                <option value="@city.Id.ToString()">@city.Name</option>
-            }
-        </select>
+        <select id="city" name="city" onchange="document.forms[0].submit();" asp-items="ViewBag.Cities"></select>
         <script type="text/javascript">
             window.onload = function() {
                 $("#city").val("@ViewBag.SelectedCity");
@@ -24,106 +18,113 @@
         </script>
     </p>
 </form>
-<table class="table">
-    <thead>
-        <tr>
-            <th></th>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Phone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Password)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Grade)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StudyFieldId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CityId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Gender)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SchoolName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Coins)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TotalPoints)
-            </th>
-            <th>سوالات تائید شده</th>
-            <th>سوالات رد شده</th>
-            <th>جوابهای تائید شده</th>
-            <th>جوابهای رد شده</th>
-            <th>جوابهای گزارش شده</th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.ActionLink("ویرایش", "Edit", new { id = item.Id.ToString() }) |
-                @Html.ActionLink("غیر فعال سازی", "Disable", new { id = item.Id.ToString() })
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Phone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Password)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Grade)
-            </td>
-            <td>
-                @(DB.FindById<StudyField>(item.StudyFieldId)?.Name)
-            </td>
-            <td>
-                @(DB.FindById<City>(item.CityId)?.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Gender)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SchoolName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Coins)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalPoints)
-            </td>
-            <td>
-                @(DB.Count<Question>(q => q.UserId == item.Id && q.PublishStatus == BaseUserContent.PublishStatusEnum.Published))
-            </td>
-            <td>
-                @(DB.Count<Question>(q => q.UserId == item.Id && q.PublishStatus == BaseUserContent.PublishStatusEnum.Rejected))
-            </td>
-            <td>
-                @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Accepted))
-            </td>
-            <td>
-                @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Rejected))
-            </td>
-            <td>
-                @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Reported))
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<div style="width:120%">
+    <table class="table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Phone)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Password)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Grade)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StudyFieldId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CityId)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Gender)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SchoolName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Coins)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TotalPoints)
+                </th>
+                <th>سوالات تائید شده</th>
+                <th>سوالات رد شده</th>
+                <th>جوابهای تائید شده</th>
+                <th>جوابهای رد شده</th>
+                <th>جوابهای گزارش شده</th>
+            </tr>
+        </thead>
+        <tbody>
+    @foreach (var item in Model) {
+            <tr>
+                <td>
+                    @Html.ActionLink("ویرایش", "Edit", new { id = item.Id.ToString() }) |
+                    @Html.ActionLink("غیر فعال سازی", "Disable", new { id = item.Id.ToString() })
+                    @if (item.PusheId != null)
+                    {
+                        <span> | </span>
+                        @Html.ActionLink("ارسال اعلان", "SendNew", "Push", new { pusheId = item.PusheId })
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Phone)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Password)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Grade)
+                </td>
+                <td>
+                    @(DB.FindById<StudyField>(item.StudyFieldId)?.Name)
+                </td>
+                <td>
+                    @(DB.FindById<City>(item.CityId)?.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Gender)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SchoolName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Coins)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalPoints)
+                </td>
+                <td>
+                    @(DB.Count<Question>(q => q.UserId == item.Id && q.PublishStatus == BaseUserContent.PublishStatusEnum.Published))
+                </td>
+                <td>
+                    @(DB.Count<Question>(q => q.UserId == item.Id && q.PublishStatus == BaseUserContent.PublishStatusEnum.Rejected))
+                </td>
+                <td>
+                    @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Accepted))
+                </td>
+                <td>
+                    @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Rejected))
+                </td>
+                <td>
+                    @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Reported))
+                </td>
+            </tr>
+    }
+        </tbody>
+    </table>
+</div>
