@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BaltazarWeb.Utils
 {
-    public class PusheAPI
+    public class PusheAPI : IPushNotificationProvider
     {
         class MessageData
         {

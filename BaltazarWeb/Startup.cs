@@ -77,8 +77,8 @@ namespace BaltazarWeb
             services.AddSingleton(DB);
             services.AddSingleton(new ScoresDataProvider(DB));
 
-            PusheAPI pusheAPI = new PusheAPI(Configuration.GetValue<string>("PusheToken"), Configuration.GetValue<string>("AndroidPackage"));
-            services.AddSingleton(pusheAPI);
+            IPushNotificationProvider pusheAPI = new PusheAPI(Configuration.GetValue<string>("PusheToken"), Configuration.GetValue<string>("AndroidPackage"));
+            services.AddSingleton(typeof(IPushNotificationProvider), pusheAPI);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

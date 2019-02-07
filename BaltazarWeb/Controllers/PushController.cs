@@ -15,11 +15,11 @@ namespace BaltazarWeb.Controllers
     public class PushController : Controller
     {
         private readonly MongoHelper DB;
-        private readonly PusheAPI push;
-        public PushController(MongoHelper DB, PusheAPI push)
+        private readonly IPushNotificationProvider pushProvider;
+        public PushController(MongoHelper DB, IPushNotificationProvider pushProvider)
         {
             this.DB = DB;
-            this.push = push;
+            this.pushProvider = pushProvider;
         }
         
         public IActionResult SendNew(string pusheId = null)
@@ -36,12 +36,12 @@ namespace BaltazarWeb.Controllers
         {
             bool result;
             if (string.IsNullOrEmpty(data.SpecificUserPusheId))
-                result = push.SendMessageToAll(data.Title, data.Content);
+                result = pushProvider.SendMessageToAll(data.Title, data.Content);
             else
             {
                 var users = new List<string>();
                 users.AddRange(data.SpecificUserPusheId.Split(";"));
-                result = push.SendMessageToUsers(data.Title, data.Content, users);
+                result = pushProvider.SendMessageToUsers(data.Title, data.Content, users);
             }
             ViewData["result"] = result;
             return View();

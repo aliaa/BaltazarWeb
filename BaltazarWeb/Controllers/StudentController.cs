@@ -18,11 +18,13 @@ namespace BaltazarWeb.Controllers
     {
         private readonly MongoHelper DB;
         private readonly ScoresDataProvider scoresDataProvider;
+        private readonly IPushNotificationProvider pushProvider;
 
-        public StudentController(MongoHelper DB, ScoresDataProvider scoresDataProvider)
+        public StudentController(MongoHelper DB, ScoresDataProvider scoresDataProvider, IPushNotificationProvider pushProvider)
         {
             this.DB = DB;
             this.scoresDataProvider = scoresDataProvider;
+            this.pushProvider = pushProvider;
         }
 
         [Authorize(policy: nameof(Permission.ManageStudents))]
@@ -116,6 +118,10 @@ namespace BaltazarWeb.Controllers
                 inviteSource.Coins += Consts.INVITE_PRIZE;
                 inviteSource.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITE_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
                 DB.Save(inviteSource);
+                if (inviteSource.PusheId != null)
+                    pushProvider.SendMessageToUser("سکه بالتازار!", 
+                        "تبریک! یکی از دوستان شما با وارد کردن کد دعوت شما عضو بالتازار شد و " + Consts.INVITE_PRIZE + " سکه به شما تعلق یافت!", 
+                        inviteSource.PusheId);
 
                 student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITE_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
                 student.Coins += Consts.INVITE_PRIZE;

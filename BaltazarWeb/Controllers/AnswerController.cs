@@ -17,13 +17,13 @@ namespace BaltazarWeb.Controllers
     public class AnswerController : Controller
     {
         private readonly MongoHelper DB;
-        private readonly PusheAPI push;
+        private readonly IPushNotificationProvider pushProvider;
         private readonly string ImageUploadPath;
 
-        public AnswerController(MongoHelper DB, IHostingEnvironment env, PusheAPI push)
+        public AnswerController(MongoHelper DB, IHostingEnvironment env, IPushNotificationProvider pushProvider)
         {
             this.DB = DB;
-            this.push = push;
+            this.pushProvider = pushProvider;
             ImageUploadPath = Path.Combine(env.WebRootPath, Consts.UPLOAD_IMAGE_DIR);
             if (!Directory.Exists(ImageUploadPath))
                 Directory.CreateDirectory(ImageUploadPath);
@@ -165,8 +165,9 @@ namespace BaltazarWeb.Controllers
                     DB.Save(answererStudent);
 
                     if (answererStudent.PusheId != null)
-                        push.SendMessageToUser("تائید جواب شما", 
-                            "تبریک! جواب شما برای یک سوال از طرف سوال کننده تائید شده و " + question.Prize + " امتیاز به شما تعلق یافت!", answererStudent.PusheId);
+                        pushProvider.SendMessageToUser("تائید جواب شما", 
+                            "تبریک! جواب شما برای یک سوال از طرف سوال کننده تائید شده و " + question.Prize + " امتیاز به شما تعلق یافت!", 
+                            answererStudent.PusheId);
                 }
             }
 

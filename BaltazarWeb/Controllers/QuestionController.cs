@@ -18,14 +18,14 @@ namespace BaltazarWeb.Controllers
     public class QuestionController : Controller
     {
         private readonly MongoHelper DB;
-        private readonly PusheAPI push;
+        private readonly IPushNotificationProvider pushProvider;
         private readonly string ImageUploadPath;
         private const int PAGE_SIZE = 200;
 
-        public QuestionController(MongoHelper DB, IHostingEnvironment env, PusheAPI push)
+        public QuestionController(MongoHelper DB, IHostingEnvironment env, IPushNotificationProvider pushProvider)
         {
             this.DB = DB;
-            this.push = push;
+            this.pushProvider = pushProvider;
             ImageUploadPath = Path.Combine(env.WebRootPath, Consts.UPLOAD_IMAGE_DIR);
             if (!Directory.Exists(ImageUploadPath))
                 Directory.CreateDirectory(ImageUploadPath);
@@ -51,7 +51,7 @@ namespace BaltazarWeb.Controllers
             Student student = DB.FindById<Student>(question.UserId);
             DB.Save(student);
             if(student.PusheId != null)
-                push.SendMessageToUser("تائید سوال شما", "سوال شما تائید و منتشر شد!", student.PusheId);
+                pushProvider.SendMessageToUser("تائید سوال شما", "سوال شما تائید و منتشر شد!", student.PusheId);
             return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
         }
 
@@ -73,7 +73,7 @@ namespace BaltazarWeb.Controllers
                     DB.Save(student);
                 }
                 if (student.PusheId != null)
-                    push.SendMessageToUser("رد سوال شما", "متاسفانه سوال شما برای انتشار رد شد!", student.PusheId);
+                    pushProvider.SendMessageToUser("رد سوال شما", "متاسفانه سوال شما برای انتشار رد شد!", student.PusheId);
             }
             return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
         }
