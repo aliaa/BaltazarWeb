@@ -8,47 +8,42 @@
 <h2>مدیریت کاربران</h2>
 
 <hr />
-<div>
-    کاربر:
-    <select asp-for="Id" asp-items="DB.All<AuthUserX>().Select(u => new SelectListItem(u.DisplayName, u.Id.ToString()))" ></select>
-</div>
+
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3">
         <form asp-action="Manage">
+            <div class="form-group">
+                کاربر:
+                <select asp-for="Id" asp-items="ViewBag.Users" onchange="document.forms[0].submit();"></select>
+            </div>
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Username" class="control-label"></label>
+                نام کاربری:
                 <input asp-for="Username" class="form-control" />
                 <span asp-validation-for="Username" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="IsAdmin"></label>@Html.DisplayFor(m => m.IsAdmin)
+                ادمین است @Html.DisplayFor(m => m.IsAdmin)
             </div>
             <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
+                نام:
                 <input asp-for="FirstName" class="form-control" />
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
+                نام خانوادگی:
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <div class="checkbox">
-                    <label>
-                        <input asp-for="Disabled" /> @Html.DisplayNameFor(model => model.Disabled)
+                    <label dir="ltr">
+                        <input asp-for="Disabled" /> کاربر غیر فعال
                     </label>
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="DisplayName" class="control-label"></label>
-                <input asp-for="DisplayName" class="form-control" />
-                <span asp-validation-for="DisplayName" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <input type="submit" value="ذخیره" class="btn btn-default" />
+                <input type="submit" value="ذخیره" class="btn btn-default" asp-action="SaveUser" />
             </div>
         </form>
     </div>
