@@ -50,3 +50,17 @@ body {
 th {
     text-align: right;
 }
+
+.checkboxlist {
+    border: 1px solid #ccc;
+    padding: 10px 15px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.checkboxlist label {
+    display: block;
+    margin-bottom: 10px;
+}

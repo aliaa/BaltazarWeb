@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace BaltazarWeb.Controllers
@@ -86,27 +87,35 @@ namespace BaltazarWeb.Controllers
         }
 
         [Authorize(policy: "Admin")]
-        public IActionResult Manage(string id)
+        public IActionResult Manage(ManageAccountsViewModel model)
         {
             List<SelectListItem> dropdownItems = new List<SelectListItem>();
             dropdownItems.Add(new SelectListItem("- انتخاب کنید -", ""));
             dropdownItems.AddRange(DB.All<AuthUserX>().Select(u => new SelectListItem(u.DisplayName, u.Id.ToString())));
             ViewBag.Users = dropdownItems;
-            if(!string.IsNullOrEmpty(id))
-                return View(DB.FindById<AuthUserX>(id));
+
+            if (!string.IsNullOrEmpty(model.Id))
+            {
+                model.Initialize();
+                model.User = DB.FindById<AuthUserX>(model.Id);
+                return View(model);
+            }
             return View();
         }
 
         [Authorize(policy: "Admin")]
         [HttpPost]
-        public IActionResult SaveUser(AuthUserX user)
+        public IActionResult SaveUser(ManageAccountsViewModel model)
         {
-            DB.UpdateOne(u => u.Id == user.Id, 
+            model.SetUserData();
+            var user = model.User;
+            DB.UpdateOne(u => u.Id == user.Id,
                 Builders<AuthUserX>.Update.Set(u => u.Disabled, user.Disabled)
                     .Set(u => u.FirstName, user.FirstName)
                     .Set(u => u.LastName, user.LastName)
-                    .Set(u => u.Username, user.Username));
-            return RedirectToAction(nameof(Manage), new { id = user.Id });
+                    .Set(u => u.Username, user.Username)
+                    .Set(u => u.Permissions, user.Permissions));
+            return RedirectToAction(nameof(Manage), new { user.Id });
         }
     }
 }

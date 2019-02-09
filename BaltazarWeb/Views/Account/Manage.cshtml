@@ -1,4 +1,4 @@
-﻿@model BaltazarWeb.Models.AuthUserX
+﻿@model ManageAccountsViewModel
 @inject AliaaCommon.MongoDB.MongoHelper DB
 
 @{
@@ -16,35 +16,42 @@
                 کاربر:
                 <select asp-for="Id" asp-items="ViewBag.Users" onchange="document.forms[0].submit();"></select>
             </div>
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                نام کاربری:
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                ادمین است @Html.DisplayFor(m => m.IsAdmin)
-            </div>
-            <div class="form-group">
-                نام:
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                نام خانوادگی:
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <div class="checkbox">
-                    <label dir="ltr">
-                        <input asp-for="Disabled" /> کاربر غیر فعال
-                    </label>
+            @if (Model != null)
+            {
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    نام کاربری:
+                    <input asp-for="User.Username" class="form-control" />
+                    <span asp-validation-for="User.Username" class="text-danger"></span>
                 </div>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="ذخیره" class="btn btn-default" asp-action="SaveUser" />
-            </div>
+                <div class="form-group">
+                    @Html.DisplayFor(m => m.User.IsAdmin) ادمین است
+                </div>
+                <div class="form-group">
+                    نام:
+                    <input asp-for="User.FirstName" class="form-control" />
+                    <span asp-validation-for="User.FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    نام خانوادگی:
+                    <input asp-for="User.LastName" class="form-control" />
+                    <span asp-validation-for="User.LastName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <label>
+                            <input asp-for="User.Disabled" /> کاربر غیر فعال
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div>اجازه ها:</div>
+                    <div asp-checkboxlist="Model.Permissions" asp-modelname="Permissions"></div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="ذخیره" class="btn btn-default" asp-action="SaveUser" />
+                </div>
+            }
         </form>
     </div>
 </div>
