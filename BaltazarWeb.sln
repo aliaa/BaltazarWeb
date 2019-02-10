@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaltazarWeb", "BaltazarWeb\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AliaaCommon", "..\AliaaCommon\AliaaCommon\AliaaCommon.csproj", "{10666660-095D-4878-99CF-3E5CAB5B575A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManualWorks", "ManualWorks\ManualWorks.csproj", "{E6694590-7052-412B-B96A-78410F18802C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ManualWorks", "ManualWorks\ManualWorks.csproj", "{E6694590-7052-412B-B96A-78410F18802C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

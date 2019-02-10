@@ -37,7 +37,7 @@
                         string[] permsArr = perms.Split(',');
                         @if(User.HasClaim("IsAdmin", "true"))
                         {
-                            <li><a asp-controller="Account" asp-action="Manage">مدیریت کاربران</a></li>
+                            <li><a asp-controller="Account" asp-action="List">مدیریت کاربران</a></li>
                         }
                         @if (permsArr.Contains(nameof(Permission.SendPush)))
                         {

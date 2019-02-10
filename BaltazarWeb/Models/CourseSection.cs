@@ -14,6 +14,7 @@ namespace BaltazarWeb.Models
         public ObjectId CourseId { get; set; }
 
         [Display(Name = "نام سرفصل")]
+        [Required]
         public string Name { get; set; }
     }
 }

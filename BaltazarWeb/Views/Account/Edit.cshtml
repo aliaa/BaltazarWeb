@@ -1,0 +1,55 @@
+﻿@model BaltazarWeb.Models.ViewModels.AccountViewModel
+
+@{
+    ViewData["Title"] = "ویرایش کاربر";
+}
+
+<h2>ویرایش کاربر</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input asp-for="User.Id" type="hidden" />
+            <div class="form-group">
+                نام کاربری:
+                <input asp-for="User.Username" class="form-control" />
+                <span asp-validation-for="User.Username" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                رمز عبور (برای عدم تغییر خالی بگذارید):
+                <input asp-for="Password" class="form-control" type="password" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                نام:
+                <input asp-for="User.FirstName" class="form-control" />
+                <span asp-validation-for="User.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                نام خانوادگی:
+                <input asp-for="User.LastName" class="form-control" />
+                <span asp-validation-for="User.LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <div>
+                    <label>
+                        <input asp-for="User.Disabled" /> غیرفعال شده
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div>اجازه ها:</div>
+                <div asp-checkboxlist="Model.SelectablePermissions" asp-modelname="SelectablePermissions"></div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="ذخیره" class="btn btn-default" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="List">برگشت به لیست</a>
+</div>

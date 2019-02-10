@@ -31,6 +31,7 @@ namespace BaltazarWeb.Models
         public ObjectId UserId { get; set; }
 
         [BsonIgnore]
+        [Required]
         public string UserName { get; set; }
 
         [Display(Name = "تاریخ ایجاد")]

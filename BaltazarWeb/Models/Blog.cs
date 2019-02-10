@@ -17,9 +17,11 @@ namespace BaltazarWeb.Models
         public DateTime DateAdded { get; set; } = DateTime.Now;
 
         [Display(Name = "موضوع")]
+        [Required]
         public string Title { get; set; }
 
         [Display(Name = "محتوا")]
+        [Required]
         public string HtmlContent { get; set; }
         
         public bool HasImage { get; set; }

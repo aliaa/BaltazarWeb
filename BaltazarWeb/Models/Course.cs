@@ -18,6 +18,7 @@ namespace BaltazarWeb.Models
         public ObjectId StudyFieldId { get; set; }
 
         [Display(Name = "نام")]
+        [Required]
         public string Name { get; set; }
     }
 }
