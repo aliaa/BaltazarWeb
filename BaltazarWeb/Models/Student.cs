@@ -33,15 +33,18 @@ namespace BaltazarWeb.Models
         }
 
         [Display(Name = "نام")]
+        [Required]
         public string FirstName { get; set; }
 
         [Display(Name = "نام خانوادگی")]
+        [Required]
         public string LastName { get; set; }
 
         [Display(Name = "نام و نام خانوادگی")]
         public string DisplayName => FirstName + " " + LastName;
 
         [Display(Name = "نام مستعار")]
+        [Required]
         public string NickName { get; set; }
 
         [Display(Name = "تاریخ ثبت نام")]
@@ -50,11 +53,15 @@ namespace BaltazarWeb.Models
         public int MembershipDurationDays => (int)(DateTime.Now - RegistrationDate).TotalDays;
 
         [Display(Name = "شماره همراه")]
+        [Required]
+        [RegularExpression("^09\\d{9}$")]
         public string Phone { get; set; }
 
+        [Required]
         public string Password { get; set; }
 
         [Display(Name = "مقطع تحصیلی")]
+        [Range(minimum:1, maximum:12)]
         public int Grade { get; set; }
 
         [Display(Name = "رشته")]

@@ -10,6 +10,7 @@ namespace BaltazarWeb.Models
     public class Province : MongoEntity
     {
         [Display(Name = "نام")]
+        [Required]
         public string Name { get; set; }
     }
 }

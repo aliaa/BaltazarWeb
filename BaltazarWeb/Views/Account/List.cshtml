@@ -1,0 +1,52 @@
+﻿@model IEnumerable<BaltazarWeb.Models.AuthUserX>
+
+@{
+    ViewData["Title"] = "لیست کاربران";
+}
+
+<h2>لیست کاربران</h2>
+
+<p>
+    <a asp-action="Add">ایجاد</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>نام کاربری</th>
+            <th>مدیر است</th>
+            <th>نام</th>
+            <th>نام خانوادگی</th>
+            <th>غیر فعال است</th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.ActionLink("ویرایش", "Edit", new { id = item.Id.ToString() })
+                @if (!item.IsAdmin)
+                {
+                    <span>&nbsp;|&nbsp;</span>
+                    @Html.ActionLink("حذف", "Delete", new { id = item.Id.ToString() })
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Username)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsAdmin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FirstName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LastName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Disabled)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

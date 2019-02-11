@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
 using BaltazarWeb.Models.ViewModels;
@@ -11,8 +9,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace BaltazarWeb.Controllers
@@ -87,35 +83,66 @@ namespace BaltazarWeb.Controllers
         }
 
         [Authorize(policy: "Admin")]
-        public IActionResult Manage(ManageAccountsViewModel model)
+        public IActionResult List()
         {
-            List<SelectListItem> dropdownItems = new List<SelectListItem>();
-            dropdownItems.Add(new SelectListItem("- انتخاب کنید -", ""));
-            dropdownItems.AddRange(DB.All<AuthUserX>().Select(u => new SelectListItem(u.DisplayName, u.Id.ToString())));
-            ViewBag.Users = dropdownItems;
+            return View(DB.All<AuthUserX>());
+        }
 
-            if (!string.IsNullOrEmpty(model.Id))
-            {
-                model.Initialize();
-                model.User = DB.FindById<AuthUserX>(model.Id);
-                return View(model);
-            }
-            return View();
+        [Authorize(policy: "Admin")]
+        public IActionResult Add()
+        {
+            return View(new AccountViewModel());
         }
 
         [Authorize(policy: "Admin")]
         [HttpPost]
-        public IActionResult SaveUser(ManageAccountsViewModel model)
+        public IActionResult Add(AccountViewModel model)
         {
-            model.SetUserData();
-            var user = model.User;
-            DB.UpdateOne(u => u.Id == user.Id,
-                Builders<AuthUserX>.Update.Set(u => u.Disabled, user.Disabled)
-                    .Set(u => u.FirstName, user.FirstName)
-                    .Set(u => u.LastName, user.LastName)
-                    .Set(u => u.Username, user.Username)
-                    .Set(u => u.Permissions, user.Permissions));
-            return RedirectToAction(nameof(Manage), new { user.Id });
+            DB.Save(model.User);
+            return RedirectToAction(nameof(List));
         }
+
+        [Authorize(policy: "Admin")]
+        public IActionResult Edit(string id)
+        {
+            var user = DB.FindById<AuthUserX>(id);
+            var model = new AccountViewModel { User = user };
+            return View(model);
+        }
+
+        [Authorize(policy: "Admin")]
+        [HttpPost]
+        public IActionResult Edit(AccountViewModel model)
+        {
+            if(DB.Any<AuthUserX>(u => u.Username == model.User.Username && u.Id != model.User.Id))
+            {
+                ModelState.AddModelError("Username", "نام کاربری قبلا موجود است!");
+                return View(model);
+            }
+            
+            var update = Builders<AuthUserX>.Update
+                .Set(u => u.Disabled, model.User.Disabled)
+                .Set(u => u.FirstName, model.User.FirstName)
+                .Set(u => u.LastName, model.User.LastName)
+                .Set(u => u.Username, model.User.Username)
+                .Set(u => u.Permissions, model.User.Permissions);
+
+            if (!string.IsNullOrEmpty(model.Password))
+                update = update.Set(u => u.HashedPassword, model.User.HashedPassword);
+
+            DB.UpdateOne(u => u.Id == model.User.Id, update);
+            return RedirectToAction(nameof(List));
+        }
+
+
+        [Authorize(policy: "Admin")]
+        public IActionResult Delete(string id)
+        {
+            var user = DB.FindById<AuthUserX>(id);
+            if(!user.IsAdmin)
+                DB.DeleteOne(user);
+            return RedirectToAction(nameof(List));
+        }
+
     }
 }

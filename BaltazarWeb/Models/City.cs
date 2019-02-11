@@ -14,6 +14,7 @@ namespace BaltazarWeb.Models
         public ObjectId ProvinceId { get; set; }
 
         [Display(Name= "نام")]
+        [Required]
         public string Name { get; set; }
     }
 }
