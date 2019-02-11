@@ -34,5 +34,7 @@ namespace BaltazarWeb.Models
         [Display(Name = "سوال بالتازار")]
         [BsonIgnore]
         public bool FromBaltazar { get; protected set; } = false;
+
+        public int UnseenAnswersCount { get; set; } = 0;
     }
 }

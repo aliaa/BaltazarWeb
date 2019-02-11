@@ -204,6 +204,7 @@ namespace BaltazarWeb.Controllers
                         a.Response == Answer.QuestionerResponseEnum.NotSeen &&
                         a.PublishStatus == BaseUserContent.PublishStatusEnum.Published).ToList();
             }
+
             return new DataResponse<List<Question>> { Success = true, Data = list };
         }
 

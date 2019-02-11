@@ -114,6 +114,13 @@ namespace BaltazarWeb.Models
 
         [JsonIgnore]
         public List<FestivalPoint> FestivalPoints { get; set; } = new List<FestivalPoint>();
+        
+        [JsonIgnore]
+        public DateTime LastBlogVisit { get; set; }
+
+        [JsonIgnore]
+        public DateTime LastShopVisit { get; set; }
+
 
         private static readonly Random random = new Random();
 

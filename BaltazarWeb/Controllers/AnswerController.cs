@@ -38,8 +38,12 @@ namespace BaltazarWeb.Controllers
         [Authorize(policy: nameof(Permission.ApproveContent))]
         public IActionResult Accept(string id)
         {
-            ObjectId objId = ObjectId.Parse(id);
-            DB.UpdateOne(q => q.Id == objId, Builders<Answer>.Update.Set(a => a.PublishStatus, BaseUserContent.PublishStatusEnum.Published));
+            Answer answer = DB.FindById<Answer>(id);
+            if(answer != null)
+            {
+                DB.UpdateOne<Answer>(a => a.Id == answer.Id, Builders<Answer>.Update.Set(a => a.PublishStatus, BaseUserContent.PublishStatusEnum.Published));
+                DB.UpdateOne<Question>(q => q.Id == answer.QuestionId, Builders<Question>.Update.Inc(q => q.UnseenAnswersCount, 1));
+            }
             return RedirectToAction(nameof(ApproveList));
         }
 
@@ -131,7 +135,6 @@ namespace BaltazarWeb.Controllers
                     return new CommonResponse { Success = false, Message = "قبلا جوابی برای این سوال قبول شده است!" };
 
                 question.AcceptedAnswerId = answer.Id;
-                DB.Save(question);
 
                 Student answererStudent = DB.FindById<Student>(answer.UserId);
                 if (answererStudent != null)
@@ -170,6 +173,9 @@ namespace BaltazarWeb.Controllers
                             answererStudent.PusheId);
                 }
             }
+
+            question.UnseenAnswersCount--;
+            DB.Save(question);
 
             answer.Response = response;
             DB.Save(answer);

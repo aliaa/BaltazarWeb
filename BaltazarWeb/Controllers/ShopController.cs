@@ -121,6 +121,8 @@ namespace BaltazarWeb.Controllers
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
                 return Unauthorized();
+            else
+                DB.UpdateOne<Student>(s => s.Id == student.Id, Builders<Student>.Update.Set(s => s.LastShopVisit, DateTime.Now));
             var list = DB.Find<ShopItem>(i => i.Enabled).SortByDescending(i => i.DateAdded).ToList();
             return new DataResponse<List<ShopItem>> { Success = true, Data = list };
         }

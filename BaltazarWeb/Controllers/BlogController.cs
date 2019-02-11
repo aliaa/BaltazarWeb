@@ -88,8 +88,12 @@ namespace BaltazarWeb.Controllers
         }
         
 
-        public ActionResult<DataResponse<List<Blog>>> App()
+        public ActionResult<DataResponse<List<Blog>>> App([FromHeader] Guid token)
         {
+            var student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            if(student != null)
+                DB.UpdateOne<Student>(s => s.Id == student.Id, Builders<Student>.Update.Set(s => s.LastBlogVisit, DateTime.Now));
+
             return new DataResponse<List<Blog>>
             {
                 Success = true,

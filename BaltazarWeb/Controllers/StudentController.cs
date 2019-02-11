@@ -215,7 +215,7 @@ namespace BaltazarWeb.Controllers
             return new DataResponse<Student> { Success = true, Data = st };
         }
 
-        private readonly string[] SEASONAL_FESTIVAL_NAMES = new string[] { "بهاره", "تابستانه", "پاییزه", "زمستانه" };
+        private readonly string[] SEASON_NAMES = new string[] { "بهار", "تابستان", "پاییز", "زمستان" };
 
         public ActionResult<DataResponse<ScoresData>> Scores([FromHeader] Guid token)
         {
@@ -234,7 +234,7 @@ namespace BaltazarWeb.Controllers
             data.MyAllTimePoints = me.TotalPoints;
             data.MyAllTimeTotalScore = DB.Count<Student>(s => s.TotalPoints > me.TotalPoints) + 1;
 
-            data.FestivalName = SEASONAL_FESTIVAL_NAMES[currentSeason0Based] + pDate.Year % 100;
+            data.FestivalName = SEASON_NAMES[currentSeason0Based] + " " + pDate.Year % 100;
             var myFestival = me.FestivalPoints.FirstOrDefault(f => f.FestivalName == currentFestival);
             data.MyFestivalPoints = myFestival != null ? myFestival.Points : 0;
             data.MyFestivalPointsFromLeague = myFestival != null ? myFestival.PointsFromLeague : 0;

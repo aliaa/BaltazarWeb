@@ -47,12 +47,25 @@ namespace BaltazarWeb.Controllers
                 }
                 student.Password = null;
             }
+
+            CommonData.Notifications notifications = null;
+            if (student != null)
+            {
+                notifications = new CommonData.Notifications
+                {
+                    NewAnswers = DB.Find<Question>(q => q.UserId == student.Id && q.UnseenAnswersCount > 0).Project(q => q.UnseenAnswersCount).ToEnumerable().Sum(),
+                    NewBlogs = (int)DB.Count<Blog>(b => b.DateAdded > student.LastBlogVisit),
+                    NewShops = (int)DB.Count<ShopItem>(s => s.DateAdded > student.LastShopVisit)
+                };
+            }
+
             return new DataResponse<CommonData>
             {
                 Success = true,
                 Data = new CommonData
                 {
                     Me = student,
+                    Notification = notifications,
                     Provinces = DB.All<Province>().ToList(),
                     Cities = DB.All<City>().ToList(),
                     Courses = DB.All<Course>().ToList(),
