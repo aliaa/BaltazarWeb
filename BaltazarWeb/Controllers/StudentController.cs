@@ -86,6 +86,11 @@ namespace BaltazarWeb.Controllers
                 response.Message = "رمز عبوز نباید خالی باشد!";
                 return response;
             }
+            if(DB.Any<Student>(s => s.Password == student.Password))
+            {
+                response.Message = "این کد ملی قبلا ثبت نام شده است!";
+                return response;
+            }
             if(student.Grade < 1 || student.Grade > 12)
             {
                 response.Message = "مقطع تحصیلی صحیح نیست!";
@@ -106,10 +111,16 @@ namespace BaltazarWeb.Controllers
                 response.Message = "این شماره قبلا ثبت نام نموده است!";
                 return response;
             }
+            if(!string.IsNullOrEmpty(student.PusheId) && DB.Any<Student>(s => s.PusheId == student.PusheId))
+            {
+                response.Message = "از این دستگاه قبلا ثبت نام شده است! هر دستگاه مجاز است فقط یکبار ثبت نام کند!";
+                return response;
+            }
 
             response.Success = true;
             student.Token = Guid.NewGuid();
             student.Coins = Consts.INITIAL_COIN;
+            student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INITIAL_COIN, Type = CoinTransaction.TransactionType.Register });
             student.RegistrationDate = DateTime.Now;
             student.InvitationCode = Student.GenerateNewInvitationCode(DB);
             if (!string.IsNullOrEmpty(student.InvitedFromCode))
@@ -123,8 +134,8 @@ namespace BaltazarWeb.Controllers
                         "تبریک! یکی از دوستان شما با وارد کردن کد دعوت شما عضو بالتازار شد و " + Consts.INVITE_PRIZE + " سکه به شما تعلق یافت!", 
                         inviteSource.PusheId);
 
-                student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITE_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
-                student.Coins += Consts.INVITE_PRIZE;
+                student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITED_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
+                student.Coins += Consts.INVITED_PRIZE;
             }
             else
                 student.InvitedFromCode = null;
@@ -223,7 +234,7 @@ namespace BaltazarWeb.Controllers
             data.MyAllTimePoints = me.TotalPoints;
             data.MyAllTimeTotalScore = DB.Count<Student>(s => s.TotalPoints > me.TotalPoints) + 1;
 
-            data.FestivalName = SEASONAL_FESTIVAL_NAMES[currentSeason0Based];
+            data.FestivalName = SEASONAL_FESTIVAL_NAMES[currentSeason0Based] + pDate.Year % 100;
             var myFestival = me.FestivalPoints.FirstOrDefault(f => f.FestivalName == currentFestival);
             data.MyFestivalPoints = myFestival != null ? myFestival.Points : 0;
             data.MyFestivalPointsFromLeague = myFestival != null ? myFestival.PointsFromLeague : 0;

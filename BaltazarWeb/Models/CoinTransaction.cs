@@ -18,6 +18,7 @@ namespace BaltazarWeb.Models
             Buy,
             InviteFriend,
             ProfileCompletion,
+            Register,
         }
 
         public int Amount { get; set; }
