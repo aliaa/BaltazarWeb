@@ -43,6 +43,14 @@ namespace BaltazarWeb.Controllers
             {
                 DB.UpdateOne<Answer>(a => a.Id == answer.Id, Builders<Answer>.Update.Set(a => a.PublishStatus, BaseUserContent.PublishStatusEnum.Published));
                 DB.UpdateOne<Question>(q => q.Id == answer.QuestionId, Builders<Question>.Update.Inc(q => q.UnseenAnswersCount, 1));
+
+                var askerId = DB.Find<Question>(q => q.Id == answer.QuestionId).Project(q => q.UserId).FirstOrDefault();
+                if(askerId != ObjectId.Empty)
+                {
+                    var pusheId = DB.Find<Student>(s => s.Id == askerId).Project(s => s.PusheId).FirstOrDefault();
+                    if (pusheId != null)
+                        pushProvider.SendMessageToUser("جواب جدید!", "برای یکی از سوالات شما، یک جواب جدید داده شده است!", pusheId);
+                }
             }
             return RedirectToAction(nameof(ApproveList));
         }
@@ -76,9 +84,9 @@ namespace BaltazarWeb.Controllers
                 question = DB.FindById<Question>(answer.QuestionId);
 
             if (question == null)
-                return new DataResponse<Answer> { Success = true, Message = "سوال یافت نشد!" };
+                return new DataResponse<Answer> { Message = "سوال یافت نشد!" };
             if(question.PublishStatus != BaseUserContent.PublishStatusEnum.Published)
-
+                return new DataResponse<Answer> { Message = "سوال هنوز منتشر نشده است!" };
             answer.Id = ObjectId.Empty;
             answer.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;
             answer.UserId = student.Id;
@@ -150,7 +158,7 @@ namespace BaltazarWeb.Controllers
                     answererStudent.TotalPointsFromOtherQuestions += question.Prize;
 
                     string festivalName = ScoresData.CurrentFestivalName;
-                    var festivalPoint = answererStudent.FestivalPoints.First(f => f.FestivalName == festivalName);
+                    var festivalPoint = answererStudent.FestivalPoints.FirstOrDefault(f => f.FestivalName == festivalName);
                     if (festivalPoint == null)
                     {
                         answererStudent.FestivalPoints.Add(new Student.FestivalPoint
