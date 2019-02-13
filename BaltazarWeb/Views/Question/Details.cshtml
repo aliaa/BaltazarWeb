@@ -9,33 +9,41 @@
 
 <div>
     <hr />
-    <dl>
-        <dt>@Html.DisplayNameFor(model => model.UserId)</dt>
-        <dd>@(DB.FindById<Student>(Model.UserId)?.DisplayName)</dd>
-
-        <dt>@Html.DisplayNameFor(model => model.Grade)</dt>
-        <dd>@Html.DisplayFor(model => model.Grade)</dd>
-
-        <dt>@Html.DisplayNameFor(model => model.CourseId)</dt>
-        <dd>@(DB.FindById<Course>(Model.CourseId)?.Name)</dd>
-
-        <dt>@Html.DisplayNameFor(model => model.SectionId)</dt>
-        <dd>@(DB.FindById<CourseSection>(Model.SectionId)?.Name)</dd>
-
-        <dt>@Html.DisplayNameFor(model => model.CreateDate)</dt>
-        <dd>@Html.DisplayFor(model => model.CreateDate)</dd>
-
-        <dt>@Html.DisplayNameFor(model => model.Text)</dt>
-        <dd>@Html.DisplayFor(model => model.Text)</dd>
-
-        @if(Model.HasImage)
-        {
+    <table class="table">
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.UserId)</td>
+            <td>@(DB.FindById<Student>(Model.UserId)?.DisplayName)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.Grade)</td>
+            <td>@Html.DisplayFor(model => model.Grade)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.CourseId)</td>
+            <td>@(DB.FindById<Course>(Model.CourseId)?.Name)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.SectionId)</td>
+            <td>@(DB.FindById<CourseSection>(Model.SectionId)?.Name)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.CreateDate)</td>
+            <td>@Html.DisplayFor(model => model.CreateDate)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.Text)</td>
+            <td>@Html.DisplayFor(model => model.Text)</td>
+        </tr>
+    </table>
+    @if(Model.HasImage)
+    {
+        <dl>
             <dt>تصویر:</dt>
             <dd>
                 <img src="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + Model.Id + ".jpg")" style="width:100%;"/>
             </dd>
-        }
-    </dl>
+        </dl>
+    }
 </div>
 <div align="center">
     @if (Model.PublishStatus != BaseUserContent.PublishStatusEnum.Published)
@@ -48,6 +56,36 @@
         @Html.ActionLink("محتوای نامناسب", "Reject", new { id = Model.Id.ToString() })
     }
 </div>
+@if (Model.PublishStatus == BaseUserContent.PublishStatusEnum.Published)
+{
+    <div align="center">
+        <h4>لیست جواب ها</h4>
+        <table class="table">
+            <tr>
+                <th></th>
+                <th>@(Utils.GetDisplayNameOfMember<Answer>(a => a.CreateDate))</th>
+                <th>@(Utils.GetDisplayNameOfMember<Answer>(a => a.Response))</th>
+                <th>@(Utils.GetDisplayNameOfMember<Answer>(a => a.PublishStatus))</th>
+                <th></th>
+            </tr>
+            @foreach (var answer in DB.Find<Answer>(a => a.QuestionId == Model.Id).SortBy(a => a.CreateDate).ToEnumerable())
+            {
+            <tr>
+                <td>@Html.ActionLink("جزئیات", "Details", "Answer", new { id = answer.Id.ToString() })</td>
+                <td>@Utils.GetPersianDateString(answer.CreateDate)</td>
+                <td>@Utils.GetDisplayNameOfMember(typeof(Answer.QuestionerResponseEnum), answer.Response.ToString())</td>
+                <td>@Utils.GetDisplayNameOfMember(typeof(BaseUserContent.PublishStatusEnum), answer.PublishStatus.ToString())</td>
+                <td>
+                    @if (answer.HasImage)
+                    {
+                        <a href="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + answer.Id + ".jpg")">تصویر</a>
+                    }
+                </td>
+            </tr>
+            }
+        </table>
+    </div>
+}
 <div>
     <a asp-action="Index">برگشت به لیست</a>
 </div>
