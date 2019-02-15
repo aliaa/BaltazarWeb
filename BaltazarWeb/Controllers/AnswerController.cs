@@ -146,40 +146,7 @@ namespace BaltazarWeb.Controllers
 
                 Student answererStudent = DB.FindById<Student>(answer.UserId);
                 if (answererStudent != null)
-                {
-                    answererStudent.CoinTransactions.Add(new CoinTransaction
-                    {
-                        Type = CoinTransaction.TransactionType.AnswerQuestion,
-                        Amount = question.Prize,
-                        SourceId = question.Id
-                    });
-                    answererStudent.Coins += question.Prize;
-                    answererStudent.TotalPoints += question.Prize;
-                    answererStudent.TotalPointsFromOtherQuestions += question.Prize;
-
-                    string festivalName = ScoresData.CurrentFestivalName;
-                    var festivalPoint = answererStudent.FestivalPoints.FirstOrDefault(f => f.FestivalName == festivalName);
-                    if (festivalPoint == null)
-                    {
-                        answererStudent.FestivalPoints.Add(new Student.FestivalPoint
-                        {
-                            FestivalName = festivalName,
-                            Points = question.Prize,
-                            PointsFromOtherQuestions = question.Prize
-                        });
-                    }
-                    else
-                    {
-                        festivalPoint.Points += question.Prize;
-                        festivalPoint.PointsFromOtherQuestions += question.Prize;
-                    }
-                    DB.Save(answererStudent);
-
-                    if (answererStudent.PusheId != null)
-                        pushProvider.SendMessageToUser("تائید جواب شما", 
-                            "تبریک! جواب شما برای یک سوال از طرف سوال کننده تائید شده و " + question.Prize + " امتیاز به شما تعلق یافت!", 
-                            answererStudent.PusheId);
-                }
+                    AddPointsToStudentForCorrectAnswering(answererStudent, question, false);
             }
 
             question.UnseenAnswersCount--;
@@ -189,6 +156,49 @@ namespace BaltazarWeb.Controllers
             DB.Save(answer);
 
             return new CommonResponse { Success = true };
+        }
+
+        private void AddPointsToStudentForCorrectAnswering(Student st, Question question, bool isLeagueQuestions)
+        {
+            st.CoinTransactions.Add(new CoinTransaction
+            {
+                Type = isLeagueQuestions ? CoinTransaction.TransactionType.AnswerBaltazar : CoinTransaction.TransactionType.AnswerQuestion,
+                Amount = question.Prize,
+                SourceId = question.Id
+            });
+
+            string festivalName = ScoresData.CurrentFestivalName;
+            var festivalPoint = st.FestivalPoints.FirstOrDefault(f => f.Name == festivalName);
+            if (festivalPoint == null)
+            {
+                //var previousFestival = answererStudent.FestivalPoints.LastOrDefault();
+                st.FestivalPoints.Add(new Student.FestivalPoint
+                {
+                    Name = festivalName,
+                    DisplayName = ScoresData.CurrentFestivalDisplayName,
+                    Points = question.Prize,
+                    PointsFromOtherQuestions = question.Prize
+                });
+            }
+            else
+            {
+                festivalPoint.Points += question.Prize;
+                festivalPoint.PointsFromOtherQuestions += question.Prize;
+            }
+
+            st.Coins += question.Prize;
+            st.TotalPoints += question.Prize;
+            if (isLeagueQuestions)
+                st.TotalPointsFromLeague += question.Prize;
+            else
+                st.TotalPointsFromOtherQuestions += question.Prize;
+
+            DB.Save(st);
+
+            if (st.PusheId != null)
+                pushProvider.SendMessageToUser("تائید جواب شما",
+                    "تبریک! جواب شما برای یک سوال از طرف سوال کننده تائید شده و " + question.Prize + " امتیاز به شما تعلق یافت!",
+                    st.PusheId);
         }
 
         //public ActionResult<ListResponse<Answer>> List([FromHeader] Guid token, string questionId)

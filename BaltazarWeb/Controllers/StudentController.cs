@@ -214,9 +214,7 @@ namespace BaltazarWeb.Controllers
             DB.Save(st);
             return new DataResponse<Student> { Success = true, Data = st };
         }
-
-        private readonly string[] SEASON_NAMES = new string[] { "بهار", "تابستان", "پاییز", "زمستان" };
-
+        
         public ActionResult<DataResponse<ScoresData>> Scores([FromHeader] Guid token)
         {
             PersianDate pDate = PersianDateConverter.ToPersianDate(DateTime.Now);
@@ -234,8 +232,8 @@ namespace BaltazarWeb.Controllers
             data.MyAllTimePoints = me.TotalPoints;
             data.MyAllTimeTotalScore = DB.Count<Student>(s => s.TotalPoints > me.TotalPoints) + 1;
 
-            data.FestivalName = SEASON_NAMES[currentSeason0Based] + " " + pDate.Year % 100;
-            var myFestival = me.FestivalPoints.FirstOrDefault(f => f.FestivalName == currentFestival);
+            data.FestivalName = ScoresData.CurrentFestivalDisplayName;
+            var myFestival = me.FestivalPoints.FirstOrDefault(f => f.Name == currentFestival);
             data.MyFestivalPoints = myFestival != null ? myFestival.Points : 0;
             data.MyFestivalPointsFromLeague = myFestival != null ? myFestival.PointsFromLeague : 0;
             data.MyFestivalPointsFromOtherQuestions = myFestival != null ? myFestival.PointsFromOtherQuestions : 0;

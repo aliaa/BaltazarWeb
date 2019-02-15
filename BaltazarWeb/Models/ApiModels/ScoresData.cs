@@ -40,5 +40,16 @@ namespace BaltazarWeb.Models.ApiModels
                 return pDate.Year + "S" + currentSeason1Based;
             }
         }
+
+        public static string CurrentFestivalDisplayName
+        {
+            get
+            {
+                PersianDate pDate = PersianDateConverter.ToPersianDate(DateTime.Now);
+                int currentMonth = pDate.Month;
+                int currentSeason0Based = (currentMonth - 1) / 3;
+                return Consts.SEASON_NAMES[currentSeason0Based] + " " + (pDate.Year % 100);
+            }
+        }
     }
 }

@@ -156,7 +156,7 @@ namespace BaltazarWeb.Controllers
             {
                 Type = CoinTransaction.TransactionType.Buy,
                 Amount = -shopItem.CoinCost,
-                SourceId = shopItem.Id
+                SourceId = order.Id
             });
             student.Coins -= shopItem.CoinCost;
             DB.Save(student);
@@ -164,7 +164,7 @@ namespace BaltazarWeb.Controllers
             return new CommonResponse { Success = true, Message = "سفارش شما ثبت شد!" };
         }
 
-        public ActionResult<List<ShopOrder>> MyOrders([FromHeader] Guid token)
+        public ActionResult<DataResponse<List<ShopOrder>>> MyOrders([FromHeader] Guid token)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null)
@@ -172,7 +172,34 @@ namespace BaltazarWeb.Controllers
             List<ShopOrder> orders = DB.Find<ShopOrder>(s => s.UserId == student.Id).ToList();
             foreach (var item in orders)
                 item.ShopItemName = DB.FindById<ShopItem>(item.ShopItemId)?.Name;
-            return orders;
+            return new DataResponse<List<ShopOrder>> { Success = true, Data = orders };
+        }
+
+        [HttpDelete]
+        [Route("Shop/{id}")]
+        public ActionResult<CommonResponse> CancelOrder([FromHeader] Guid token, [FromRoute] string id)
+        {
+            Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            if (student == null)
+                return Unauthorized();
+            ShopOrder order = DB.FindById<ShopOrder>(id);
+            if (order == null)
+                return new CommonResponse { Message = "سفارش یافت نشد!" };
+            if (order.UserId != student.Id)
+                return new CommonResponse { Message = "این سفارش برای شما نیست!" };
+            if (order.Status != ShopOrder.OrderStatus.WaitForApprove)
+                return new CommonResponse { Message = "سفارش قابل حذف نیست!" };
+
+            var transaction = student.CoinTransactions.LastOrDefault(t => t.SourceId == order.Id);
+            if (transaction != null)
+            {
+                student.CoinTransactions.Remove(transaction);
+                student.Coins += Math.Abs(transaction.Amount);
+            }
+            DB.DeleteOne(order);
+            DB.Save(student);
+
+            return new CommonResponse { Success = true, Message = "سفارش شما حذف شد!" };
         }
     }
 }

@@ -26,10 +26,12 @@ namespace BaltazarWeb.Models
 
         public class FestivalPoint
         {
-            public string FestivalName { get; set; }
+            public string DisplayName { get; set; }
+            public string Name { get; set; }
             public int PointsFromLeague { get; set; }
             public int PointsFromOtherQuestions { get; set; }
             public int Points { get; set; }
+            public int TotalPoints { get; set; }
         }
 
         [Display(Name = "نام")]
@@ -111,8 +113,7 @@ namespace BaltazarWeb.Models
 
         [JsonIgnore]
         public List<CoinTransaction> CoinTransactions { get; set; } = new List<CoinTransaction>();
-
-        [JsonIgnore]
+        
         public List<FestivalPoint> FestivalPoints { get; set; } = new List<FestivalPoint>();
         
         [JsonIgnore]

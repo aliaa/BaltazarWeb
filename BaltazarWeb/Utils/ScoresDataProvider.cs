@@ -88,7 +88,7 @@ namespace BaltazarWeb.Utils
                     CityId = s.CityId,
                     School = s.SchoolName,
                     Points = s.FestivalPoints.Points,
-                    FestivalName = s.FestivalPoints.FestivalName,
+                    FestivalName = s.FestivalPoints.Name,
                     Grade = s.Grade
                 });
 
