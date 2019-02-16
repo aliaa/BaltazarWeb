@@ -31,16 +31,20 @@
             <td>@Html.DisplayFor(model => model.CreateDate)</td>
         </tr>
         <tr>
+            <td>@Html.DisplayNameFor(model => model.PublishStatus)</td>
+            <td>@Html.DisplayFor(model => model.PublishStatus)</td>
+        </tr>
+        <tr>
             <td>@Html.DisplayNameFor(model => model.Text)</td>
             <td>@Html.DisplayFor(model => model.Text)</td>
         </tr>
     </table>
-    @if(Model.HasImage)
+    @if (Model.HasImage)
     {
         <dl>
             <dt>تصویر:</dt>
             <dd>
-                <img src="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + Model.Id + ".jpg")" style="max-width:100%;"/>
+                <img src="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + Model.Id + ".jpg")" style="max-width:100%;" />
             </dd>
         </dl>
     }
@@ -48,21 +52,25 @@
 <div align="center">
     @if (Model.PublishStatus != BaseUserContent.PublishStatusEnum.Published)
     {
-        @Html.ActionLink("تائید محتوا", "Accept", new { id = Model.Id.ToString() }) 
+        @Html.ActionLink("تائید محتوا", "Accept", new { id = Model.Id.ToString() })
     }
-    @if(Model.PublishStatus != BaseUserContent.PublishStatusEnum.Rejected)
-    { 
+    @if (Model.PublishStatus != BaseUserContent.PublishStatusEnum.Rejected)
+    {
         <span>&nbsp; &nbsp; &nbsp;</span>
         @Html.ActionLink("محتوای نامناسب", "Reject", new { id = Model.Id.ToString() })
     }
 </div>
+<div>
+    <a asp-action="Index">برگشت به لیست</a>
+</div>
 @if (Model.PublishStatus == BaseUserContent.PublishStatusEnum.Published)
 {
-    <div align="center">
+    <div align="center" style="margin-top:70px;">
         <h4>لیست جواب ها</h4>
         <table class="table">
             <tr>
                 <th></th>
+                <th>@(Utils.GetDisplayNameOfMember<Answer>(a => a.UserId))</th>
                 <th>@(Utils.GetDisplayNameOfMember<Answer>(a => a.CreateDate))</th>
                 <th>@(Utils.GetDisplayNameOfMember<Answer>(a => a.Response))</th>
                 <th>@(Utils.GetDisplayNameOfMember<Answer>(a => a.PublishStatus))</th>
@@ -70,22 +78,20 @@
             </tr>
             @foreach (var answer in DB.Find<Answer>(a => a.QuestionId == Model.Id).SortBy(a => a.CreateDate).ToEnumerable())
             {
-            <tr>
-                <td>@Html.ActionLink("جزئیات", "Details", "Answer", new { id = answer.Id.ToString() })</td>
-                <td>@Utils.GetPersianDateString(answer.CreateDate)</td>
-                <td>@Utils.GetDisplayNameOfMember(typeof(Answer.QuestionerResponseEnum), answer.Response.ToString())</td>
-                <td>@Utils.GetDisplayNameOfMember(typeof(BaseUserContent.PublishStatusEnum), answer.PublishStatus.ToString())</td>
-                <td>
-                    @if (answer.HasImage)
-                    {
-                        <a href="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + answer.Id + ".jpg")">تصویر</a>
-                    }
-                </td>
-            </tr>
+                <tr>
+                    <td>@Html.ActionLink("جزئیات", "Details", "Answer", new { id = answer.Id.ToString() })</td>
+                    <td>@(DB.FindById<Student>(answer.UserId).DisplayName)</td>
+                    <td>@Utils.GetPersianDateString(answer.CreateDate)</td>
+                    <td>@Utils.GetDisplayNameOfMember(typeof(Answer.QuestionerResponseEnum), answer.Response.ToString())</td>
+                    <td>@Utils.GetDisplayNameOfMember(typeof(BaseUserContent.PublishStatusEnum), answer.PublishStatus.ToString())</td>
+                    <td>
+                        @if (answer.HasImage)
+                        {
+                            <a href="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + answer.Id + ".jpg")">تصویر</a>
+                        }
+                    </td>
+                </tr>
             }
         </table>
     </div>
 }
-<div>
-    <a asp-action="Index">برگشت به لیست</a>
-</div>

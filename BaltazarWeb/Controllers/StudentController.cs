@@ -34,14 +34,32 @@ namespace BaltazarWeb.Controllers
             ObjectId.TryParse(city, out cityId);
             var list = DB.Find<Student>(s => s.CityId == cityId).Limit(1000).Skip(page * 1000).ToList();
 
-            var provinces = DB.All<Province>().ToDictionary(i => i.Id, i => i.Name);
             List<SelectListItem> cities = new List<SelectListItem>();
             cities.Add(new SelectListItem("انتخاب نشده", ""));
-            cities.AddRange(DB.Find<City>(_ => true).SortBy(c => c.ProvinceId).ThenBy(c => c.Name).ToEnumerable()
-                .Select(c => new SelectListItem(provinces[c.ProvinceId] + " - " + c.Name, c.Id.ToString())));
+            cities.AddRange(GetCitiesItem());
             ViewBag.Cities = cities;
             ViewBag.SelectedCity = city;
             return View(list);
+        }
+        
+        class CityStudentCount
+        {
+            public ObjectId ProvinceId { get; set; }
+            public ObjectId _id { get; set; }
+            public string Name { get; set; }
+            public int StudentCount { get; set; }
+        }
+
+        private IEnumerable<SelectListItem> GetCitiesItem()
+        {
+            var provinces = DB.All<Province>().ToDictionary(i => i.Id, i => i.Name);
+            return DB.Aggregate<City>()
+                .Lookup(nameof(Student), nameof(City.Id), nameof(Student.CityId), "students")
+                .Project("{ \"ProvinceId\":1, \"Name\":1, \"StudentCount\" : {$size: \"$students\"} }")
+                .Match("{ \"StudentCount\" : {$gt: 0} }")
+                .Sort("{ \"ProvinceId\" : 1, \"StudentCount\" : -1 }")
+                .As<CityStudentCount>().ToEnumerable()
+                .Select(i => new SelectListItem { Text = provinces[i.ProvinceId] + " - " + i.Name + " (" + i.StudentCount + ")", Value = i._id.ToString() });
         }
 
         [Authorize(policy: nameof(Permission.ManageStudents))]

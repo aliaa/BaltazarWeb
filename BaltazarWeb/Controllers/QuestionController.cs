@@ -51,8 +51,8 @@ namespace BaltazarWeb.Controllers
             Student student = DB.FindById<Student>(question.UserId);
             DB.Save(student);
             if(student.PusheId != null)
-                pushProvider.SendMessageToUser("تائید سوال شما", "سوال شما تائید و منتشر شد!", student.PusheId);
-            return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
+                pushProvider.SendMessageToUser("تائید سوال", "سوال شما تائید و منتشر شد!", student.PusheId);
+            return NextNeedToApprove();
         }
 
         [Authorize(policy: nameof(Permission.ApproveContent))]
@@ -75,7 +75,15 @@ namespace BaltazarWeb.Controllers
                 if (student.PusheId != null)
                     pushProvider.SendMessageToUser("رد سوال شما", "متاسفانه سوال شما برای انتشار رد شد!", student.PusheId);
             }
-            return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
+            return NextNeedToApprove();
+        }
+
+        private IActionResult NextNeedToApprove()
+        {
+            var next = DB.Find<Question>(q => q.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).SortBy(q => q.CreateDate).FirstOrDefault();
+            if (next == null)
+                return RedirectToAction(nameof(Index), new { status = BaseUserContent.PublishStatusEnum.WaitForApprove });
+            return View(nameof(Details), next);
         }
 
         [Authorize(policy: nameof(Permission.ViewContent))]

@@ -52,7 +52,7 @@ namespace BaltazarWeb.Controllers
                         pushProvider.SendMessageToUser("جواب جدید!", "برای یکی از سوالات شما، یک جواب جدید داده شده است!", pusheId);
                 }
             }
-            return RedirectToAction(nameof(ApproveList));
+            return NextNeedToApprove();
         }
 
         [Authorize(policy: nameof(Permission.ApproveContent))]
@@ -60,7 +60,15 @@ namespace BaltazarWeb.Controllers
         {
             ObjectId objId = ObjectId.Parse(id);
             DB.UpdateOne(q => q.Id == objId, Builders<Answer>.Update.Set(a => a.PublishStatus, BaseUserContent.PublishStatusEnum.Rejected));
-            return RedirectToAction(nameof(ApproveList));
+            return NextNeedToApprove();
+        }
+
+        private IActionResult NextNeedToApprove()
+        {
+            var next = DB.Find<Answer>(a => a.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).SortBy(q => q.CreateDate).FirstOrDefault();
+            if(next == null)
+                return RedirectToAction(nameof(ApproveList));
+            return View(nameof(Details), next);
         }
 
         [Authorize(policy: nameof(Permission.ViewContent))]

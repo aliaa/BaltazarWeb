@@ -32,9 +32,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.CreateDate)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Text)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -58,21 +55,7 @@
                     @(DB.FindById<CourseSection>(item.SectionId)?.Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.CreateDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Text)
-                </td>
-                <td>
-                    @if (item.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove)
-                    {
-                        @if (!item.HasImage)
-                        {
-                            @Html.ActionLink("تائید", "Accept", new { id = item.Id.ToString() })
-                            <span>&nbsp;|&nbsp;</span>
-                        }
-                        @Html.ActionLink("نامناسب", "Reject", new { id = item.Id.ToString() })
-                    }
+                    @(Utils.GetPersianDateString(item.CreateDate))
                 </td>
             </tr>
         }

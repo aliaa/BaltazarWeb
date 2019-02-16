@@ -42,7 +42,7 @@
                     @Html.DisplayNameFor(model => model.StudyFieldId)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.CityId)
+                    @Html.DisplayNameFor(model => model.RegistrationDate)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Gender)
@@ -94,7 +94,7 @@
                     @(DB.FindById<StudyField>(item.StudyFieldId)?.Name)
                 </td>
                 <td>
-                    @(DB.FindById<City>(item.CityId)?.Name)
+                    @Utils.GetPersianDateString(item.RegistrationDate, false)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Gender)

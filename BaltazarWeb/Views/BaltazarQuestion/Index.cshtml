@@ -52,7 +52,7 @@
                 @Html.DisplayFor(modelItem => item.Prize)
             </td>
             <td>
-                @Html.DisplayNameFor(model => model.CreateDate)
+                @(Utils.GetPersianDateString(item.CreateDate))
             </td>
             <td>
                 @if (item.HasImage)

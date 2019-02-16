@@ -43,7 +43,7 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.DateAdded)
+                @(Utils.GetPersianDateString(item.DateAdded))
             </td>
             <td>
                 @if (item.HasImage)
