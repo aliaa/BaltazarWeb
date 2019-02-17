@@ -74,7 +74,7 @@
         {
             <tr>
                 <td>
-                    @*@Html.ActionLink("جزئیات", "Details", "Answer", new { id = answer.Id.ToString() }) |*@
+                    @Html.ActionLink("جزئیات", "Details", "Answer", new { id = answer.Id.ToString() }) |
                     @Html.ActionLink("تائید و دادن امتیاز", "AcceptAnswer", new { questionId = Model.Id.ToString(), answerId = answer.Id.ToString() }) |
                     @Html.ActionLink("رد جواب", "RejectAnswer", new { id = answer.Id.ToString() })
                 </td>

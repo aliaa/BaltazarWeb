@@ -35,7 +35,8 @@ namespace BaltazarWeb.Controllers
             var list = DB.Find<Student>(s => s.CityId == cityId).Limit(1000).Skip(page * 1000).ToList();
 
             List<SelectListItem> cities = new List<SelectListItem>();
-            cities.Add(new SelectListItem("انتخاب نشده", ""));
+            long cityUnselectedStudentsCount = DB.Count<Student>(s => s.CityId == ObjectId.Empty);
+            cities.Add(new SelectListItem("انتخاب نشده (" + cityUnselectedStudentsCount + ")", ""));
             cities.AddRange(GetCitiesItem());
             ViewBag.Cities = cities;
             ViewBag.SelectedCity = city;
