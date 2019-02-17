@@ -20,7 +20,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Text)
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -39,15 +38,14 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Text)
                 </td>
-                <td>
-                <td>
+                @*<td>
                     @if (!item.HasImage)
                     {
                         @Html.ActionLink("تائید", "Accept", new { id = item.Id.ToString() })
                         <span>&nbsp;|&nbsp;</span>
                     }
                     @Html.ActionLink("نامناسب", "Reject", new { id = item.Id.ToString() })
-                </td>
+                </td>*@
             </tr>
         }
     </tbody>

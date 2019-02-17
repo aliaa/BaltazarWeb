@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
+using BaltazarWeb.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -17,10 +18,12 @@ namespace BaltazarWeb.Controllers
     public class BaltazarQuestionController : Controller
     {
         private readonly MongoHelper DB;
+        private readonly IPushNotificationProvider pushProvider;
         private readonly string ImageUploadPath;
-        public BaltazarQuestionController(MongoHelper DB, IHostingEnvironment env)
+        public BaltazarQuestionController(MongoHelper DB, IHostingEnvironment env, IPushNotificationProvider pushProvider)
         {
             this.DB = DB;
+            this.pushProvider = pushProvider;
             ImageUploadPath = Path.Combine(env.WebRootPath, Consts.UPLOAD_IMAGE_DIR);
             if (!Directory.Exists(ImageUploadPath))
                 Directory.CreateDirectory(ImageUploadPath);
@@ -51,6 +54,11 @@ namespace BaltazarWeb.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
+
+        public IActionResult Details(string id)
+        {
+            return View(DB.FindById<BaltazarQuestion>(id));
+        }
         
         public IActionResult Edit(string id)
         {
@@ -73,6 +81,37 @@ namespace BaltazarWeb.Controllers
             else
                 DB.DeleteOne<BaltazarQuestion>(objId);
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult AcceptAnswer(string questionId, string answerId)
+        {
+            BaltazarQuestion question = DB.FindById<BaltazarQuestion>(questionId);
+            Answer answer = DB.FindById<Answer>(answerId);
+            if (question == null || answer == null || answer.QuestionId != question.Id)
+                return RedirectToAction(nameof(Index));
+
+            if (answer.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove && answer.ToBaltazarQuestion)
+            {
+                DB.UpdateOne<Answer>(a => a.Id == answer.Id, Builders<Answer>.Update.Set(a => a.PublishStatus, BaseUserContent.PublishStatusEnum.Published));
+                Student answerer = DB.FindById<Student>(answer.UserId);
+                if(answerer != null)
+                    AnswerController.AddPointsToStudentForCorrectAnswering(DB, pushProvider, answerer, question);
+            }
+            return RedirectToAction(nameof(Details), new { id = questionId });
+        }
+
+        public IActionResult RejectAnswer(string questionId, string answerId)
+        {
+            BaltazarQuestion question = DB.FindById<BaltazarQuestion>(questionId);
+            Answer answer = DB.FindById<Answer>(answerId);
+            if (question == null || answer == null || answer.QuestionId != question.Id)
+                return RedirectToAction(nameof(Index));
+
+            if (answer.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove && answer.ToBaltazarQuestion)
+            {
+                DB.UpdateOne<Answer>(a => a.Id == answer.Id, Builders<Answer>.Update.Set(a => a.PublishStatus, BaseUserContent.PublishStatusEnum.Rejected));
+            }
+            return RedirectToAction(nameof(Details), new { id = questionId });
         }
     }
 }

@@ -26,6 +26,9 @@ namespace BaltazarWeb.Models
         [Display(Name = "تاریخ انقضا")]
         public DateTime ExpireDate { get; set; } = DateTime.Now.AddDays(2);
 
+        [Display(Name = "اجازه به جواب دهنده برای آپلود مدیا")]
+        public bool AllowUploadOnAnswer { get; set; }
+
         [JsonIgnore][BsonIgnore]
         [Display(Name = "تصویر")]
         public IFormFile ImageFile { get; set; }

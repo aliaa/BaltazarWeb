@@ -95,6 +95,15 @@ namespace BaltazarWeb.Controllers
                 return new DataResponse<Answer> { Message = "سوال یافت نشد!" };
             if(question.PublishStatus != BaseUserContent.PublishStatusEnum.Published)
                 return new DataResponse<Answer> { Message = "سوال هنوز منتشر نشده است!" };
+
+            var previousStudentAnswer = DB.Find<Answer>(a => a.UserId == student.Id && a.QuestionId == question.Id).FirstOrDefault();
+            if(previousStudentAnswer != null)
+            {
+                if (previousStudentAnswer.PublishStatus == BaseUserContent.PublishStatusEnum.Published)
+                    return new DataResponse<Answer> { Message = "شما قبلا به این سوال پاسخ صحیح داده اید!" };
+                DB.DeleteOne(previousStudentAnswer);
+            }
+
             answer.Id = ObjectId.Empty;
             answer.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;
             answer.UserId = student.Id;
@@ -154,7 +163,7 @@ namespace BaltazarWeb.Controllers
 
                 Student answererStudent = DB.FindById<Student>(answer.UserId);
                 if (answererStudent != null)
-                    AddPointsToStudentForCorrectAnswering(answererStudent, question, false);
+                    AddPointsToStudentForCorrectAnswering(DB, pushProvider, answererStudent, question);
             }
 
             question.UnseenAnswersCount--;
@@ -166,11 +175,12 @@ namespace BaltazarWeb.Controllers
             return new CommonResponse { Success = true };
         }
 
-        private void AddPointsToStudentForCorrectAnswering(Student st, Question question, bool isLeagueQuestions)
+        public static void AddPointsToStudentForCorrectAnswering(MongoHelper DB, IPushNotificationProvider pushProvider, Student st, Question question)
         {
+            bool isLeagueQuestion = question is BaltazarQuestion;
             st.CoinTransactions.Add(new CoinTransaction
             {
-                Type = isLeagueQuestions ? CoinTransaction.TransactionType.AnswerBaltazar : CoinTransaction.TransactionType.AnswerQuestion,
+                Type = isLeagueQuestion ? CoinTransaction.TransactionType.AnswerBaltazar : CoinTransaction.TransactionType.AnswerQuestion,
                 Amount = question.Prize,
                 SourceId = question.Id
             });
@@ -180,23 +190,22 @@ namespace BaltazarWeb.Controllers
             if (festivalPoint == null)
             {
                 //var previousFestival = answererStudent.FestivalPoints.LastOrDefault();
-                st.FestivalPoints.Add(new Student.FestivalPoint
+                festivalPoint = new Student.FestivalPoint
                 {
                     Name = festivalName,
-                    DisplayName = ScoresData.CurrentFestivalDisplayName,
-                    Points = question.Prize,
-                    PointsFromOtherQuestions = question.Prize
-                });
+                    DisplayName = ScoresData.CurrentFestivalDisplayName
+                };
+                st.FestivalPoints.Add(festivalPoint);
             }
+            festivalPoint.Points += question.Prize;
+            if (isLeagueQuestion)
+                festivalPoint.PointsFromLeague += question.Prize;
             else
-            {
-                festivalPoint.Points += question.Prize;
                 festivalPoint.PointsFromOtherQuestions += question.Prize;
-            }
 
             st.Coins += question.Prize;
             st.TotalPoints += question.Prize;
-            if (isLeagueQuestions)
+            if (isLeagueQuestion)
                 st.TotalPointsFromLeague += question.Prize;
             else
                 st.TotalPointsFromOtherQuestions += question.Prize;
@@ -204,9 +213,14 @@ namespace BaltazarWeb.Controllers
             DB.Save(st);
 
             if (st.PusheId != null)
-                pushProvider.SendMessageToUser("تائید جواب شما",
-                    "تبریک! جواب شما برای یک سوال از طرف سوال کننده تائید شده و " + question.Prize + " امتیاز به شما تعلق یافت!",
-                    st.PusheId);
+            {
+                string msg;
+                if (isLeagueQuestion)
+                    msg = "تبریک! جواب شما برای سوال بالتازار تائید شده و " + question.Prize + " امتیاز به شما تعلق یافت!";
+                else
+                    msg = "تبریک! جواب شما برای یک سوال از طرف سوال کننده تائید شده و " + question.Prize + " امتیاز به شما تعلق یافت!";
+                pushProvider.SendMessageToUser("تائید جواب شما", msg, st.PusheId);
+            }
         }
 
         //public ActionResult<ListResponse<Answer>> List([FromHeader] Guid token, string questionId)

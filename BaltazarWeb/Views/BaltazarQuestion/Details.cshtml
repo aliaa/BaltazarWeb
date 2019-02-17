@@ -1,0 +1,93 @@
+﻿@model BaltazarWeb.Models.BaltazarQuestion
+@inject AliaaCommon.MongoDB.MongoHelper DB
+
+@{
+    ViewData["Title"] = "جزئیات سوال بالتازار";
+}
+
+<h2>جزئیات سوال بالتازار</h2>
+
+<div>
+    <hr />
+    <table class="table">
+        <tr>
+            <td>حداقل مقطع</td>
+            <td>@Html.DisplayFor(model => model.Grade)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.MaxGrade)</td>
+            <td>@Html.DisplayFor(model => model.MaxGrade)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.ExpireDate)</td>
+            <td>@(Utils.GetPersianDateString(Model.ExpireDate))</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.Prize)</td>
+            <td>@Html.DisplayFor(model => model.Prize)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.CreateDate)</td>
+            <td>@(Utils.GetPersianDateString(Model.CreateDate))</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.AllowUploadOnAnswer)</td>
+            <td>@Html.DisplayFor(model => model.AllowUploadOnAnswer)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.Text)</td>
+            <td>@Html.DisplayFor(model => model.Text)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.PublishStatus)</td>
+            <td>@Html.DisplayFor(model => model.PublishStatus)</td>
+        </tr>
+    </table>
+    @if (Model.HasImage)
+    {
+        <dl>
+            <dt>تصویر</dt>
+            <dd>
+                <img src="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + Model.Id + ".jpg")" style="max-width:100%;" />
+            </dd>
+        </dl>
+    }
+</div>
+<div>
+    @Html.ActionLink("ویرایش", "Edit", new { id = Model.Id.ToString() }) |
+    <a asp-action="Index">برگشت به لیست</a>
+</div>
+
+<h3>جواب های نیاز به تائید</h3>
+
+<div>
+    <hr/>
+    <table class="table">
+        <tr>
+            <th></th>
+            <th>@Html.DisplayNameFor(model => model.CreateDate)</th>
+            <th>@Html.DisplayNameFor(model => model.UserId)</th>
+            <th></th>
+            <th>@Html.DisplayNameFor(model => model.Text)</th>
+        </tr>
+        @foreach (var answer in DB.Find<Answer>(a => a.QuestionId == Model.Id && a.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).Limit(100).ToEnumerable())
+        {
+            <tr>
+                <td>
+                    @*@Html.ActionLink("جزئیات", "Details", "Answer", new { id = answer.Id.ToString() }) |*@
+                    @Html.ActionLink("تائید و دادن امتیاز", "AcceptAnswer", new { questionId = Model.Id.ToString(), answerId = answer.Id.ToString() }) |
+                    @Html.ActionLink("رد جواب", "RejectAnswer", new { id = answer.Id.ToString() })
+                </td>
+                <td>@(Utils.GetPersianDateString(answer.CreateDate))</td>
+                <td>@(DB.FindById<Student>(answer.UserId).DisplayName)</td>
+                <td>
+                    @if(answer.HasImage)
+                    {
+                        <a href="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + Model.Id + ".jpg")">تصویر</a>
+                    }
+                </td>
+                <td>@(answer.Text)</td>
+            </tr>
+        }
+    </table>
+</div>

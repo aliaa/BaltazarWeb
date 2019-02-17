@@ -8,6 +8,55 @@
 
 <h2>جزئیات جواب</h2>
 
+<h3>سوال</h3>
+<div>
+    @{
+        var question = DB.FindById<Question>(Model.QuestionId);
+    }
+    <hr />
+    <table class="table">
+        <tr>
+            <td>@Html.DisplayNameFor(_ => question.UserId)</td>
+            <td>@(DB.FindById<Student>(question.UserId)?.DisplayName)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(_ => question.Grade)</td>
+            <td>@Html.DisplayFor(_ => question.Grade)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(_ => question.CourseId)</td>
+            <td>@(DB.FindById<Course>(question.CourseId)?.Name)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(_ => question.SectionId)</td>
+            <td>@(DB.FindById<CourseSection>(question.SectionId)?.Name)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(_ => question.CreateDate)</td>
+            <td>@Html.DisplayFor(_ => question.CreateDate)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(_ => question.PublishStatus)</td>
+            <td>@Html.DisplayFor(_ => question.PublishStatus)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(_ => question.Text)</td>
+            <td>@Html.DisplayFor(_ => question.Text)</td>
+        </tr>
+        @if (question.HasImage)
+        {
+            <tr>
+                <td></td>
+                <td>
+                    <a href="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + question.Id + ".jpg")" style="max-width:100%;">تصویر</a>
+                </td>
+            </tr>
+        }
+    </table>
+    
+</div>
+
+<h3>جواب</h3>
 <div>
     <hr />
     <table class="table">

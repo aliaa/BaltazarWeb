@@ -41,7 +41,7 @@ namespace BaltazarWeb.Utils
         class RapidData : MessageData
         {
             public Action action { get; set; } = new Action();
-            //public string notif_icon { get; set; } = "android.resource://com.mybaltazar.baltazar2/drawable/ic_notification";
+            public string notif_icon { get; set; } = "notification";
         }
 
         class RapidPushNotificationMessage
