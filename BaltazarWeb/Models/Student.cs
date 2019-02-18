@@ -110,6 +110,7 @@ namespace BaltazarWeb.Models
         [Display(Name = "آیدی پوشه")]
         public string PusheId { get; set; }
 
+        public bool IsTeacher { get; set; }
 
         [JsonIgnore]
         public List<CoinTransaction> CoinTransactions { get; set; } = new List<CoinTransaction>();
