@@ -24,6 +24,8 @@ namespace BaltazarWeb.Models
         ManageShops,
         [Display(Name = "مدیریت دانش آموزان")]
         ManageStudents,
+        [Display(Name = "مدیریت آموزگاران")]
+        ManageTeachers,
         [Display(Name = "ارسال اعلان")]
         SendPush,
     }

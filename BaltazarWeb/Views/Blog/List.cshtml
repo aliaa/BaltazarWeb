@@ -44,7 +44,7 @@
             </td>
             <td>
                 @Html.ActionLink("ویرایش", "Edit", new { id=item.Id.ToString() }) |
-                @Html.ActionLink("حذف", "Delete", new { id = item.Id.ToString() })
+                @Html.ActionLink("حذف", "Delete", new { id = item.Id.ToString() }, new { onclick = "return confirm('آیا برای حذف مطمئن هستید؟');" })
             </td>
         </tr>
 }

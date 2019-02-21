@@ -97,7 +97,7 @@ namespace BaltazarWeb.Controllers
         public ActionResult<DataResponse<Question>> Publish([FromHeader] Guid token, [FromBody] Question question)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
-            if (student == null)
+            if (student == null || student.IsTeacher)
                 return Unauthorized();
 
             if (student.Coins < Consts.QUESTION_COIN_COST)
@@ -167,9 +167,9 @@ namespace BaltazarWeb.Controllers
             filters.Add(fb.Eq(q => q.AcceptedAnswerId, ObjectId.Empty));
             filters.Add(fb.Eq(q => q.PublishStatus, BaseUserContent.PublishStatusEnum.Published));
 
-            if (grade == null)
+            if (grade == null && !student.IsTeacher)
                 filters.Add(fb.Lte(q => q.Grade, student.Grade));
-            else
+            else if(grade != null)
                 filters.Add(fb.Eq(q => q.Grade, grade.Value));
 
             ObjectId id;
@@ -188,12 +188,16 @@ namespace BaltazarWeb.Controllers
                 item.Hot = !DB.Any<Answer>(a => a.QuestionId == item.Id);
                 item.UserName = DB.FindById<Student>(item.UserId).NickName;
             }
-            var baltazarQuestions = DB.Find<BaltazarQuestion>(q => q.ExpireDate > DateTime.Now && student.Grade >= q.Grade && student.Grade <= q.MaxGrade).ToList();
-            Random random = new Random();
-            foreach (var bq in baltazarQuestions)
+
+            if (!student.IsTeacher)
             {
-                int index = random.Next(list.Count);
-                list.Insert(index, bq);
+                var baltazarQuestions = DB.Find<BaltazarQuestion>(q => q.ExpireDate > DateTime.Now && student.Grade >= q.Grade && student.Grade <= q.MaxGrade).ToList();
+                Random random = new Random();
+                foreach (var bq in baltazarQuestions)
+                {
+                    int index = random.Next(list.Count);
+                    list.Insert(index, bq);
+                }
             }
 
             return new DataResponse<List<Question>> { Success = true, Data = list };

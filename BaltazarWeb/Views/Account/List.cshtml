@@ -28,7 +28,7 @@
                 @if (!item.IsAdmin)
                 {
                     <span>&nbsp;|&nbsp;</span>
-                    @Html.ActionLink("حذف", "Delete", new { id = item.Id.ToString() })
+                    @Html.ActionLink("حذف", "Delete", new { id = item.Id.ToString() }, new { onclick = "return confirm('آیا برای حذف مطمئن هستید؟');" })
                 }
             </td>
             <td>

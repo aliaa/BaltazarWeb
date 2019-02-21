@@ -32,7 +32,7 @@ namespace BaltazarWeb.Controllers
         {
             ObjectId cityId;
             ObjectId.TryParse(city, out cityId);
-            var list = DB.Find<Student>(s => s.CityId == cityId).Limit(1000).Skip(page * 1000).ToList();
+            var list = DB.Find<Student>(s => s.CityId == cityId && s.IsTeacher != true).Limit(1000).Skip(page * 1000).ToList();
 
             List<SelectListItem> cities = new List<SelectListItem>();
             long cityUnselectedStudentsCount = DB.Count<Student>(s => s.CityId == ObjectId.Empty);
@@ -69,6 +69,7 @@ namespace BaltazarWeb.Controllers
             return View(DB.FindById<Student>(id));
         }
 
+        [Authorize(policy: nameof(Permission.ManageStudents))]
         [HttpPost]
         public IActionResult Edit(Student student, string id)
         {
@@ -144,17 +145,24 @@ namespace BaltazarWeb.Controllers
             student.InvitationCode = Student.GenerateNewInvitationCode(DB);
             if (!string.IsNullOrEmpty(student.InvitedFromCode))
             {
-                Student inviteSource = DB.Find<Student>(s => s.InvitationCode == student.InvitedFromCode).FirstOrDefault();
-                inviteSource.Coins += Consts.INVITE_PRIZE;
-                inviteSource.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITE_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
-                DB.Save(inviteSource);
-                if (inviteSource.PusheId != null)
-                    pushProvider.SendMessageToUser("سکه بالتازار!", 
-                        "تبریک! یکی از دوستان شما با وارد کردن کد دعوت شما عضو بالتازار شد و " + Consts.INVITE_PRIZE + " سکه به شما تعلق یافت!", 
-                        inviteSource.PusheId);
+                if (student.InvitedFromCode.ToLower() == "teach")
+                {
+                    student.IsTeacher = true;
+                }
+                else
+                {
+                    Student inviteSource = DB.Find<Student>(s => s.InvitationCode == student.InvitedFromCode).FirstOrDefault();
+                    inviteSource.Coins += Consts.INVITE_PRIZE;
+                    inviteSource.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITE_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
+                    DB.Save(inviteSource);
+                    if (inviteSource.PusheId != null)
+                        pushProvider.SendMessageToUser("سکه بالتازار!",
+                            "تبریک! یکی از دوستان شما با وارد کردن کد دعوت شما عضو بالتازار شد و " + Consts.INVITE_PRIZE + " سکه به شما تعلق یافت!",
+                            inviteSource.PusheId);
 
-                student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITED_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
-                student.Coins += Consts.INVITED_PRIZE;
+                    student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITED_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
+                    student.Coins += Consts.INVITED_PRIZE;
+                }
             }
             else
                 student.InvitedFromCode = null;
@@ -293,6 +301,32 @@ namespace BaltazarWeb.Controllers
                 Success = true,
                 Data = me.CoinTransactions.OrderByDescending(t => t.Date).Take(100).ToList()
             };
+        }
+
+
+        [Authorize(policy: nameof(Permission.ManageTeachers))]
+        public IActionResult Teachers()
+        {
+            var list = DB.Find<Student>(s => s.IsTeacher == true).ToList();
+            return View(list);
+        }
+
+        [Authorize(policy: nameof(Permission.ManageTeachers))]
+        public IActionResult EditTeacher(string id)
+        {
+            return View(DB.FindById<Student>(id));
+        }
+
+        [Authorize(policy: nameof(Permission.ManageTeachers))]
+        [HttpPost]
+        public IActionResult EditTeacher(Student update, string id)
+        {
+            DB.UpdateOne<Student>(s => s.Id == ObjectId.Parse(id), Builders<Student>.Update
+                .Set(s => s.FirstName, update.FirstName)
+                .Set(s => s.LastName, update.LastName)
+                .Set(s => s.Password, update.Password)
+                .Set(s => s.Phone, update.Phone));
+            return RedirectToAction(nameof(Teachers));
         }
     }
 }

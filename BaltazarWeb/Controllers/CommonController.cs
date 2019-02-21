@@ -34,7 +34,8 @@ namespace BaltazarWeb.Controllers
                 StudentId = student != null ? student.Id : ObjectId.Empty,
                 UUID = uuid,
                 AppVersion = appVersion,
-                AndroidVersion = androidVersion
+                AndroidVersion = androidVersion,
+                PusheId = pusheId
             };
             DB.Save(log);
 
@@ -51,12 +52,13 @@ namespace BaltazarWeb.Controllers
             CommonData.Notifications notifications = null;
             if (student != null)
             {
-                notifications = new CommonData.Notifications
+                notifications = new CommonData.Notifications();
+                if (!student.IsTeacher)
                 {
-                    NewAnswers = DB.Find<Question>(q => q.UserId == student.Id && q.UnseenAnswersCount > 0).Project(q => q.UnseenAnswersCount).ToEnumerable().Sum(),
-                    NewBlogs = (int)DB.Count<Blog>(b => b.DateAdded > student.LastBlogVisit),
-                    NewShops = (int)DB.Count<ShopItem>(s => s.DateAdded > student.LastShopVisit)
-                };
+                    notifications.NewAnswers = DB.Find<Question>(q => q.UserId == student.Id && q.UnseenAnswersCount > 0).Project(q => q.UnseenAnswersCount).ToEnumerable().Sum();
+                    notifications.NewShops = (int)DB.Count<ShopItem>(s => s.DateAdded > student.LastShopVisit);
+                }
+                notifications.NewBlogs = (int)DB.Count<Blog>(b => b.DateAdded > student.LastBlogVisit);
             }
 
             return new DataResponse<CommonData>

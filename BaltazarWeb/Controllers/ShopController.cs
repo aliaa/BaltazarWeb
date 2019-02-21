@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
 using BaltazarWeb.Models.ApiModels;
@@ -130,7 +129,7 @@ namespace BaltazarWeb.Controllers
         public ActionResult<CommonResponse> AddOrder([FromHeader] Guid token, string shopItemId)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
-            if (student == null)
+            if (student == null || student.IsTeacher)
                 return Unauthorized();
             if(student.CityId == ObjectId.Empty || string.IsNullOrWhiteSpace(student.Address))
                 return new CommonResponse { Message = "ثبت سفارش انجام نشد! لطفا اطلاعات پروفایل خود را قبل از سفارش دادن تکمیل نمائید!" };
@@ -167,7 +166,7 @@ namespace BaltazarWeb.Controllers
         public ActionResult<DataResponse<List<ShopOrder>>> MyOrders([FromHeader] Guid token)
         {
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
-            if (student == null)
+            if (student == null || student.IsTeacher)
                 return Unauthorized();
             List<ShopOrder> orders = DB.Find<ShopOrder>(s => s.UserId == student.Id).ToList();
             foreach (var item in orders)

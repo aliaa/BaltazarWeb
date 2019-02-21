@@ -35,7 +35,7 @@
                     @if (perms != null)
                     {
                         string[] permsArr = perms.Split(',');
-                        @if(User.HasClaim("IsAdmin", "true"))
+                        @if (User.HasClaim("IsAdmin", "true"))
                         {
                             <li><a asp-controller="Account" asp-action="List">مدیریت کاربران</a></li>
                         }
@@ -73,6 +73,10 @@
                         @if (perms.Contains(nameof(Permission.ManageLeagueQuestions)))
                         {
                             <li><a asp-controller="BaltazarQuestion" asp-action="Index">سوالات لیگ</a></li>
+                        }
+                        @if (perms.Contains(nameof(Permission.ManageTeachers)))
+                        {
+                            <li><a asp-controller="Student" asp-action="Teachers">آموزگاران</a></li>
                         }
                         @if (perms.Contains(nameof(Permission.ManageStudents)))
                         {

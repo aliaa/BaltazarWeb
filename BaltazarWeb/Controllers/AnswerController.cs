@@ -99,13 +99,16 @@ namespace BaltazarWeb.Controllers
             var previousStudentAnswer = DB.Find<Answer>(a => a.UserId == student.Id && a.QuestionId == question.Id).FirstOrDefault();
             if(previousStudentAnswer != null)
             {
-                if (previousStudentAnswer.PublishStatus == BaseUserContent.PublishStatusEnum.Published)
+                if (!student.IsTeacher && previousStudentAnswer.PublishStatus == BaseUserContent.PublishStatusEnum.Published)
                     return new DataResponse<Answer> { Message = "شما قبلا به این سوال پاسخ صحیح داده اید!" };
                 DB.DeleteOne(previousStudentAnswer);
             }
 
             answer.Id = ObjectId.Empty;
-            answer.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;
+            if(student.IsTeacher)
+                answer.PublishStatus = BaseUserContent.PublishStatusEnum.Published;
+            else
+                answer.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;
             answer.UserId = student.Id;
             answer.UserName = student.NickName;
             answer.HasImage = false;
@@ -162,7 +165,7 @@ namespace BaltazarWeb.Controllers
                 question.AcceptedAnswerId = answer.Id;
 
                 Student answererStudent = DB.FindById<Student>(answer.UserId);
-                if (answererStudent != null)
+                if (answererStudent != null && !answererStudent.IsTeacher)
                     AddPointsToStudentForCorrectAnswering(DB, pushProvider, answererStudent, question);
             }
 

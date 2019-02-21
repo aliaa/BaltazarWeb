@@ -15,5 +15,6 @@ namespace BaltazarWeb.Models
         public string UUID { get; set; }
         public int AppVersion { get; set; }
         public int AndroidVersion { get; set; }
+        public string PusheId { get; set; }
     }
 }
