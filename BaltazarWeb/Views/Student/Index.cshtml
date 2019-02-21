@@ -5,17 +5,16 @@
     ViewData["Title"] = "لیست دانش آموزان";
 }
 
-
+<script type="text/javascript">
+    window.onload = function() {
+        $("#city").val("@ViewBag.SelectedCity");
+    }
+</script>
 
 <form asp-action="Index">
     <p style="margin:10px; text-align:center;">
         شهر: 
         <select id="city" name="city" onchange="document.forms[0].submit();" asp-items="ViewBag.Cities"></select>
-        <script type="text/javascript">
-            window.onload = function() {
-                $("#city").val("@ViewBag.SelectedCity");
-            }
-        </script>
     </p>
 </form>
 <div style="width:120%">

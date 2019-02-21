@@ -7,11 +7,29 @@
     if (queryStatus.Count == 1) {
         Enum.TryParse<BaseUserContent.PublishStatusEnum>(queryStatus, out status);
     }
-    
+
     ViewData["Title"] = "سوالات";
 }
 
+<script type="text/javascript">
+    window.onload = function() {
+        $("#grade").val("@ViewBag.SelectedGrade");
+        $("#course").val("@ViewBag.SelectedCourseId")
+    }
+</script>
+
 <h2>سوالات @Html.DisplayFor(_ => status)</h2>
+
+<form asp-action="Index">
+    <input type="hidden" id="status" name="status" value="@((string)Context.Request.Query["status"] ?? (string)ViewBag.Status)" />
+    <p style="margin:10px; text-align:center;">
+        مقطع:
+        <select id="grade" name="grade" onchange="document.forms[0].submit();" asp-items="ViewBag.Grades"></select>
+        &nbsp;&nbsp;
+        درس:
+        <select id="course" name="course" onchange="document.forms[0].submit()" asp-items="ViewBag.Courses"></select>
+    </p>
+</form>
 
 <table class="table">
     <thead>

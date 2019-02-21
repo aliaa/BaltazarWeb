@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -32,13 +33,48 @@ namespace BaltazarWeb.Controllers
         }
 
         [Authorize(policy: nameof(Permission.ViewContent))]
-        public IActionResult Index(BaseUserContent.PublishStatusEnum status)
+        public IActionResult Index(string status, string grade = "", string course = "")
         {
-            var query = DB.Find<Question>(q => q.PublishStatus == status);
-            if (status == BaseUserContent.PublishStatusEnum.WaitForApprove)
+            BaseUserContent.PublishStatusEnum statusEnum = (BaseUserContent.PublishStatusEnum)Enum.Parse(typeof(BaseUserContent.PublishStatusEnum), status);
+            List<FilterDefinition<Question>> filters = new List<FilterDefinition<Question>>();
+            var fb = Builders<Question>.Filter;
+            filters.Add(fb.Eq(q => q.PublishStatus, statusEnum));
+
+            int gradeInt = 0;
+            int.TryParse(grade, out gradeInt);
+            if (gradeInt > 0)
+                filters.Add(fb.Eq(q => q.Grade, gradeInt));
+
+            ObjectId courseId = ObjectId.Empty;
+            ObjectId.TryParse(course, out courseId);
+            if (courseId != ObjectId.Empty)
+                filters.Add(fb.Eq(q => q.CourseId, courseId));
+
+            var totalFilter = fb.And(filters);
+            if (filters.Count == 1)
+                totalFilter = filters[0];
+
+            var query = DB.Find(totalFilter);
+            if (statusEnum == BaseUserContent.PublishStatusEnum.WaitForApprove)
                 query = query.SortBy(q => q.CreateDate);
             else
                 query = query.SortByDescending(q => q.CreateDate);
+
+            List<SelectListItem> grades = new List<SelectListItem>();
+            grades.Add(new SelectListItem("همه", ""));
+            for (int i = 1; i <= 12; i++)
+                grades.Add(new SelectListItem(i.ToString(), i.ToString()));
+            ViewBag.Grades = grades;
+            ViewBag.SelectedGrade = grade;
+            ViewBag.Status = status;
+
+            List<SelectListItem> courses = new List<SelectListItem>();
+            courses.Add(new SelectListItem("همه", ""));
+            if(gradeInt > 0)
+                courses.AddRange(DB.Find<Course>(c => c.Grade == gradeInt).ToEnumerable().Select(c => new SelectListItem(c.Name, c.Id.ToString())));
+            ViewBag.Courses = courses;
+            ViewBag.SelectedCourseId = course;
+
             return View(query.ToEnumerable());
         }
 

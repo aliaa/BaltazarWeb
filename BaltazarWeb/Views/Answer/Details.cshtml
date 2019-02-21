@@ -73,10 +73,6 @@
             <td>@Html.DisplayFor(model => model.CreateDate)</td>
         </tr>
         <tr>
-            <td>@Html.DisplayNameFor(model => model.Text)</td>
-            <td>@Html.DisplayFor(model => model.Text)</td>
-        </tr>
-        <tr>
             <td>@Html.DisplayNameFor(model => model.PublishStatus)</td>
             <td>@Html.DisplayFor(model => model.PublishStatus)</td>
         </tr>
@@ -96,8 +92,15 @@
     }
 </div>
 <div align="center">
-    @Html.ActionLink("تائید محتوا", "Accept", new { id = Model.Id.ToString() }) &nbsp;&nbsp;&nbsp;
-    @Html.ActionLink("محتوای نامناسب", "Reject", new { id = Model.Id.ToString() })
+    @if (Model.PublishStatus != BaseUserContent.PublishStatusEnum.Published)
+    {
+        @Html.ActionLink("تائید محتوا", "Accept", new { id = Model.Id.ToString() })
+    }
+    &nbsp;&nbsp;&nbsp;
+    @if (Model.PublishStatus != BaseUserContent.PublishStatusEnum.Rejected)
+    {
+        @Html.ActionLink("محتوای نامناسب", "Reject", new { id = Model.Id.ToString() })
+    }
 </div>
 <div>
     <a asp-action="ApproveList">برگشت به لیست</a>
