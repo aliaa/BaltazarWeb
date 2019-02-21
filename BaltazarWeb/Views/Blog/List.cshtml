@@ -12,6 +12,7 @@
 <table class="table">
     <thead>
         <tr>
+            <th></th>
             <th>
                 @Html.DisplayNameFor(model => model.DateAdded)
             </th>
@@ -24,12 +25,15 @@
             <th>
                 @Html.DisplayNameFor(model => model.ShowOnWeb)
             </th>
-            <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.ActionLink("ویرایش", "Edit", new { id = item.Id.ToString() }) |
+                @Html.ActionLink("حذف", "Delete", new { id = item.Id.ToString() }, new { onclick = "return confirm('آیا برای حذف مطمئن هستید؟');" })
+            </td>
             <td>
                 @(Utils.GetPersianDateString(item.DateAdded))
             </td>
@@ -41,10 +45,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ShowOnWeb)
-            </td>
-            <td>
-                @Html.ActionLink("ویرایش", "Edit", new { id=item.Id.ToString() }) |
-                @Html.ActionLink("حذف", "Delete", new { id = item.Id.ToString() }, new { onclick = "return confirm('آیا برای حذف مطمئن هستید؟');" })
             </td>
         </tr>
 }
