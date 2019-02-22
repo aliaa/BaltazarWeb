@@ -58,7 +58,7 @@
     <a asp-action="Index">برگشت به لیست</a>
 </div>
 
-<h3>جواب های نیاز به تائید</h3>
+<h3>جواب ها</h3>
 
 <div>
     <hr/>
@@ -70,13 +70,17 @@
             <th></th>
             <th>@Html.DisplayNameFor(model => model.Text)</th>
         </tr>
-        @foreach (var answer in DB.Find<Answer>(a => a.QuestionId == Model.Id && a.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).Limit(100).ToEnumerable())
+        @foreach (var answer in DB.Find<Answer>(a => a.QuestionId == Model.Id).SortByDescending(a => a.CreateDate).Limit(100).ToEnumerable())
         {
             <tr>
                 <td>
                     @Html.ActionLink("جزئیات", "Details", "Answer", new { id = answer.Id.ToString() }) |
-                    @Html.ActionLink("تائید و دادن امتیاز", "AcceptAnswer", new { questionId = Model.Id.ToString(), answerId = answer.Id.ToString() }) |
-                    @Html.ActionLink("رد جواب", "RejectAnswer", new { id = answer.Id.ToString() })
+                    @if (answer.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove)
+                    {
+                        @Html.ActionLink("تائید و دادن امتیاز", "AcceptAnswer", new { questionId = Model.Id.ToString(), answerId = answer.Id.ToString() })
+                        <span>&nbsp;|&nbsp;</span>
+                        @Html.ActionLink("رد جواب", "RejectAnswer", new { id = answer.Id.ToString() })
+                    }
                 </td>
                 <td>@(Utils.GetPersianDateString(answer.CreateDate))</td>
                 <td>@(DB.FindById<Student>(answer.UserId).DisplayName)</td>

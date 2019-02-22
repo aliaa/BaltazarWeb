@@ -32,7 +32,7 @@ namespace BaltazarWeb.Controllers
         [Authorize(policy: nameof(Permission.ViewContent))]
         public IActionResult ApproveList()
         {
-            return View(DB.Find<Answer>(a => a.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove).SortBy(q => q.CreateDate).ToEnumerable());
+            return View(DB.Find<Answer>(a => a.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove && !a.ToBaltazarQuestion).SortBy(q => q.CreateDate).ToEnumerable());
         }
 
         [Authorize(policy: nameof(Permission.ApproveContent))]
@@ -99,13 +99,13 @@ namespace BaltazarWeb.Controllers
             var previousStudentAnswer = DB.Find<Answer>(a => a.UserId == student.Id && a.QuestionId == question.Id).FirstOrDefault();
             if(previousStudentAnswer != null)
             {
-                if (!student.IsTeacher && previousStudentAnswer.PublishStatus == BaseUserContent.PublishStatusEnum.Published)
+                if (!student.IsTeacher && previousStudentAnswer.Response == Answer.QuestionerResponseEnum.Accepted)
                     return new DataResponse<Answer> { Message = "شما قبلا به این سوال پاسخ صحیح داده اید!" };
                 DB.DeleteOne(previousStudentAnswer);
             }
 
             answer.Id = ObjectId.Empty;
-            if(student.IsTeacher)
+            if(student.IsTeacher || answer.ToBaltazarQuestion)
                 answer.PublishStatus = BaseUserContent.PublishStatusEnum.Published;
             else
                 answer.PublishStatus = BaseUserContent.PublishStatusEnum.WaitForApprove;

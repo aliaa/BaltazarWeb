@@ -98,7 +98,7 @@ namespace BaltazarWeb.Controllers
         public IActionResult OrdersList(ShopOrder.OrderStatus status = ShopOrder.OrderStatus.WaitForApprove)
         {
             ViewBag.Status = AliaaCommon.Utils.GetDisplayNameOfMember(typeof(ShopOrder.OrderStatus), status.ToString());
-            return View(DB.Find<ShopOrder>(o => o.Status == status).ToEnumerable());
+            return View(DB.Find<ShopOrder>(o => o.Status == status).SortBy(o => o.OrderDate).ToEnumerable());
         }
 
         [Authorize(policy: nameof(Permission.ManageShops))]
