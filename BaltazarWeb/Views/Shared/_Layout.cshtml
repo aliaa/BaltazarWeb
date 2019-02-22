@@ -53,7 +53,8 @@
                                 <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">فروشگاه <span class="caret"></span></a>
                                 <ul class="dropdown-menu">
                                     <li><a asp-controller="Shop" asp-action="Index">اقلام</a></li>
-                                    <li><a asp-controller="Shop" asp-action="OrdersList">سفارش ها</a></li>
+                                    <li><a asp-controller="Shop" asp-action="OrdersList" asp-route-status="WaitForApprove">سفارش های منتظر تائید</a></li>
+                                    <li><a asp-controller="Shop" asp-action="OrdersList" asp-route-status="Approved">سفارش های تائید شده</a></li>
                                 </ul>
                             </li>
                         }

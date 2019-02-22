@@ -226,16 +226,8 @@ namespace BaltazarWeb.Controllers
             }
 
             if (!student.IsTeacher)
-            {
-                var baltazarQuestions = DB.Find<BaltazarQuestion>(q => q.ExpireDate > DateTime.Now && student.Grade >= q.Grade && student.Grade <= q.MaxGrade).ToList();
-                Random random = new Random();
-                foreach (var bq in baltazarQuestions)
-                {
-                    int index = random.Next(list.Count);
-                    list.Insert(index, bq);
-                }
-            }
-
+                list.AddRange(DB.Find<BaltazarQuestion>(q => q.ExpireDate > DateTime.Now && student.Grade >= q.Grade && student.Grade <= q.MaxGrade).ToEnumerable());
+            list = list.OrderByDescending(q => q.CreateDate).ToList();
             return new DataResponse<List<Question>> { Success = true, Data = list };
         }
 

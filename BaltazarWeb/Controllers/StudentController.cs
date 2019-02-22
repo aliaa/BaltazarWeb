@@ -32,7 +32,7 @@ namespace BaltazarWeb.Controllers
         {
             ObjectId cityId;
             ObjectId.TryParse(city, out cityId);
-            var list = DB.Find<Student>(s => s.CityId == cityId && s.IsTeacher != true).Limit(1000).Skip(page * 1000).ToList();
+            var list = DB.Find<Student>(s => s.CityId == cityId && s.IsTeacher != true).Limit(1000).Skip(page * 1000).SortByDescending(s => s.RegistrationDate).ToList();
 
             List<SelectListItem> cities = new List<SelectListItem>();
             long cityUnselectedStudentsCount = DB.Count<Student>(s => s.CityId == ObjectId.Empty);
@@ -307,7 +307,7 @@ namespace BaltazarWeb.Controllers
         [Authorize(policy: nameof(Permission.ManageTeachers))]
         public IActionResult Teachers()
         {
-            var list = DB.Find<Student>(s => s.IsTeacher == true).ToList();
+            var list = DB.Find<Student>(s => s.IsTeacher == true).SortByDescending(s => s.RegistrationDate).ToList();
             return View(list);
         }
 
