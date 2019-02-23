@@ -10,27 +10,25 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ShopItemId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CoinCost)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.OrderDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
             <th></th>
+            <th>@Html.DisplayNameFor(model => model.ShopItemId)</th>
+            <th>@Html.DisplayNameFor(model => model.UserId)</th>
+            <th>@Html.DisplayNameFor(model => model.CoinCost)</th>
+            <th>@Html.DisplayNameFor(model => model.OrderDate)</th>
+            <th>@Html.DisplayNameFor(model => model.Status)</th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @if (item.Status == ShopOrder.OrderStatus.WaitForApprove)
+                {
+                    @Html.ActionLink("تائید", "ApproveOrder", new { id = item.Id })
+                    <span>&nbsp;|&nbsp;</span>
+                    @Html.ActionLink("رد", "RejectOrder", new { id = item.Id })
+                }
+            </td>
             <td>
                 @(DB.FindById<ShopItem>(item.ShopItemId)?.Name)
             </td>
@@ -45,14 +43,6 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @if (item.Status == ShopOrder.OrderStatus.WaitForApprove)
-                {
-                    @Html.ActionLink("تائید", "ApproveOrder", new { id = item.Id })
-                    <span>&nbsp;|&nbsp;</span>
-                    @Html.ActionLink("رد", "RejectOrder", new { id = item.Id })
-                }
             </td>
         </tr>
 }

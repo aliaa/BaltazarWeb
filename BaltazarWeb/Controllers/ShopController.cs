@@ -37,6 +37,12 @@ namespace BaltazarWeb.Controllers
             return View();
         }
 
+        [Authorize(policy: nameof(Permission.ManageBlogs))]
+        public IActionResult Details(string id)
+        {
+            return View(DB.FindById<ShopItem>(id));
+        }
+
         [Authorize(policy: nameof(Permission.ManageShops))]
         [HttpPost]
         public IActionResult Add(ShopItem item)

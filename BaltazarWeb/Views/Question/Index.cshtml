@@ -58,7 +58,7 @@
             <td>
                 @if (item.HasImage)
                 {
-                    <a href="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\", "/") + "/" + item.Id + ".jpg")">تصویر</a>
+                    <a href="@UtilsX.GetImageUrl(item.Id)">تصویر</a>
                 }
             </td>
             <td>@Html.DisplayFor(modelItem => item.Text)</td>

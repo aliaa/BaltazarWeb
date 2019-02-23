@@ -13,21 +13,11 @@
     <thead>
         <tr>
             <th></th>
-            <th>
-                @Html.DisplayNameFor(model => model.Enabled)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CoinCost)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DateAdded)
-            </th>
-            <th>
-                تصویر
-            </th>
+            <th>@Html.DisplayNameFor(model => model.Enabled)</th>
+            <th>@Html.DisplayNameFor(model => model.CoinCost)</th>
+            <th>@Html.DisplayNameFor(model => model.Name)</th>
+            <th>@Html.DisplayNameFor(model => model.DateAdded)</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -53,7 +43,7 @@
             <td>
                 @if (item.HasImage)
                 {
-                    <a href="@(Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + item.Id + ".jpg")">نمایش تصویر</a>
+                    <a href="@UtilsX.GetImageUrl(item.Id)">تصویر</a>
                 }
             </td>
         </tr>
