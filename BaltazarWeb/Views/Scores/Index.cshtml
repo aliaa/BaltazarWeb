@@ -1,0 +1,69 @@
+﻿@model BaltazarWeb.Models.ViewModels.ScoresViewModel
+@inject AliaaCommon.MongoDB.MongoHelper DB
+
+@{
+    ViewData["Title"] = "امتیاز دانش آموزان";
+}
+
+<h2>امتیاز دانش آموزان</h2>
+
+<div>
+    <h4>جدول کلی</h4>
+    <table class="table">
+        <tr>
+            <th>شهر</th>
+            <th>دانش آموز</th>
+            <th>امتیاز</th>
+        </tr>
+        @foreach (var item in Model.TotalTopStudents)
+        {
+            <tr>
+                <td>@(DB.FindById<City>(item.CityId)?.Name)</td>
+                <td>@item.UserName</td>
+                <td>@item.Points</td>
+            </tr>
+        }
+    </table>
+
+    <hr />
+    <h4>جدول لیگ فعلی (@Model.CurrentFestivalName)</h4>
+    <table class="table">
+        <tr>
+            <th>شهر</th>
+            <th>دانش آموز</th>
+            <th>امتیاز</th>
+        </tr>
+        @foreach (var item in Model.FestivalTopStudents)
+        {
+            <tr>
+                <td>@(DB.FindById<City>(item.CityId)?.Name)</td>
+                <td>@item.UserName</td>
+                <td>@item.Points</td>
+            </tr>
+        }
+    </table>
+
+    <hr/>
+    @for (int i = 0; i < Model.FestivalTopInGrades.Length; i++)
+    {
+        <div style="float:right; margin:8px; padding:8px; background-color:aliceblue;">
+            <h4>جدول لیگ فعلی برای مقطع @(i+1)</h4>
+            <table class="table">
+                <tr>
+                    <th>شهر</th>
+                    <th>دانش آموز</th>
+                    <th>امتیاز</th>
+                </tr>
+                @foreach (var item in Model.FestivalTopInGrades[i])
+                {
+                    <tr>
+                        <td>@(DB.FindById<City>(item.CityId)?.Name)</td>
+                        <td>@item.UserName</td>
+                        <td>@item.Points</td>
+                    </tr>
+                }
+            </table>
+        </div>
+    }
+    <hr/>
+</div>

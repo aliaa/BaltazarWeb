@@ -79,6 +79,7 @@
                         {
                             <li><a asp-controller="Student" asp-action="Teachers">آموزگاران</a></li>
                         }
+                        <li><a asp-controller="Scores" asp-action="Index">امتیازات</a></li>
                         @if (perms.Contains(nameof(Permission.ManageStudents)))
                         {
                             <li><a asp-controller="Student" asp-action="Index">دانش آموزان</a></li>

@@ -17,13 +17,11 @@ namespace BaltazarWeb.Controllers
     public class StudentController : Controller
     {
         private readonly MongoHelper DB;
-        private readonly ScoresDataProvider scoresDataProvider;
         private readonly IPushNotificationProvider pushProvider;
 
-        public StudentController(MongoHelper DB, ScoresDataProvider scoresDataProvider, IPushNotificationProvider pushProvider)
+        public StudentController(MongoHelper DB, IPushNotificationProvider pushProvider)
         {
             this.DB = DB;
-            this.scoresDataProvider = scoresDataProvider;
             this.pushProvider = pushProvider;
         }
 
@@ -240,47 +238,6 @@ namespace BaltazarWeb.Controllers
             st.Token = Guid.NewGuid();
             DB.Save(st);
             return new DataResponse<Student> { Success = true, Data = st };
-        }
-        
-        public ActionResult<DataResponse<ScoresData>> Scores([FromHeader] Guid token)
-        {
-            PersianDate pDate = PersianDateConverter.ToPersianDate(DateTime.Now);
-            int currentMonth = pDate.Month;
-            int currentSeason0Based = (currentMonth - 1) / 3;
-            DateTime festivalStart = PersianDateConverter.ToGregorianDateTime(new PersianDate(pDate.Year, month: currentSeason0Based * 3 + 1, day: 1));
-
-            Student me = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
-            if (me == null)
-                return Unauthorized();
-
-            var currentFestival = ScoresData.CurrentFestivalName;
-            ScoresData data = new ScoresData();
-
-            data.MyAllTimePoints = me.TotalPoints;
-            data.MyAllTimeTotalScore = DB.Count<Student>(s => s.TotalPoints > me.TotalPoints) + 1;
-
-            data.FestivalName = ScoresData.CurrentFestivalDisplayName;
-            var myFestival = me.FestivalPoints.FirstOrDefault(f => f.Name == currentFestival);
-            data.MyFestivalPoints = myFestival != null ? myFestival.Points : 0;
-            data.MyFestivalPointsFromLeague = myFestival != null ? myFestival.PointsFromLeague : 0;
-            data.MyFestivalPointsFromOtherQuestions = myFestival != null ? myFestival.PointsFromOtherQuestions : 0;
-
-            data.MyFestivalScore = DB.Count(Builders<Student>.Filter.ElemMatch(s => s.FestivalPoints, f => f.Points > data.MyFestivalPoints)) + 1;
-            data.MyFestivalScoreOnGrade = DB.Count(
-                Builders<Student>.Filter.And(
-                    Builders<Student>.Filter.Eq(s => s.Grade, me.Grade),
-                    Builders<Student>.Filter.ElemMatch(s => s.FestivalPoints, f => f.Points > data.MyFestivalPoints)
-                )) + 1;
-
-            data.FestivalTop = scoresDataProvider.FestivalTopStudents;
-            data.TotalTop = scoresDataProvider.TotalTopStudents;
-            data.FestivalTopOnGrade = scoresDataProvider.GetFestivalTopStudentsInGrade(me.Grade);
-
-            return new DataResponse<ScoresData>
-            {
-                Success = true,
-                Data = data
-            };
         }
         
         public ActionResult<DataResponse<Student>> Me([FromHeader] Guid token)
