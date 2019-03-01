@@ -19,7 +19,7 @@
         {
             <tr>
                 <td>@(DB.FindById<City>(item.CityId)?.Name)</td>
-                <td>@item.UserName</td>
+                <td>@Html.ActionLink(item.UserName, "Details", "Student", new { id = item.StudentId.ToString() })</td>
                 <td>@item.Points</td>
             </tr>
         }
@@ -37,7 +37,7 @@
         {
             <tr>
                 <td>@(DB.FindById<City>(item.CityId)?.Name)</td>
-                <td>@item.UserName</td>
+                <td>@Html.ActionLink(item.UserName, "Details", "Student", new { id = item.StudentId.ToString() })</td>
                 <td>@item.Points</td>
             </tr>
         }
@@ -58,7 +58,7 @@
                 {
                     <tr>
                         <td>@(DB.FindById<City>(item.CityId)?.Name)</td>
-                        <td>@item.UserName</td>
+                        <td>@Html.ActionLink(item.UserName, "Details", "Student", new { id = item.StudentId.ToString() })</td>
                         <td>@item.Points</td>
                     </tr>
                 }

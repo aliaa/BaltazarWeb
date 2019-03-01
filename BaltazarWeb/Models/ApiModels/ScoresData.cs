@@ -1,5 +1,7 @@
-﻿using FarsiLibrary;
+﻿using AliaaCommon;
+using FarsiLibrary;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,7 @@ namespace BaltazarWeb.Models.ApiModels
 {
     public class TopStudent
     {
+        public ObjectId StudentId { get; set; }
         public string UserName { get; set; }
         public ObjectId CityId { get; set; }
         public string School { get; set; }

@@ -43,7 +43,7 @@ namespace BaltazarWeb.Utils
         private List<TopStudent> GetTotalTopFromDB()
         {
             return DB.Find<Student>(s => true).SortByDescending(s => s.TotalPoints).Limit(10).ToEnumerable()
-                .Select(s => new TopStudent { UserName = s.DisplayName, CityId = s.CityId, Points = s.TotalPoints, School = s.SchoolName }).ToList();
+                .Select(s => new TopStudent { StudentId = s.Id, UserName = s.DisplayName, CityId = s.CityId, Points = s.TotalPoints, School = s.SchoolName }).ToList();
         }
 
         public List<TopStudent> FestivalTopStudents
@@ -59,7 +59,7 @@ namespace BaltazarWeb.Utils
             }
         }
 
-        class UnWindedFestivalStudent : MongoEntity
+        private class UnWindedFestivalStudent : MongoEntity
         {
             public Student.FestivalPoint FestivalPoints { get; set; }
             public string FirstName { get; set; }
@@ -69,7 +69,7 @@ namespace BaltazarWeb.Utils
             public int Grade { get; set; }
         }
 
-        class TopStudentWithFestivalName : TopStudent
+        private class TopStudentWithFestivalName : TopStudent
         {
             public string FestivalName { get; set; }
             public int Grade { get; set; }
@@ -79,11 +79,12 @@ namespace BaltazarWeb.Utils
         {
             var currentFestival = ScoresData.CurrentFestivalName;
             var agg = DB.Aggregate<Student>()
-                .Project<Student>(Builders<Student>.Projection.Include(s => s.FirstName).Include(s => s.LastName)
+                .Project<Student>(Builders<Student>.Projection.Include(s => s.Id).Include(s => s.FirstName).Include(s => s.LastName)
                     .Include(s => s.SchoolName).Include(s => s.Grade).Include(s => s.FestivalPoints).Include(s => s.CityId))
                 .Unwind<Student, UnWindedFestivalStudent>(s => s.FestivalPoints)
                 .Project(s => new TopStudentWithFestivalName
                 {
+                    StudentId = s.Id,
                     UserName = s.FirstName + " " + s.LastName,
                     CityId = s.CityId,
                     School = s.SchoolName,
@@ -97,10 +98,10 @@ namespace BaltazarWeb.Utils
             else
                 agg = agg.Match(s => s.FestivalName == currentFestival && s.Grade == grade.Value);
 
-            return agg
+            agg = agg
                 .Project<TopStudentWithFestivalName>(Builders<TopStudentWithFestivalName>.Projection.Exclude(s => s.FestivalName).Exclude(s => s.Grade))
-                .Sort(Builders<TopStudentWithFestivalName>.Sort.Descending(s => s.Points))
-                .As<TopStudent>().ToList();
+                .Sort(Builders<TopStudentWithFestivalName>.Sort.Descending(s => s.Points));
+            return agg.As<TopStudent>().ToList();
         }
 
         //public List<TopStudent> GetTotalTopStudentsInGrade(int grade)
@@ -127,6 +128,33 @@ namespace BaltazarWeb.Utils
                 festivalGradesTopCache[grade-1].AutoRefreshFunc = _ => GetFestivalTopFromDB(grade);
             }
             return festivalGradesTopCache[grade-1].Data;
+        }
+
+        public ScoresData GetScoresData(Student student)
+        {
+            var currentFestival = ScoresData.CurrentFestivalName;
+            ScoresData data = new ScoresData();
+
+            data.MyAllTimePoints = student.TotalPoints;
+            data.MyAllTimeTotalScore = DB.Count<Student>(s => s.TotalPoints > student.TotalPoints) + 1;
+
+            data.FestivalName = ScoresData.CurrentFestivalDisplayName;
+            var myFestival = student.FestivalPoints.FirstOrDefault(f => f.Name == currentFestival);
+            data.MyFestivalPoints = myFestival != null ? myFestival.Points : 0;
+            data.MyFestivalPointsFromLeague = myFestival != null ? myFestival.PointsFromLeague : 0;
+            data.MyFestivalPointsFromOtherQuestions = myFestival != null ? myFestival.PointsFromOtherQuestions : 0;
+
+            data.MyFestivalScore = DB.Count(Builders<Student>.Filter.ElemMatch(s => s.FestivalPoints, f => f.Points > data.MyFestivalPoints)) + 1;
+            data.MyFestivalScoreOnGrade = DB.Count(
+                Builders<Student>.Filter.And(
+                    Builders<Student>.Filter.Eq(s => s.Grade, student.Grade),
+                    Builders<Student>.Filter.ElemMatch(s => s.FestivalPoints, f => f.Points > data.MyFestivalPoints)
+                )) + 1;
+
+            data.FestivalTop = FestivalTopStudents;
+            data.TotalTop = TotalTopStudents;
+            data.FestivalTopOnGrade = GetFestivalTopStudentsInGrade(student.Grade);
+            return data;
         }
     }
 }

@@ -1,0 +1,211 @@
+﻿@model BaltazarWeb.Models.Student
+@inject BaltazarWeb.Utils.ScoresDataProvider scoresProvider
+
+@{
+    ViewData["Title"] = "اطلاعات دانش آموز";
+    var scoresData = scoresProvider.GetScoresData(Model);
+}
+
+<h2>اطلاعات دانش آموز</h2>
+
+<div class="row">
+    <hr />
+    <div class="col-md-5">
+        <table class="table">
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.FirstName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.LastName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.NickName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.NickName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.RegistrationDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.RegistrationDate)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.MembershipDurationDays)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.MembershipDurationDays)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Phone)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Phone)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Password)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Password)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Grade)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Grade)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Address)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Address)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Gender)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Gender)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.SchoolName)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.SchoolName)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.SchoolPhone)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.SchoolPhone)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.InvitationCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.InvitationCode)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.InvitedFromCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.InvitedFromCode)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.BirthDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.BirthDate)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.PusheId)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.PusheId)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.Coins)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.Coins)
+                </td>
+            </tr>
+        </table>
+        <hr />
+    </div>
+    <div class="col-md-4">
+        <h4>امتیازات</h4>
+        <table class="table">
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.TotalPoints)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.TotalPoints)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.TotalPointsFromLeague)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.TotalPointsFromLeague)
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    @Html.DisplayNameFor(model => model.TotalPointsFromOtherQuestions)
+                </td>
+                <td>
+                    @Html.DisplayFor(model => model.TotalPointsFromOtherQuestions)
+                </td>
+            </tr>
+            <tr>
+                <td>رتبه کلی</td>
+                <td>@scoresData.MyAllTimeTotalScore</td>
+            </tr>
+            <tr>
+                <td>امتیاز در لیگ فعلی</td>
+                <td>@scoresData.MyFestivalPoints</td>
+            </tr>
+            <tr>
+                <td>امتیاز سوالات بالتازار در لیگ فعلی</td>
+                <td>@scoresData.MyFestivalPointsFromLeague</td>
+            </tr>
+            <tr>
+                <td>امتیاز سوالات دیگر در لیگ فعلی</td>
+                <td>@scoresData.MyFestivalPointsFromOtherQuestions</td>
+            </tr>
+            <tr>
+                <td>رتبه در لیگ فعلی</td>
+                <td>@scoresData.MyFestivalScore</td>
+            </tr>
+            <tr>
+                <td>رتبه در لیگ فعلی در مقطع خود</td>
+                <td>@scoresData.MyFestivalScoreOnGrade</td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div>
+    @Html.ActionLink("ویرایش", "Edit", new { id = Model.Id.ToString() }) |
+    <a asp-action="Index">برگشت به لیست</a>
+</div>

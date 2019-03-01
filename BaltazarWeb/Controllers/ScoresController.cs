@@ -47,35 +47,8 @@ namespace BaltazarWeb.Controllers
             return new DataResponse<ScoresData>
             {
                 Success = true,
-                Data = GetScoresData(me)
+                Data = scoresDataProvider.GetScoresData(me)
             };
-        }
-
-        private ScoresData GetScoresData(Student student)
-        {
-            var currentFestival = ScoresData.CurrentFestivalName;
-            ScoresData data = new ScoresData();
-
-            data.MyAllTimePoints = student.TotalPoints;
-            data.MyAllTimeTotalScore = DB.Count<Student>(s => s.TotalPoints > student.TotalPoints) + 1;
-
-            data.FestivalName = ScoresData.CurrentFestivalDisplayName;
-            var myFestival = student.FestivalPoints.FirstOrDefault(f => f.Name == currentFestival);
-            data.MyFestivalPoints = myFestival != null ? myFestival.Points : 0;
-            data.MyFestivalPointsFromLeague = myFestival != null ? myFestival.PointsFromLeague : 0;
-            data.MyFestivalPointsFromOtherQuestions = myFestival != null ? myFestival.PointsFromOtherQuestions : 0;
-
-            data.MyFestivalScore = DB.Count(Builders<Student>.Filter.ElemMatch(s => s.FestivalPoints, f => f.Points > data.MyFestivalPoints)) + 1;
-            data.MyFestivalScoreOnGrade = DB.Count(
-                Builders<Student>.Filter.And(
-                    Builders<Student>.Filter.Eq(s => s.Grade, student.Grade),
-                    Builders<Student>.Filter.ElemMatch(s => s.FestivalPoints, f => f.Points > data.MyFestivalPoints)
-                )) + 1;
-
-            data.FestivalTop = scoresDataProvider.FestivalTopStudents;
-            data.TotalTop = scoresDataProvider.TotalTopStudents;
-            data.FestivalTopOnGrade = scoresDataProvider.GetFestivalTopStudentsInGrade(student.Grade);
-            return data;
         }
     }
 }

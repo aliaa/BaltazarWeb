@@ -83,6 +83,12 @@ namespace BaltazarWeb.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(policy: nameof(Permission.ManageStudents))]
+        public IActionResult Details(string id)
+        {
+            return View(DB.FindById<Student>(id));
+        }
+
         [HttpPost]
         public ActionResult<DataResponse<Student>> Register([FromBody] Student student)
         {

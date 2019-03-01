@@ -66,8 +66,8 @@
     @foreach (var item in Model) {
             <tr>
                 <td>
-                    @Html.ActionLink("ویرایش", "Edit", new { id = item.Id.ToString() }) |
-                    @Html.ActionLink("غیر فعال سازی", "Disable", new { id = item.Id.ToString() })
+                    @Html.ActionLink("جزئیات", "Details", new { id = item.Id.ToString() }) |
+                    @Html.ActionLink("ویرایش", "Edit", new { id = item.Id.ToString() })
                     @if (item.PusheId != null)
                     {
                         <span> | </span>
