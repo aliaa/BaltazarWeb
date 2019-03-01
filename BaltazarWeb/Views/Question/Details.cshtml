@@ -44,7 +44,7 @@
         <dl>
             <dt>تصویر:</dt>
             <dd>
-                <img src="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + Model.Id + ".jpg")" style="max-width:100%;" />
+                <img src="@UtilsX.GetImageUrl(Model.Id)" style="max-width:100%;" />
             </dd>
         </dl>
     }
@@ -87,7 +87,7 @@
                     <td>
                         @if (answer.HasImage)
                         {
-                            <a href="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + answer.Id + ".jpg")">تصویر</a>
+                            <a href="@UtilsX.GetImageUrl(answer.Id)">تصویر</a>
                         }
                     </td>
                 </tr>

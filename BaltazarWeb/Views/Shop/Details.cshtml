@@ -1,0 +1,43 @@
+﻿@model BaltazarWeb.Models.ShopItem
+
+@{
+    ViewData["Title"] = "جزئیات آیتم فروشگاه";
+}
+
+<h2>جزئیات آیتم فروشگاه</h2>
+
+<div>
+    <hr />
+    <table class="table">
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.Enabled)</td>
+            <td>@Html.DisplayFor(model => model.Enabled)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.CoinCost)</td>
+            <td>@Html.DisplayFor(model => model.CoinCost)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.Name)</td>
+            <td>@Html.DisplayFor(model => model.Name)</td>
+        </tr>
+        <tr>
+            <td>@Html.DisplayNameFor(model => model.DateAdded)</td>
+            <td>@Utils.GetPersianDateString(Model.DateAdded)</td>
+        </tr>
+    </table>
+
+    @if (Model.HasImage)
+    {
+        <dl>
+            <dt>تصویر</dt>
+            <dd>
+                <img src="@UtilsX.GetImageUrl(Model.Id)" style="max-width:100%" />
+            </dd>
+        </dl>
+    }
+    </div>
+<div>
+    @Html.ActionLink("ویرایش", "Edit", new { id = Model.Id.ToString() }) |
+    <a asp-action="Index">برگشت به لیست</a>
+</div>

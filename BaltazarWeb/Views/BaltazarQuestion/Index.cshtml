@@ -46,7 +46,7 @@
             <td>
                 @if (item.HasImage)
                 {
-                    <a href="@(Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + item.Id + ".jpg")">تصویر</a>
+                    <a href="@UtilsX.GetImageUrl(item.Id)">تصویر</a>
                 }
             </td>
             <td>@(item.Text.Length <= 40 ? item.Text : item.Text.Substring(0, Math.Min(item.Text.Length, 40)) + "...")</td>

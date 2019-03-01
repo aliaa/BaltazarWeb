@@ -48,7 +48,7 @@
             <tr>
                 <td></td>
                 <td>
-                    <a href="@("../../" + Consts.UPLOAD_IMAGE_DIR.Replace("\\","/") + "/" + question.Id + ".jpg")" style="max-width:100%;">تصویر</a>
+                    <a href="@UtilsX.GetImageUrl(question.Id)" style="max-width:100%;">تصویر</a>
                 </td>
             </tr>
         }

@@ -46,19 +46,21 @@ namespace BaltazarWeb.Controllers
             public ObjectId ProvinceId { get; set; }
             public ObjectId _id { get; set; }
             public string Name { get; set; }
-            public int StudentCount { get; set; }
+            public int Count { get; set; }
         }
-
+        
         private IEnumerable<SelectListItem> GetCitiesItem()
         {
             var provinces = DB.All<Province>().ToDictionary(i => i.Id, i => i.Name);
-            return DB.Aggregate<City>()
-                .Lookup(nameof(Student), nameof(City.Id), nameof(Student.CityId), "students")
-                .Project("{ \"ProvinceId\":1, \"Name\":1, \"StudentCount\" : {$size: \"$students\"} }")
-                .Match("{ \"StudentCount\" : {$gt: 0} }")
-                .Sort("{ \"ProvinceId\" : 1, \"StudentCount\" : -1 }")
-                .As<CityStudentCount>().ToEnumerable()
-                .Select(i => new SelectListItem { Text = provinces[i.ProvinceId] + " - " + i.Name + " (" + i.StudentCount + ")", Value = i._id.ToString() });
+            var result = DB.Aggregate<Student>()
+                .Match(s => s.IsTeacher != true)
+                .Lookup(nameof(City), nameof(Student.CityId), "_id", "City")
+                .Project("{ City: { $arrayElemAt: [ \"$City\", 0 ] }, Count: { $size: \"$City\" }}")
+                .Match("{Count: { $gt: 0 }}")
+                .Group("{ _id: \"$City._id\", Name: {$first: \"$City.Name\"}, ProvinceId: {$first: \"$City.ProvinceId\"}, Count: {$sum: 1}}")
+                .As<CityStudentCount>()
+                .ToList();
+            return result.Select(i => new SelectListItem { Text = provinces[i.ProvinceId] + " - " + i.Name + " (" + i.Count + ")", Value = i._id.ToString() });
         }
 
         [Authorize(policy: nameof(Permission.ManageStudents))]
