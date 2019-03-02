@@ -52,6 +52,7 @@ namespace BaltazarWeb.Models
         [Display(Name = "تاریخ ثبت نام")]
         public DateTime RegistrationDate { get; set; }
 
+        [Display(Name = "مدت عضویت")]
         public int MembershipDurationDays => (int)(DateTime.Now - RegistrationDate).TotalDays;
 
         [Display(Name = "شماره همراه")]
@@ -60,6 +61,7 @@ namespace BaltazarWeb.Models
         public string Phone { get; set; }
 
         [Required]
+        [Display(Name = "رمز عبور")]
         public string Password { get; set; }
 
         [Display(Name = "مقطع تحصیلی")]

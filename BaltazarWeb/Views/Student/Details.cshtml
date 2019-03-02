@@ -207,5 +207,10 @@
 </div>
 <div>
     @Html.ActionLink("ویرایش", "Edit", new { id = Model.Id.ToString() }) |
+    @if (Model.PusheId != null)
+    {
+        @Html.ActionLink("ارسال اعلان", "SendNew", "Push", new { pusheId = Model.PusheId })
+        <span> | </span>
+    }
     <a asp-action="Index">برگشت به لیست</a>
 </div>
