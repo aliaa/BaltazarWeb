@@ -1,0 +1,64 @@
+﻿@model IEnumerable<BaltazarWeb.Models.ContactUsMessage>
+@inject AliaaCommon.MongoDB.MongoHelper DB
+
+@{
+    ViewData["Title"] = "لیست نظرات";
+}
+
+<h2>لیست نظرات</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FromAndroid)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StudentId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Message)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Utils.GetPersianDateString(item.Date, false)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FromAndroid)
+            </td>
+            <td>
+                @if(item.StudentId != ObjectId.Empty)
+                {
+                    Student student = (DB.FindById<Student>(item.StudentId));
+                    if (student != null)
+                    {
+                        Html.ActionLink(student.DisplayName, "Details", "Student", new { id = student.Id.ToString() });
+                    }
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Message)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

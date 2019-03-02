@@ -39,6 +39,10 @@
                         {
                             <li><a asp-controller="Account" asp-action="List">مدیریت کاربران</a></li>
                         }
+                        @if (permsArr.Contains(nameof(Permission.ViewContactUsMessages)))
+                        {
+                            <li><a asp-controller="ContactUs" asp-action="List">نظرات</a></li>
+                        }
                         @if (permsArr.Contains(nameof(Permission.SendPush)))
                         {
                             <li><a asp-controller="Push" asp-action="SendNew">ارسال اعلان</a></li>

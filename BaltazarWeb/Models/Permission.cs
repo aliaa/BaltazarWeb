@@ -28,5 +28,7 @@ namespace BaltazarWeb.Models
         ManageTeachers,
         [Display(Name = "ارسال اعلان")]
         SendPush,
+        [Display(Name = "مشاهده نظرات")]
+        ViewContactUsMessages,
     }
 }
