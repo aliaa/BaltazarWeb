@@ -42,7 +42,7 @@ namespace BaltazarWeb.Utils
 
         private List<TopStudent> GetTotalTopFromDB()
         {
-            return DB.Find<Student>(s => true).SortByDescending(s => s.TotalPoints).Limit(10).ToEnumerable()
+            return DB.Find<Student>(s => s.IsTeacher != true).SortByDescending(s => s.TotalPoints).Limit(10).ToEnumerable()
                 .Select(s => new TopStudent { StudentId = s.Id, UserName = s.DisplayName, CityId = s.CityId, Points = s.TotalPoints, School = s.SchoolName }).ToList();
         }
 
@@ -79,6 +79,7 @@ namespace BaltazarWeb.Utils
         {
             var currentFestival = ScoresData.CurrentFestivalName;
             var agg = DB.Aggregate<Student>()
+                .Match(s => s.IsTeacher != true && s.FestivalPoints.Any(f => f.Name == currentFestival))
                 .Project<Student>(Builders<Student>.Projection.Include(s => s.Id).Include(s => s.FirstName).Include(s => s.LastName)
                     .Include(s => s.SchoolName).Include(s => s.Grade).Include(s => s.FestivalPoints).Include(s => s.CityId))
                 .Unwind<Student, UnWindedFestivalStudent>(s => s.FestivalPoints)
