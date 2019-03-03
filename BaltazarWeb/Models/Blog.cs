@@ -20,6 +20,9 @@ namespace BaltazarWeb.Models
         [Required]
         public string Title { get; set; }
 
+        [Display(Name = "خلاصه")]
+        public string Summary { get; set; }
+
         [Display(Name = "محتوا")]
         [Required]
         public string HtmlContent { get; set; }

@@ -25,6 +25,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.ShowOnWeb)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Summary)
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -45,6 +48,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ShowOnWeb)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Summary)
             </td>
         </tr>
 }
