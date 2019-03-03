@@ -243,8 +243,15 @@ namespace BaltazarWeb.Controllers
                         a.QuestionId == question.Id &&
                         a.Response == Answer.QuestionerResponseEnum.NotSeen &&
                         a.PublishStatus == BaseUserContent.PublishStatusEnum.Published).ToList();
+                foreach (var ans in question.Answers)
+                    ans.UserName = DB.FindById<Student>(ans.UserId)?.NickName;
+
                 if (question.AcceptedAnswerId != ObjectId.Empty)
+                {
                     question.AcceptedAnswer = DB.FindById<Answer>(question.AcceptedAnswerId);
+                    if (question.AcceptedAnswer != null)
+                        question.AcceptedAnswer.UserName = DB.FindById<Student>(question.AcceptedAnswer.UserId)?.NickName;
+                }
             }
 
             return new DataResponse<List<Question>> { Success = true, Data = list };
