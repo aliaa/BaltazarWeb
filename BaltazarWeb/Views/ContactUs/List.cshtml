@@ -45,7 +45,7 @@
                     Student student = (DB.FindById<Student>(item.StudentId));
                     if (student != null)
                     {
-                        Html.ActionLink(student.DisplayName, "Details", "Student", new { id = student.Id.ToString() });
+                        @Html.ActionLink(student.DisplayName, "Details", "Student", new { id = student.Id.ToString() });
                     }
                 }
             </td>

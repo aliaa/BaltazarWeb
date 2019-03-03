@@ -20,6 +20,21 @@ namespace BaltazarWeb.Controllers
             this.DB = DB;
         }
 
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Index(ContactUsMessage contactUsMessage)
+        {
+            contactUsMessage.Date = DateTime.Now;
+            contactUsMessage.FromAndroid = false;
+            DB.Save(contactUsMessage);
+            ViewBag.Message = "نظر شما با موفقیت ثبت شد! از شما متشکریم!";
+            return View();
+        }
+
         [Authorize(Policy = nameof(Permission.ViewContactUsMessages))]
         public IActionResult List()
         {

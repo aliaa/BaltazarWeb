@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace BaltazarWeb.Models
 {
+    [MongoIndex(new string[] { nameof(Date) }, new MongoIndexType[] { MongoIndexType.Descending })]
     public class ContactUsMessage : MongoEntity
     {
         [JsonIgnore]
