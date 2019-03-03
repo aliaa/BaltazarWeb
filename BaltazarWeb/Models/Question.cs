@@ -1,6 +1,7 @@
 ﻿using AliaaCommon;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -19,7 +20,11 @@ namespace BaltazarWeb.Models
         [Display(Name = "نام سرفصل")]
         public ObjectId SectionId { get; set; }
 
+        [JsonIgnore]
         public ObjectId AcceptedAnswerId { get; set; }
+
+        [BsonIgnore]
+        public Answer AcceptedAnswer { get; set; }
 
         [BsonIgnore]
         public List<Answer> Answers { get; set; }
