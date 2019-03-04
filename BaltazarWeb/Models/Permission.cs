@@ -30,5 +30,7 @@ namespace BaltazarWeb.Models
         SendPush,
         [Display(Name = "مشاهده نظرات")]
         ViewContactUsMessages,
+        [Display(Name = "مدیریت آپلودها")]
+        ManageUploads,
     }
 }

@@ -1,0 +1,39 @@
+﻿@model IEnumerable<BaltazarWeb.Models.UploadedFile>
+
+@{
+    ViewData["Title"] = "مدیریت آپلودها";
+}
+
+<h2>مدیریت آپلودها</h2>
+
+<p>
+    <a asp-action="New">آپلود جدید</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FileName)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.ActionLink("حذف", "Delete", new { id = item.Id.ToString() }, new { onclick = "return confirm('آیا برای حذف مطمئن هستید؟');" })
+            </td>
+            <td>
+                @Utils.GetPersianDateString(item.Date)
+            </td>
+            <td>
+                <a href="@("../Uploads/File/" + item.Id.ToString() + System.IO.Path.GetExtension(item.FileName))">@item.FileName</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

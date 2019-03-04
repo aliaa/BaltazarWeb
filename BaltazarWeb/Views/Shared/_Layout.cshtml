@@ -39,6 +39,10 @@
                         {
                             <li><a asp-controller="Account" asp-action="List">مدیریت کاربران</a></li>
                         }
+                        @if(permsArr.Contains(nameof(Permission.ManageUploads)))
+                        {
+                            <li><a asp-controller="Uploads" asp-action="Index">آپلودها</a></li>
+                        }
                         @if (permsArr.Contains(nameof(Permission.ViewContactUsMessages)))
                         {
                             <li><a asp-controller="ContactUs" asp-action="List">نظرات</a></li>

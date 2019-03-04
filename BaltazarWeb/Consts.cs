@@ -16,6 +16,7 @@ namespace BaltazarWeb
         public const string UPLOAD_IMAGE_DIR = "Uploads\\Image";
         public const string UPLOAD_VOICE_DIR = "Uploads\\Voice";
         public const string UPLOAD_VIDEO_DIR = "Uploads\\Video";
+        public const string UPLOAD_FILE_DIR = "Uploads\\File";
         public static readonly string[] SEASON_NAMES = new string[] { "بهار", "تابستان", "پاییز", "زمستان" };
     }
 }
