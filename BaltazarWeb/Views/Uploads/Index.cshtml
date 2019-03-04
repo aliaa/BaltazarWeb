@@ -31,7 +31,7 @@
                 @Utils.GetPersianDateString(item.Date)
             </td>
             <td>
-                <a href="@("/Uploads/File/" + item.Id.ToString() + System.IO.Path.GetExtension(item.FileName))">@item.FileName</a>
+                <a href="@("Uploads/File/" + item.Id.ToString() + System.IO.Path.GetExtension(item.FileName))">@item.FileName</a>
             </td>
         </tr>
 }
