@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<BaltazarWeb.Models.Student>
+@inject AliaaCommon.MongoDB.MongoHelper DB
 
 @{
     ViewData["Title"] = "لیست آموزگاران";
@@ -28,14 +29,18 @@
             <th>
                 @Html.DisplayNameFor(model => model.Password)
             </th>
+            <th>جوابهای تائید شده</th>
+            <th>جوابهای رد شده</th>
+            <th>جوابهای گزارش شده</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+        @foreach (var item in Model)
+        {
         <tr>
             <td>
-                @Html.ActionLink("ویرایش", "EditTeacher", new {  id=item.Id.ToString()  }) |
-                @Html.ActionLink("حذف", "Delete", new {  id=item.Id.ToString() }, new { onclick = "return confirm('آیا برای حذف مطمئن هستید؟');" })
+                @Html.ActionLink("ویرایش", "EditTeacher", new { id = item.Id.ToString() }) |
+                @Html.ActionLink("حذف", "Delete", new { id = item.Id.ToString() }, new { onclick = "return confirm('آیا برای حذف مطمئن هستید؟');" })
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
@@ -55,7 +60,16 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Password)
             </td>
+            <td>
+                @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Accepted))
+            </td>
+            <td>
+                @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Rejected))
+            </td>
+            <td>
+                @(DB.Count<Answer>(a => a.UserId == item.Id && a.Response == Answer.QuestionerResponseEnum.Reported))
+            </td>
         </tr>
-}
+        }
     </tbody>
 </table>
