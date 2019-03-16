@@ -293,5 +293,38 @@ namespace BaltazarWeb.Controllers
                 .Set(s => s.Phone, update.Phone));
             return RedirectToAction(nameof(Teachers));
         }
+
+        public ActionResult<DataResponse<TeacherStatus>> TeacherStats([FromHeader] Guid token)
+        {
+            Student me = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            if (me == null || !me.IsTeacher)
+                return Unauthorized();
+            var stats = new TeacherStatus
+            {
+                AnswersCount = (int)DB.Count<Answer>(a => a.UserId == me.Id)
+            };
+            foreach (var id in DB.Find<Answer>(a => a.UserId == me.Id).Project(a => a.Id).ToEnumerable())
+            {
+                if (DB.Any<Question>(q => q.AcceptedAnswerId == id))
+                    stats.AcceptedAnswersCount++;
+            }
+            return new DataResponse<TeacherStatus> { Success = true, Data = stats };
+        }
+
+        public ActionResult<CommonResponse> RequestWithdrawal([FromHeader] Guid token, [FromQuery] string card)
+        {
+            Student me = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
+            if (me == null || !me.IsTeacher)
+                return Unauthorized();
+            DB.Save(new WithdrawRequest { TeacherId = me.Id, CardNumber = card });
+            return new CommonResponse { Success = true, Message = "درخواست شما با موفقیت ذخیره شد!" };
+        }
+
+        [Authorize(policy: nameof(Permission.ManageTeachers))]
+        public IActionResult WithdrawRequests()
+        {
+            var list = DB.Find<WithdrawRequest>(_ => true).SortByDescending(s => s.Date).ToList();
+            return View(list);
+        }
     }
 }

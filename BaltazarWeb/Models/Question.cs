@@ -8,6 +8,7 @@ using System.ComponentModel.DataAnnotations;
 namespace BaltazarWeb.Models
 {
     [MongoIndex(new string[] { nameof(Grade) })]
+    [MongoIndex(new string[] { nameof(AcceptedAnswer) })]
     public class Question : BaseUserContent
     {
         [Display(Name = "مقطع تحصیلی")]

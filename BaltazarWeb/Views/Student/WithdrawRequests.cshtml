@@ -1,0 +1,40 @@
+﻿@model IEnumerable<BaltazarWeb.Models.WithdrawRequest>
+@inject AliaaCommon.MongoDB.MongoHelper DB
+
+@{
+    ViewData["Title"] = "درخواست های تسویه آموزگاران";
+}
+
+<h2>درخواست های تسویه آموزگاران</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.TeacherId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CardNumber)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @(DB.FindById<Student>(item.TeacherId).DisplayName)
+            </td>
+            <td>
+                @(Utils.GetPersianDateString(item.Date))
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CardNumber)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

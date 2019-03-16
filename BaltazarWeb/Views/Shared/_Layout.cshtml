@@ -39,7 +39,7 @@
                         {
                             <li><a asp-controller="Account" asp-action="List">مدیریت کاربران</a></li>
                         }
-                        @if(permsArr.Contains(nameof(Permission.ManageUploads)))
+                        @if (permsArr.Contains(nameof(Permission.ManageUploads)))
                         {
                             <li><a asp-controller="Uploads" asp-action="Index">آپلودها</a></li>
                         }
@@ -85,7 +85,13 @@
                         }
                         @if (perms.Contains(nameof(Permission.ManageTeachers)))
                         {
-                            <li><a asp-controller="Student" asp-action="Teachers">آموزگاران</a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">آموزگاران <span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    <li><a asp-controller="Student" asp-action="Teachers">لیست</a></li>
+                                    <li><a asp-controller="Student" asp-action="WithdrawRequests">درخواست های تسویه</a></li>
+                                </ul>
+                            </li>
                         }
                         <li><a asp-controller="Scores" asp-action="Index">امتیازات</a></li>
                         @if (perms.Contains(nameof(Permission.ManageStudents)))
