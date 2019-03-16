@@ -104,7 +104,7 @@ namespace BaltazarWeb.Controllers
         public IActionResult OrdersList(ShopOrder.OrderStatus status = ShopOrder.OrderStatus.WaitForApprove)
         {
             ViewBag.Status = AliaaCommon.Utils.GetDisplayNameOfMember(typeof(ShopOrder.OrderStatus), status.ToString());
-            return View(DB.Find<ShopOrder>(o => o.Status == status).SortBy(o => o.OrderDate).ToEnumerable());
+            return View(DB.Find<ShopOrder>(o => o.Status == status).SortByDescending(o => o.OrderDate).ToEnumerable());
         }
 
         [Authorize(policy: nameof(Permission.ManageShops))]
@@ -174,7 +174,7 @@ namespace BaltazarWeb.Controllers
             Student student = DB.Find<Student>(s => s.Token == token).FirstOrDefault();
             if (student == null || student.IsTeacher)
                 return Unauthorized();
-            List<ShopOrder> orders = DB.Find<ShopOrder>(s => s.UserId == student.Id).ToList();
+            List<ShopOrder> orders = DB.Find<ShopOrder>(s => s.UserId == student.Id).SortByDescending(o => o.OrderDate).ToList();
             foreach (var item in orders)
                 item.ShopItemName = DB.FindById<ShopItem>(item.ShopItemId)?.Name;
             return new DataResponse<List<ShopOrder>> { Success = true, Data = orders };
