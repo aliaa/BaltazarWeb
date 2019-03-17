@@ -75,7 +75,10 @@ namespace BaltazarWeb.Controllers
             ViewBag.Courses = courses;
             ViewBag.SelectedCourseId = course;
 
-            return View(query.ToEnumerable());
+            var list = query.Limit(1000).ToList();
+            foreach (var item in list)
+                item.UserName = DB.FindById<Student>(item.UserId).DisplayName;
+            return View(list);
         }
 
         [Authorize(policy: nameof(Permission.ApproveContent))]

@@ -50,7 +50,7 @@
         {
         <tr>
             <td>@Html.ActionLink("جزئیات", "Details", new { id = item.Id.ToString() })</td>
-            <td>@(DB.FindById<Student>(item.UserId)?.DisplayName)</td>
+            <td>@Html.ActionLink(item.UserName, "Details", "Student", new { id = item.UserId.ToString() })</td>
             <td>@Html.DisplayFor(modelItem => item.Grade)</td>
             <td>@(DB.FindById<Course>(item.CourseId)?.Name)</td>
             <td>@(DB.FindById<CourseSection>(item.SectionId)?.Name)</td>
