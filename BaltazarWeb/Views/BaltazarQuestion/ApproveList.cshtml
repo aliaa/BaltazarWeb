@@ -1,0 +1,51 @@
+﻿@model IEnumerable<BaltazarWeb.Models.Answer>
+
+@{
+    ViewData["Title"] = "لیست جواب های لیگ نیاز به تائید";
+}
+
+<h2>لیست جواب های لیگ نیاز به تائید</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                کاربر
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreateDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Text)
+            </th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            
+            <td>
+                @Html.ActionLink(item.UserName, "Details", "Student", new { id = item.UserId.ToString() })
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreateDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Text)
+            </td>
+            <td>
+                @if (item.HasImage)
+                {
+                    <a href="@UtilsX.GetImageUrl(item.Id, 1)">تصویر</a>
+                }
+            </td>
+            <td>
+                @Html.ActionLink("تائید و دادن امتیاز", "AcceptAnswer", new { questionId = item.QuestionId.ToString(), answerId = item.Id.ToString() }) |
+                @Html.ActionLink("رد جواب", "RejectAnswer", new { id = item.Id.ToString() })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

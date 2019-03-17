@@ -90,14 +90,14 @@ namespace BaltazarWeb.Controllers
             if (question == null || answer == null || answer.QuestionId != question.Id)
                 return RedirectToAction(nameof(Index));
 
-            if (answer.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove && answer.ToBaltazarQuestion)
+            if (answer.Response == Answer.QuestionerResponseEnum.NotSeen && answer.ToBaltazarQuestion)
             {
-                DB.UpdateOne<Answer>(a => a.Id == answer.Id, Builders<Answer>.Update.Set(a => a.PublishStatus, BaseUserContent.PublishStatusEnum.Published));
+                DB.UpdateOne<Answer>(a => a.Id == answer.Id, Builders<Answer>.Update.Set(a => a.Response, Answer.QuestionerResponseEnum.Accepted));
                 Student answerer = DB.FindById<Student>(answer.UserId);
                 if(answerer != null)
                     AnswerController.AddPointsToStudentForCorrectAnswering(DB, pushProvider, answerer, question);
             }
-            return RedirectToAction(nameof(Details), new { id = questionId });
+            return RedirectToAction(nameof(ApproveList));
         }
 
         public IActionResult RejectAnswer(string questionId, string answerId)
@@ -107,11 +107,20 @@ namespace BaltazarWeb.Controllers
             if (question == null || answer == null || answer.QuestionId != question.Id)
                 return RedirectToAction(nameof(Index));
 
-            if (answer.PublishStatus == BaseUserContent.PublishStatusEnum.WaitForApprove && answer.ToBaltazarQuestion)
+            if (answer.Response == Answer.QuestionerResponseEnum.NotSeen && answer.ToBaltazarQuestion)
             {
-                DB.UpdateOne<Answer>(a => a.Id == answer.Id, Builders<Answer>.Update.Set(a => a.PublishStatus, BaseUserContent.PublishStatusEnum.Rejected));
+                DB.UpdateOne<Answer>(a => a.Id == answer.Id, Builders<Answer>.Update.Set(a => a.Response, Answer.QuestionerResponseEnum.Rejected));
             }
-            return RedirectToAction(nameof(Details), new { id = questionId });
+            return RedirectToAction(nameof(ApproveList));
+        }
+
+        public IActionResult ApproveList()
+        {
+            var list = DB.Find<Answer>(a => a.ToBaltazarQuestion && a.Response == Answer.QuestionerResponseEnum.NotSeen)
+                .SortBy(a => a.CreateDate).Limit(1000).ToList();
+            foreach (var item in list)
+                item.UserName = DB.FindById<Student>(item.UserId).DisplayName;
+            return View(list);
         }
     }
 }
