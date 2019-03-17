@@ -30,7 +30,7 @@
                 @Html.ActionLink(item.UserName, "Details", "Student", new { id = item.UserId.ToString() })
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CreateDate)
+                @Utils.GetPersianDateString(item.CreateDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Text)
