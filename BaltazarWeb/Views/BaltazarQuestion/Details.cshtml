@@ -79,7 +79,7 @@
                     {
                         @Html.ActionLink("تائید و دادن امتیاز", "AcceptAnswer", new { questionId = Model.Id.ToString(), answerId = answer.Id.ToString() })
                         <span>&nbsp;|&nbsp;</span>
-                        @Html.ActionLink("رد جواب", "RejectAnswer", new { id = answer.Id.ToString() })
+                        @Html.ActionLink("رد جواب", "RejectAnswer", new { questionId = Model.Id.ToString(), answerId = answer.Id.ToString() })
                     }
                 </td>
                 <td>@(Utils.GetPersianDateString(answer.CreateDate))</td>

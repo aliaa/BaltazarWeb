@@ -43,7 +43,7 @@
             </td>
             <td>
                 @Html.ActionLink("تائید و دادن امتیاز", "AcceptAnswer", new { questionId = item.QuestionId.ToString(), answerId = item.Id.ToString() }) |
-                @Html.ActionLink("رد جواب", "RejectAnswer", new { id = item.Id.ToString() })
+                @Html.ActionLink("رد جواب", "RejectAnswer", new { questionId = item.QuestionId.ToString(), answerId = item.Id.ToString() }))
             </td>
         </tr>
 }
