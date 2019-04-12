@@ -15,7 +15,7 @@ namespace BaltazarWeb.Utils
     public class ScoresDataProvider
     {
         private readonly MongoHelper DB;
-        private const int REFRESH_DURATION_SECS = 3600;
+        private const int REFRESH_DURATION_SECS = 1800;
 
         public ScoresDataProvider(MongoHelper DB)
         {

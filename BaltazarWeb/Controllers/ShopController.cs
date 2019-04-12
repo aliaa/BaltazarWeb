@@ -28,7 +28,7 @@ namespace BaltazarWeb.Controllers
         [Authorize(policy: nameof(Permission.ManageShops))]
         public IActionResult Index()
         {
-            return View(DB.All<ShopItem>());
+            return View(DB.Find<ShopItem>(_ => true).SortByDescending(s => s.DateAdded).ToList());
         }
 
         [Authorize(policy: nameof(Permission.ManageShops))]

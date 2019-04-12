@@ -14,7 +14,7 @@ namespace BaltazarWeb.Models
         public BaltazarQuestion()
         {
             FromBaltazar = true;
-            UserName = "بالتازار";
+            UserName = "سوال بالتازار";
             PublishStatus = PublishStatusEnum.Published;
         }
 
