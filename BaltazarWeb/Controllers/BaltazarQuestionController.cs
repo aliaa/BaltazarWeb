@@ -77,7 +77,9 @@ namespace BaltazarWeb.Controllers
         {
             ObjectId objId = ObjectId.Parse(id);
             if (DB.Any<Answer>(a => a.QuestionId == objId))
+            {
                 ModelState.AddModelError("", "آیتم قابل حذف نیست!");
+            }
             else
                 DB.DeleteOne<BaltazarQuestion>(objId);
             return RedirectToAction(nameof(Index));
