@@ -41,6 +41,9 @@ namespace BaltazarWeb.Models
         [BsonIgnore]
         public bool FromBaltazar { get; protected set; } = false;
 
+        [BsonIgnore]
+        public bool IAlreadyAnswered { get; set; } = false;
+
         public int UnseenAnswersCount { get; set; } = 0;
     }
 }

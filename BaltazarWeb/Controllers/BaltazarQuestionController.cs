@@ -69,6 +69,9 @@ namespace BaltazarWeb.Controllers
         public IActionResult Edit(BaltazarQuestion item, string id)
         {
             item.Id = ObjectId.Parse(id);
+            var original = DB.FindById<BaltazarQuestion>(item.Id);
+            if (original.HasImage)
+                item.HasImage = true;
             DB.Save(item);
             return RedirectToAction(nameof(Index));
         }

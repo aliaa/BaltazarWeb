@@ -226,6 +226,7 @@ namespace BaltazarWeb.Controllers
             {
                 item.Hot = !DB.Any<Answer>(a => a.QuestionId == item.Id);
                 item.UserName = DB.FindById<Student>(item.UserId).NickName;
+                item.IAlreadyAnswered = DB.Any<Answer>(a => a.UserId == student.Id && a.QuestionId == item.Id);
             }
 
             if (!student.IsTeacher)
@@ -272,6 +273,13 @@ namespace BaltazarWeb.Controllers
                 return new CommonResponse { Message = "این سوال شما نیست!" };
             if (question.PublishStatus != BaseUserContent.PublishStatusEnum.WaitForApprove)
                 return new CommonResponse { Message = "این سوال قبلا منتشر شده یا رد شده است!" };
+            var coinTansaction = student.CoinTransactions.LastOrDefault(t => t.Type == CoinTransaction.TransactionType.AskQuestion && t.SourceId == question.Id);
+            if (coinTansaction != null)
+            {
+                student.Coins += Math.Abs(coinTansaction.Amount);
+                student.CoinTransactions.Remove(coinTansaction);
+                DB.Save(student);
+            }
             DB.DeleteOne(question);
             return new CommonResponse { Success = true, Message = "سوال حذف شد!" };
         }
