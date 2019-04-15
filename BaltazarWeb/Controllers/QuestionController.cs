@@ -222,15 +222,20 @@ namespace BaltazarWeb.Controllers
                 .Limit(PAGE_SIZE)
                 .Skip(page * PAGE_SIZE)
                 .ToList();
+            
+            if (!student.IsTeacher)
+                list.AddRange(DB.Find<BaltazarQuestion>(q => q.ExpireDate > DateTime.Now && student.Grade >= q.Grade && student.Grade <= q.MaxGrade).ToEnumerable());
+
             foreach (var item in list)
             {
-                item.Hot = !DB.Any<Answer>(a => a.QuestionId == item.Id);
-                item.UserName = DB.FindById<Student>(item.UserId).NickName;
+                if (!(item is BaltazarQuestion))
+                {
+                    item.Hot = !DB.Any<Answer>(a => a.QuestionId == item.Id);
+                    item.UserName = DB.FindById<Student>(item.UserId).NickName;
+                }
                 item.IAlreadyAnswered = DB.Any<Answer>(a => a.UserId == student.Id && a.QuestionId == item.Id);
             }
 
-            if (!student.IsTeacher)
-                list.AddRange(DB.Find<BaltazarQuestion>(q => q.ExpireDate > DateTime.Now && student.Grade >= q.Grade && student.Grade <= q.MaxGrade).ToEnumerable());
             list = list.OrderByDescending(q => q.CreateDate).ToList();
             return new DataResponse<List<Question>> { Success = true, Data = list };
         }
