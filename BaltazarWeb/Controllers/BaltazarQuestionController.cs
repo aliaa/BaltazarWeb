@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
@@ -84,7 +85,17 @@ namespace BaltazarWeb.Controllers
                 ModelState.AddModelError("", "آیتم قابل حذف نیست!");
             }
             else
-                DB.DeleteOne<BaltazarQuestion>(objId);
+            {
+                BaltazarQuestion question = DB.FindById<BaltazarQuestion>(objId);
+                if (question != null)
+                {
+                    DeletedItems deletedItems = new DeletedItems { Type = nameof(BaltazarQuestion) };
+                    deletedItems.User = ObjectId.Parse(HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+                    deletedItems.Items.Add(DB.FindById<BaltazarQuestion>(objId));
+                    DB.Save(deletedItems);
+                    DB.DeleteOne<BaltazarQuestion>(objId);
+                }
+            }
             return RedirectToAction(nameof(Index));
         }
 

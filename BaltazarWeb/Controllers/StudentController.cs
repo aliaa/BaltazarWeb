@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using AliaaCommon.MongoDB;
 using BaltazarWeb.Models;
 using BaltazarWeb.Models.ApiModels;
@@ -266,6 +267,32 @@ namespace BaltazarWeb.Controllers
                 Success = true,
                 Data = me.CoinTransactions.OrderByDescending(t => t.Date).Take(100).ToList()
             };
+        }
+
+        public IActionResult Delete(string id)
+        {
+            ObjectId objId = ObjectId.Parse(id);
+            Student student = DB.FindById<Student>(objId);
+            if (student == null)
+            {
+                ModelState.AddModelError("", "دانش آموز یافت نشد!");
+            }
+            else
+            {
+                DeletedItems deletedItems = new DeletedItems { Type = nameof(Student) };
+                deletedItems.User = ObjectId.Parse(HttpContext.User.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value);
+                deletedItems.Items.Add(student);
+                deletedItems.Items.AddRange(DB.Find<Question>(q => q.UserId == objId).ToEnumerable());
+                deletedItems.Items.AddRange(DB.Find<Answer>(a => a.UserId == objId).ToEnumerable());
+                deletedItems.Items.AddRange(DB.Find<ShopOrder>(o => o.UserId == objId).ToEnumerable());
+                DB.Save(deletedItems);
+
+                DB.DeleteOne<Student>(objId);
+                DB.DeleteMany<Question>(q => q.UserId == objId);
+                DB.DeleteMany<Answer>(a => a.UserId == objId);
+                DB.DeleteMany<ShopOrder>(o => o.UserId == objId);
+            }
+            return RedirectToAction(nameof(Index));
         }
 
 

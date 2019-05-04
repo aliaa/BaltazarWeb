@@ -38,7 +38,7 @@ namespace BaltazarWeb.Models
         public DateTime CreateDate { get; set; } = DateTime.Now;
 
         [Display(Name = "متن")]
-        public string Text { get; set; }
+        public string Text { get; set; } = "";
         
         [Display(Name = "وضعیت انتشار")]
         public PublishStatusEnum PublishStatus { get; set; }
