@@ -35,15 +35,18 @@ namespace BaltazarWeb.Controllers
         public IActionResult SendNew(SendPushViewModel data)
         {
             bool result;
+            string responseStr = null;
             if (string.IsNullOrEmpty(data.SpecificUserPusheId))
-                result = pushProvider.SendMessageToAll(data.Title, data.Content);
+                result = pushProvider.SendMessageToAll(data.Title, data.Content, out responseStr);
             else
             {
                 var users = new List<string>();
                 users.AddRange(data.SpecificUserPusheId.Split(";"));
-                result = pushProvider.SendMessageToUsers(data.Title, data.Content, users);
+                result = pushProvider.SendMessageToUsers(data.Title, data.Content, users, out responseStr);
             }
             ViewData["result"] = result;
+            if(!result)
+                ViewData["errorDetails"] = responseStr;
             return View();
         }
     }

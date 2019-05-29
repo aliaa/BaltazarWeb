@@ -7,8 +7,8 @@ namespace BaltazarWeb.Utils
 {
     public interface IPushNotificationProvider
     {
-        bool SendMessageToAll(string title, string message);
-        bool SendMessageToUser(string title, string message, string id);
-        bool SendMessageToUsers(string title, string message, List<string> ids);
+        bool SendMessageToAll(string title, string message, out string responseStr);
+        bool SendMessageToUser(string title, string message, string id, out string responseStr);
+        bool SendMessageToUsers(string title, string message, List<string> ids, out string responseStr);
     }
 }

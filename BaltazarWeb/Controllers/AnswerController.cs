@@ -49,7 +49,7 @@ namespace BaltazarWeb.Controllers
                 {
                     var pusheId = DB.Find<Student>(s => s.Id == askerId).Project(s => s.PusheId).FirstOrDefault();
                     if (pusheId != null)
-                        pushProvider.SendMessageToUser("جواب جدید!", "برای یکی از سوالات شما، یک جواب جدید داده شده است!", pusheId);
+                        pushProvider.SendMessageToUser("جواب جدید!", "برای یکی از سوالات شما، یک جواب جدید داده شده است!", pusheId, out _);
                 }
             }
             return NextNeedToApprove();
@@ -222,7 +222,7 @@ namespace BaltazarWeb.Controllers
                     msg = "تبریک! جواب شما برای سوال بالتازار تائید شده و " + question.Prize + " امتیاز به شما تعلق یافت!";
                 else
                     msg = "تبریک! جواب شما برای یک سوال از طرف سوال کننده تائید شده و " + question.Prize + " امتیاز به شما تعلق یافت!";
-                pushProvider.SendMessageToUser("تائید جواب شما", msg, st.PusheId);
+                pushProvider.SendMessageToUser("تائید جواب شما", msg, st.PusheId, out _);
             }
         }
 

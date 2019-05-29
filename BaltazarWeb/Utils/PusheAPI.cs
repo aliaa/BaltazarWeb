@@ -65,7 +65,7 @@ namespace BaltazarWeb.Utils
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", token);
         }
 
-        public bool SendMessageToAll(string title, string message)
+        public bool SendMessageToAll(string title, string message, out string responseStr)
         {
             var msg = new PushNotificationMessage
             {
@@ -76,11 +76,12 @@ namespace BaltazarWeb.Utils
                     content = message
                 }
             };
-            return SendJson(NOTIFICATIONS_URI, msg);
+            return SendJson(NOTIFICATIONS_URI, msg, out responseStr);
         }
 
-        private bool SendJson<T>(string uri, T data)
+        private bool SendJson<T>(string uri, T data, out string responseStr)
         {
+            responseStr = null;
             try
             {
                 var task = client.PostAsJsonAsync(uri, data);
@@ -89,6 +90,7 @@ namespace BaltazarWeb.Utils
                 var response = task.Result;
                 var readTask = response.Content.ReadAsStringAsync();
                 readTask.Wait(1000);
+                responseStr = readTask.Result;
                 return (int)response.StatusCode / 100 == 2;
             }
             catch
@@ -97,14 +99,14 @@ namespace BaltazarWeb.Utils
             }
         }
 
-        public bool SendMessageToUser(string title, string message, string pusheId)
+        public bool SendMessageToUser(string title, string message, string pusheId, out string responseStr)
         {
             List<string> pusheIds = new List<string>();
             pusheIds.Add(pusheId);
-            return SendMessageToUsers(title, message, pusheIds);
+            return SendMessageToUsers(title, message, pusheIds, out responseStr);
         }
 
-        public bool SendMessageToUsers(string title, string message, List<string> pusheIds)
+        public bool SendMessageToUsers(string title, string message, List<string> pusheIds, out string responseStr)
         {
             var msg = new RapidPushNotificationMessage
             {
@@ -116,7 +118,7 @@ namespace BaltazarWeb.Utils
                 },
                 pids = pusheIds
             };
-            return SendJson(RAPID_URI, msg);
+            return SendJson(RAPID_URI, msg, out responseStr);
         }
     }
 }

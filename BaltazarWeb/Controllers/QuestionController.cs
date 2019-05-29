@@ -90,7 +90,7 @@ namespace BaltazarWeb.Controllers
             Student student = DB.FindById<Student>(question.UserId);
             DB.Save(student);
             if(student.PusheId != null)
-                pushProvider.SendMessageToUser("تائید سوال", "سوال شما تائید و منتشر شد!", student.PusheId);
+                pushProvider.SendMessageToUser("تائید سوال", "سوال شما تائید و منتشر شد!", student.PusheId, out _);
             return NextNeedToApprove();
         }
 
@@ -112,7 +112,7 @@ namespace BaltazarWeb.Controllers
                     DB.Save(student);
                 }
                 if (student.PusheId != null)
-                    pushProvider.SendMessageToUser("رد سوال شما", "متاسفانه سوال شما برای انتشار رد شد!", student.PusheId);
+                    pushProvider.SendMessageToUser("رد سوال شما", "متاسفانه سوال شما برای انتشار رد شد!", student.PusheId, out _);
             }
             return NextNeedToApprove();
         }

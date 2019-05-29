@@ -165,7 +165,7 @@ namespace BaltazarWeb.Controllers
                     if (inviteSource.PusheId != null)
                         pushProvider.SendMessageToUser("سکه بالتازار!",
                             "تبریک! یکی از دوستان شما با وارد کردن کد دعوت شما عضو بالتازار شد و " + Consts.INVITE_PRIZE + " سکه به شما تعلق یافت!",
-                            inviteSource.PusheId);
+                            inviteSource.PusheId, out _);
 
                     student.CoinTransactions.Add(new CoinTransaction { Amount = Consts.INVITED_PRIZE, Type = CoinTransaction.TransactionType.InviteFriend });
                     student.Coins += Consts.INVITED_PRIZE;
