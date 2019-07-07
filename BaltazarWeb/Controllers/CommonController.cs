@@ -61,6 +61,11 @@ namespace BaltazarWeb.Controllers
                 notifications.NewBlogs = (int)DB.Count<Blog>(b => b.DateAdded > student.LastBlogVisit);
             }
 
+            var upgradeInfo = DB.Find<UpgradeInfo>(u => appVersion <= u.AppVersionMax).SortByDescending(u => u.Date).FirstOrDefault();
+            CommonData.UpgradeData upgrade = null;
+            if (upgradeInfo != null)
+                upgrade = new CommonData.UpgradeData { Message = upgradeInfo.Message, ForceUpgrade = upgradeInfo.Force };
+
             return new DataResponse<CommonData>
             {
                 Success = true,
@@ -72,7 +77,8 @@ namespace BaltazarWeb.Controllers
                     Cities = DB.All<City>().ToList(),
                     Courses = DB.All<Course>().ToList(),
                     StudyFields = DB.All<StudyField>().ToList(),
-                    Sections = DB.All<CourseSection>().ToList()
+                    Sections = DB.All<CourseSection>().ToList(),
+                    Upgrade = upgrade
                 }
             };
         }
