@@ -67,11 +67,11 @@ namespace BaltazarWeb
                     })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            string path = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            PersianCharacters persianChars = new PersianCharacters(path);
-            services.AddSingleton(persianChars);
+            string filePath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "PersianCharsMap.json");
+            IStringNormalizer stringNormalizer = new StringNormalizer(filePath);
+            services.AddSingleton(stringNormalizer);
 
-            MongoHelper DB = new MongoHelper(persianChars, Configuration.GetValue<string>("DBName"), Configuration.GetValue<string>("MongoConnString"),
+            MongoHelper DB = new MongoHelper(stringNormalizer, Configuration.GetValue<string>("DBName"), Configuration.GetValue<string>("MongoConnString"),
                 Configuration.GetValue<bool>("setDictionaryConventionToArrayOfDocuments"), null);
             DB.DefaultWriteLog = false;
             services.AddSingleton(DB);
